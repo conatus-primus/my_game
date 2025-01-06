@@ -1,0 +1,3 @@
+Формат svg : https://developer.mozilla.org/ru/docs/Web/SVG/Tutorial/Paths
+
+Доступ к отдельным пикселям : https://stackoverflow.com/questions/39538642/get-color-of-individual-pixels-of-images-in-pygame
