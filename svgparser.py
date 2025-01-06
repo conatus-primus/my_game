@@ -266,9 +266,8 @@ class SvgParserOneHole:
 
 class RawHoleObject(SvgParserFile):
     def __init__(self, map_number):
-        self.current_map_path = CURRENT_DIRECTORY + '/levels/' + str(map_number)
-        self.current_svg_file = self.current_map_path + '/' + str(map_number) + '.svg'
-        self.current_txt_file = self.current_map_path + '/' + str(map_number) + '.txt'
+        self.current_svg_file = CURRENT_DIRECTORY + '/maps/' + str(map_number) + '/' + str(map_number) + '.svg'
+        self.current_txt_file = CURRENT_DIRECTORY + '/temp/' + str(map_number) + '.txt'
         super().__init__(self.current_svg_file)
 
     def load(self):
