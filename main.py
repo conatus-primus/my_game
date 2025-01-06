@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
     s_glass = pygame.mixer.Sound('sounds/glass1.ogg')
 
-    pygame.display.set_caption('Дом против монстров')
+    pygame.display.set_caption('Защита окон от монстров')
 
 
 
