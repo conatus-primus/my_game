@@ -266,18 +266,14 @@ class RawHoleObject:
 # объект с описанием карты
 class RawMapObject(SvgParserFile):
     def __init__(self, map_number):
+        self.map_number = map_number
         self.current_svg_file = CURRENT_DIRECTORY + '/maps/' + str(map_number) + '/' + str(map_number) + '.svg'
         self.current_txt_file = CURRENT_DIRECTORY + '/temp/' + str(map_number) + '.txt'
         super().__init__(self.current_svg_file)
 
     def load(self):
-        try:
-            super().load()
-            self.__print()
-        except ValueError as e:
-            LOG.write(str(e))
-        except Exception as e:
-            LOG.write(str(e))
+        super().load()
+        self.__print()
 
     def __print(self):
         with open(self.current_txt_file, 'wt') as fw:

@@ -11,9 +11,9 @@ from vars import *
 class Game:
     def __init__(self):
         # игровой блок и смещение блока относительно всего игрового поля
-        self.block = [(Header(), (0, 0)),
+        self.block = [(Map(), (WIDTH_MARGIN, HEIGHT_HEADER)),
+                      (Header(), (0, 0)),
                       (Footer(), (0, HEIGHT_HEADER + HEIGHT_MAP)),
-                      (Map(), (WIDTH_MARGIN, HEIGHT_HEADER)),
                       (MarginLeft(), (0, HEIGHT_HEADER)),
                       (MarginRight(), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                       ]

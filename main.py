@@ -136,11 +136,13 @@ if __name__ == '__main__':
     else:
         map_number = 1
 
-    map = RawMapObject(map_number)
-    map.load()
+    # map = RawMapObject(map_number)
+    # map.load()
 
     # стартовая заставка
     startScreen = ScreenSaver()
+
+
 
     try:
         # params = get_values()
@@ -167,8 +169,9 @@ if __name__ == '__main__':
     messageError = None
 
     try:
-        game.load(map_number + 1)
+        game.load(map_number)
     except Exception as e:
+        LOG.write(str(e))
         messageError = Message(str(e))
 
 
