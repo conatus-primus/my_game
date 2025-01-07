@@ -1,3 +1,5 @@
 Формат svg : https://developer.mozilla.org/ru/docs/Web/SVG/Tutorial/Paths
 
 Доступ к отдельным пикселям : https://stackoverflow.com/questions/39538642/get-color-of-individual-pixels-of-images-in-pygame
+
+Разнообразные окна : https://depositphotos.com/ru/vectors/%D0%B4%D0%B5%D0%BA%D0%BE%D1%80%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5-%D0%BE%D0%BA%D0%BD%D0%B0.html

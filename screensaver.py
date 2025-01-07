@@ -1,12 +1,13 @@
 # начальная заставка
+import pygame
 from vars import *
 
 
 class ScreenSaver:
-    def __init__(self, pygame):
+    def __init__(self):
         self.image = pygame.image.load(CURRENT_DIRECTORY + '/images/screensaver.png')
         dt = 5
-        self.rect = (392 - dt, 655 - dt, 905 + dt, 674 + dt)
+        self.rect = (404 - dt, 666 - dt, 923 + dt, 683 + dt)
 
     def render(self, screen):
         screen.blit(self.image, (0, 0))

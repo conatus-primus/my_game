@@ -1,6 +1,5 @@
 # считывание из svg векторного описания дыр и направлений движения мобов
 # линии движения ориентированы по направлению к своему окну
-
 from vars import *
 import xml.etree.ElementTree as ET
 import os
@@ -76,7 +75,7 @@ class SvgParserFile:
 
             # print(f'--------------{hole_id}------------------')
             # переводим в цирфовой вид дырку с направляющими
-            holeObject = SvgParserOneHole(str_holes[i])
+            holeObject = RawHoleObject(str_holes[i])
             holeObject.load()
             # print(holeObject)
             if self.holes is None:
@@ -188,7 +187,7 @@ class SvgParserOneLine:
 
 # перевод строковой дырки с направляющими в цифровой вид
 # на входе кортеж ид дырка, координаты дырки строкой, список кортежей направляющих: (ид, координаты строкой)
-class SvgParserOneHole:
+class RawHoleObject:
     def __init__(self, string_hole):
         # сырые данные
         self.string_hole = string_hole
@@ -240,15 +239,15 @@ class SvgParserOneHole:
             if len(line) <= 1:
                 raise ValueError(f'SvgParserOneHole: Ошибка перевода в цифру направляющей {id} дырки {self.id}')
             # разворачиваем направляющую чтобы она шла к центру дырки
-            dist_first = self.__dist2(line[0], self.centre_hole)
-            dist_last = self.__dist2(line[-1], self.centre_hole)
+            dist_first = self.__distance2(line[0], self.centre_hole)
+            dist_last = self.__distance2(line[-1], self.centre_hole)
             if dist_first < dist_last:
                 line = line[::-1]
             # теряем идентификатор направляющей - он нам не нуже
             self.coord_lines.append(line)
 
     # квадрат расстояния между двумя точками
-    def __dist2(self, p_last, p_first):
+    def __distance2(self, p_last, p_first):
         return (p_last[0] - p_first[0])**2 + (p_last[1] - p_first[1])**2
 
     # перекрываем для оладочной печати
@@ -264,7 +263,8 @@ class SvgParserOneHole:
         return '\n'.join(res)
 
 
-class RawHoleObject(SvgParserFile):
+# объект с описанием карты
+class RawMapObject(SvgParserFile):
     def __init__(self, map_number):
         self.current_svg_file = CURRENT_DIRECTORY + '/maps/' + str(map_number) + '/' + str(map_number) + '.svg'
         self.current_txt_file = CURRENT_DIRECTORY + '/temp/' + str(map_number) + '.txt'

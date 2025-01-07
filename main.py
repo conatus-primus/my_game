@@ -3,8 +3,10 @@ import random
 import configparser
 
 import os
-from svgparser import RawHoleObject
+from svgparser import RawMapObject
 from screensaver import ScreenSaver
+from game import Game
+from message import Message
 from vars import *
 
 
@@ -134,11 +136,11 @@ if __name__ == '__main__':
     else:
         map_number = 1
 
-    data = RawHoleObject(map_number)
-    data.load()
+    map = RawMapObject(map_number)
+    map.load()
 
     # стартовая заставка
-    startScreen = ScreenSaver(pygame)
+    startScreen = ScreenSaver()
 
     try:
         # params = get_values()
@@ -150,7 +152,6 @@ if __name__ == '__main__':
     pygame.mixer.pre_init(44100, -16, 1, 512)  # важно прописать до pygame.init()
 
     # board = Minesweeper(params)
-
     pygame.init()
 
     pygame.mixer.init()
@@ -162,6 +163,13 @@ if __name__ == '__main__':
     pygame.display.set_caption('Защита окон от монстров')
 
 
+    game = Game()
+    messageError = None
+
+    try:
+        game.load(map_number + 1)
+    except Exception as e:
+        messageError = Message(str(e))
 
 
 
@@ -181,12 +189,17 @@ if __name__ == '__main__':
                         startScreen = None
                     else:
                         s_glass.play()
+                    print(event.pos)
                 #board.get_click(event.pos)
 
         if startScreen is not None:
             startScreen.render(screen)
         else:
             screen.fill((240, 155, 89))
+            if messageError is not None:
+                messageError.render(screen)
+            else:
+                game.render(screen)
 
         pygame.display.flip()
 
