@@ -2,16 +2,13 @@
 # базируется на разборе svg файла
 # считываются дырки и направлений движения
 # линии движения ориентированы по направлению к своим дырками
+import copy
 from vars import *
 from svgparser import ParserSvgFileDict, ParserSvgString, Gnuplot
 
 
-# перевод строковой дырки с направляющими в цифровой вид
-# на входе кортеж ид дырка, координаты дырки строкой, список кортежей направляющих: (ид, координаты строкой)
-class ConverterSvgStringsToHole(Gnuplot):
-    def __init__(self, string_hole):
-        # сырые данные
-        self.string_hole = string_hole
+class Hole:
+    def __init__(self):
         # идентификатор дырки
         self.id = None
         # координаты дырки
@@ -19,12 +16,21 @@ class ConverterSvgStringsToHole(Gnuplot):
         # центр дырки
         self.centre_hole = None
         # направляющие
-        self.coord_lines = None
+        self.lines = None
+
+# перевод строковой дырки с направляющими в цифровой вид
+# на входе кортеж ид дырка, координаты дырки строкой, список кортежей направляющих: (ид, координаты строкой)
+# на выходе аттрибуты класса ид дырки, вещественные координаты дырки, вещественные координаты центра дырки
+# и список кортежей неаправляющий (ид, вещественные координаты)
+class ConverterSvgStringsToHole(Gnuplot, Hole):
+    def __init__(self, string_hole):
+        # сырые данные
+        self.string_hole = string_hole
 
     def load(self):
         self.__parseHole()
         self.__parseLines()
-        if self.id is None or self.coords_hole is None or self.centre_hole is None or self.coord_lines is None:
+        if self.id is None or self.coords_hole is None or self.centre_hole is None or self.lines is None:
             raise ValueError(f'{self.__class__.__name__}:{__name__} : что-то пошло не так загрузкой дырки')
 
     def __parseHole(self):
@@ -48,11 +54,10 @@ class ConverterSvgStringsToHole(Gnuplot):
                 right = max(right, x)
                 top = min(top, y)
                 bottom = max(bottom, y)
-
         self.centre_hole = (left + right) / 2, (top + bottom) / 2
 
     def __parseLines(self):
-        self.coord_lines = []
+        self.lines = []
         _, _, string_lines = self.string_hole
         for string_line in string_lines:
             id, line_coords = string_line
@@ -65,8 +70,7 @@ class ConverterSvgStringsToHole(Gnuplot):
             dist_last = self.__distance2(line[-1], self.centre_hole)
             if dist_first < dist_last:
                 line = line[::-1]
-            # теряем идентификатор направляющей - он нам не нуже
-            self.coord_lines.append(line)
+            self.lines.append((id, line))
 
     # квадрат расстояния между двумя точками
     def __distance2(self, p_last, p_first):
@@ -79,8 +83,8 @@ class ConverterSvgStringsToHole(Gnuplot):
         res.append(' ')
         res.append(self.plot(self.coords_hole))
         res.append(' ')
-        for line in self.coord_lines:
-            res.append(self.plot(line))
+        for id, one_line in self.lines:
+            res.append(self.plot(one_line))
             res.append(' ')
         return '\n'.join(res)
 
@@ -135,9 +139,8 @@ class ParserMapFile:
 
 
 # объект с описанием карты
-class RawMapObject(ParserMapFile):
+class RawMap(ParserMapFile):
     def __init__(self, map_number):
-        self.map_number = map_number
         self.current_svg_file = CURRENT_DIRECTORY + '/maps/' + str(map_number) + '/' + str(map_number) + '.svg'
         self.current_txt_file = CURRENT_DIRECTORY + '/temp/' + str(map_number) + '.txt'
         super().__init__(self.current_svg_file)
@@ -152,3 +155,38 @@ class RawMapObject(ParserMapFile):
                 res = obj.__str__()
                 print(res, file=fw)
                 print(' ', file=fw)
+
+
+# объект с описанием карты в зависимости от уровня игры
+class LevelMap:
+    def __init__(self, map_number):
+        self.map_number = map_number
+        self.rawMap = RawMap(map_number)
+        self.holes = None
+
+    def load(self):
+        if self.rawMap is not None:
+            self.rawMap.load()
+            self.holes = self.rawMap.holes
+
+    def setLevelData(self, visible_holes=None):
+
+        self.holes = []
+
+        for hole in self.rawMap.holes:
+            if visible_holes is None or hole.id in visible_holes:
+                new_hole = Hole()
+                new_hole.id = hole.id
+                # координаты дырки
+                new_hole.coords_hole = hole.coords_hole
+                # центр дырки
+                new_hole.centre_hole = hole.centre_hole
+                # направляющие
+                new_hole.lines = []
+                for id_line, coords_line in hole.lines:
+                    if visible_holes is None or id_line in visible_holes:
+                        new_hole.lines.append((id_line, coords_line))
+                self.holes.append(new_hole)
+
+
+

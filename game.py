@@ -10,8 +10,9 @@ from vars import *
 
 class Game:
     def __init__(self):
+        self.map = Map()
         # игровой блок и смещение блока относительно всего игрового поля
-        self.block = [(Map(), (WIDTH_MARGIN, HEIGHT_HEADER)),
+        self.block = [(self.map, (WIDTH_MARGIN, HEIGHT_HEADER)),
                       (Header(), (0, 0)),
                       (Footer(), (0, HEIGHT_HEADER + HEIGHT_MAP)),
                       (MarginLeft(), (0, HEIGHT_HEADER)),
@@ -22,6 +23,8 @@ class Game:
         for item in self.block:
             obj, _ = item
             obj.load(map_number)
+
+        self.map.setLevelData(['path1', 'path11', 'path3', 'path32'])
 
     def render(self, screen):
         screen.fill(pygame.Color('white'))

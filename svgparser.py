@@ -43,27 +43,29 @@ class ParserSvgFileDict:
         self.elem_g_d = dict()
         self.elem_g_rect = dict()
 
-        for elem in root.findall(self.svg_prefix('g')):
+        for elem in root.findall(self.__svg_prefix('g')):
             for elem2 in elem.iter():
                 # линия
-                if elem2.tag == self.svg_prefix('path'):
+                if elem2.tag == self.__svg_prefix('path'):
                     # в словаре должен быть иденитификатор id и координаты d
                     if 'id' in elem2.attrib and 'd' in elem2.attrib:
                         self.elem_g_d[elem2.attrib['id']] = elem2.attrib['d']
 
                 # прямоугольник
-                if elem2.tag == self.svg_prefix('rect'):
+                if elem2.tag == self.__svg_prefix('rect'):
                     attrs = ['id', 'width', 'height', 'x', 'y']
                     if all([x in elem2.attrib for x in attrs]):
                         self.elem_g_rect[elem2.attrib['id']] = float(elem2.attrib['x']), float(
                             elem2.attrib['y']), float(elem2.attrib['width']), float(elem2.attrib['height'])
 
-    def svg_prefix(self, tag):
+    def __svg_prefix(self, tag):
         return '{http://www.w3.org/2000/svg}' + tag
 
+    # найти линию по идентификатору
     def lineByID(self, id):
         return self.elem_g_d[id] if id in self.elem_g_d else None
 
+    # найти прямоугольник по идентификатору
     def rectByID(self, id):
         return self.elem_g_rect[id] if id in self.elem_g_rect else None
 
@@ -82,8 +84,6 @@ l - линия от текущего положения к этой точке
 h - горизонтальная линия
 v - вертикальная линия
 '''
-
-
 class ParserSvgString(Gnuplot):
     #
     def __init__(self, path):

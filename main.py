@@ -10,17 +10,14 @@ from message import Message
 
 
 if __name__ == '__main__':
-
     config = configparser.ConfigParser()
     config.read(CURRENT_DIRECTORY + '/data/system.ini')
 
+    # TODO посмотреть что делать, если совсем нет картинок
     if 'start' in config and 'map' in config['start']:
         map_number = int(config['start']['map'])
     else:
         map_number = 1
-
-    # map = RawMapObject(map_number)
-    # map.load()
 
     # стартовая заставка
     startScreen = ScreenSaver()
@@ -40,6 +37,7 @@ if __name__ == '__main__':
     game = Game()
     messageError = None
 
+    # TODO посмотреть внимательное еще раз - определиться где перевхватывать исключения при загрузке
     try:
         game.load(map_number)
     except Exception as e:
@@ -64,6 +62,7 @@ if __name__ == '__main__':
         if startScreen is not None:
             startScreen.render(screen)
         else:
+            # TODO вынести в константы
             screen.fill((240, 155, 89))
             if messageError is not None:
                 messageError.render(screen)
