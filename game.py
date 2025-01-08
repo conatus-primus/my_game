@@ -35,3 +35,10 @@ class Game:
             obj.render()
             # копируем на общую поверхность
             screen.blit(obj.surface, offset)
+
+    def isSession(self):
+        return True
+
+    # вход - нажатые клавиши pygame.key.get_pressed()
+    def onPressed(self, pressed_keys):
+        self.map.onPressed(pressed_keys)

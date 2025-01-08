@@ -3,26 +3,28 @@ import pygame
 from vars import *
 from block import Block
 from mapparser import LevelMap
+from location import Location
 
 
 class Map(Block):
     def __init__(self):
         super().__init__(WIDTH_MAP, HEIGHT_MAP)
         self.staticMap = None
-        self.rawMapObject = None
-        # дырки и направляющие, которые отображаются (зависит от уровня)
-        self.visible_holes = None
-
-    def render(self):
-        pygame.draw.rect(self.surface, pygame.Color('blue'), (0, 0, self.width, self.height))
-        self.staticMap.render(self.surface)
+        self.levelMap = None
+        self.location = None
+        self.current_hole = '1'
+        self.current_level = '1_1'
 
     def load(self, map_number):
+        # грузим варианты уровней и движения клавиш
+        self.location = Location(map_number)
+        self.location.load()
+
         # грузим векторное описание
         self.levelMap = LevelMap(map_number)
         self.levelMap.load()
 
-        # обработка статики в карте
+        # обработка статики в карте (фон + дырки + направляющие)
         self.staticMap = StaticMap(self.levelMap)
         self.staticMap.load()
 
@@ -30,11 +32,20 @@ class Map(Block):
     def setLevelData(self, visible_holes=None):
         self.levelMap.setLevelData(visible_holes)
 
+    def render(self):
+        pygame.draw.rect(self.surface, pygame.Color('blue'), (0, 0, self.width, self.height))
+        self.staticMap.render(self.surface)
+
+    # вход - нажатые клавиши pygame.key.get_pressed()
+    def onPressed(self, pressed_keys):
+        print(self.current_hole)
+        self.current_hole = self.location.next_hole(pressed_keys, self.current_hole, self.current_level)
+        print(self.current_hole)
+
 
 class StaticMap:
     def __init__(self, mapObject):
         self.mapObject = mapObject
-        self.visible_holes = None
 
     def load(self):
         # грузим фон

@@ -2,12 +2,10 @@ import pygame
 import random
 import configparser
 
-
 from vars import *
 from screensaver import ScreenSaver
 from game import Game
 from message import Message
-
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
@@ -37,7 +35,7 @@ if __name__ == '__main__':
     game = Game()
     messageError = None
 
-    # TODO посмотреть внимательное еще раз - определиться где перевхватывать исключения при загрузке
+    # TODO посмотреть внимательное еще раз - определиться, где перехватывать исключения при загрузке
     try:
         game.load(map_number)
     except Exception as e:
@@ -48,6 +46,7 @@ if __name__ == '__main__':
 
     running = True
     while running:
+        pressed = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -58,6 +57,9 @@ if __name__ == '__main__':
                         startScreen = None
                     else:
                         s_glass.play()
+
+            if event.type == pygame.KEYDOWN:
+                pressed = True
 
         if startScreen is not None:
             startScreen.render(screen)
@@ -71,5 +73,7 @@ if __name__ == '__main__':
 
         pygame.display.flip()
 
-pygame.quit()
+        if (pressed):
+            game.onPressed(pygame.key.get_pressed())
 
+pygame.quit()
