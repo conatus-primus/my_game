@@ -2,7 +2,7 @@
 import pygame
 from vars import *
 from block import Block
-from svgparser import RawMapObject
+from mapparser import RawMapObject
 
 class Map(Block):
     def __init__(self):
@@ -51,24 +51,18 @@ class StaticMap:
                 (pygame.Color(240, 240, 240), 1)
                ]
 
-        pens = [
-                (pygame.Color(40, 0, 0), 11),
-                (pygame.Color(80, 0, 0), 9),
-                (pygame.Color(120, 0, 0), 7),
-                (pygame.Color(160, 0, 0), 5),
-                (pygame.Color(200, 0, 0), 3),
-                (pygame.Color(240, 0, 0), 1)
-               ]
-
         for pen in pens:
             color, h = pen
-            for hole in self.mapObject.holes:
+            for n_hole, hole in enumerate(self.mapObject.holes):
+                # круги в точках перегиба дырки чтобы сгладить широкую линию
                 for point in hole.coords_hole:
                     pygame.draw.circle(surface, color, point, h // 2, h // 2)
-
+                # дырка
                 pygame.draw.lines(surface, color, True, hole.coords_hole, h)
-
-                for line in hole.coord_lines:
-                    #for point in line:
-                    #    pygame.draw.circle(surface, color, point, 4, 5)
+                # направляющие дырки
+                for n_line, line in enumerate(hole.coord_lines):
+                    # закругление внешнего конца для красоты
+                    pygame.draw.circle(surface, color, line[0], h // 2, h // 2)
+                    # сама направляющая
                     pygame.draw.lines(surface, color, False, line, h)
+

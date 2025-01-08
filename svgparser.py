@@ -5,86 +5,71 @@ import xml.etree.ElementTree as ET
 import os
 
 
-def SVG(tag):
-    return '{http://www.w3.org/2000/svg}' + tag
-
-
 # отладочный вывод координат в формате gnuplot
-def GNUPLOT(coords):
-    if coords is None:
-        return 'Отсутствую координаты'
+class Gnuplot:
+    def plot(self, coords):
+        if coords is None:
+            return 'Отсутствую координаты'
 
-    res = []
-    if isinstance(coords, tuple):
-        # искусственно формируем крест с центром в точке центра
-        res.append(f'{coords[0] - 5} {-coords[1]}')
-        res.append(f'{coords[0] + 5} {-coords[1]}')
-        res.append(' ')
-        res.append(f'{coords[0]} {-(coords[1] - 5)}')
-        res.append(f'{coords[0]} {-(coords[1] + 5)}')
-    else:
-        for x, y in coords:
-            res.append(f'{x} {-y}')
-    return '\n'.join(res)
+        res = []
+        if isinstance(coords, tuple):
+            # искусственно формируем крест с центром в точке центра
+            res.append(f'{coords[0] - 5} {-coords[1]}')
+            res.append(f'{coords[0] + 5} {-coords[1]}')
+            res.append(' ')
+            res.append(f'{coords[0]} {-(coords[1] - 5)}')
+            res.append(f'{coords[0]} {-(coords[1] + 5)}')
+        else:
+            for x, y in coords:
+                res.append(f'{x} {-y}')
+        return '\n'.join(res)
 
 
 # разбор svg файла
-class SvgParserFile:
+# на выходе словарь идентификатор -> текстовая строка с геометрией объекта в формате svg
+class ParserSvgFileDict:
     def __init__(self, svg_file):
         self.svg_file = svg_file
-        self.holes = None
+        self.elem_g_d = None
+        self.elem_g_rect = None
 
     # загрузка данных из файла
     def load(self):
-        self.holes = None
+        LOG.write(f'{self.__class__.__name__}:{__name__} : загрузка {self.svg_file}')
         tree = ET.parse(self.svg_file)
         root = tree.getroot()
 
-        # TODO : проверить что в формате единицы измерения пиксели
         # выцепляем данные по тегу g/path
-        path = dict()
-        for elem in root.findall(SVG('g')):
+        self.elem_g_d = dict()
+        self.elem_g_rect = dict()
+
+        for elem in root.findall(self.svg_prefix('g')):
             for elem2 in elem.iter():
-                if elem2.tag == SVG('path'):
+                # линия
+                if elem2.tag == self.svg_prefix('path'):
                     # в словаре должен быть иденитификатор id и координаты d
                     if 'id' in elem2.attrib and 'd' in elem2.attrib:
-                        path[elem2.attrib['id']] = elem2.attrib['d']
+                        self.elem_g_d[elem2.attrib['id']] = elem2.attrib['d']
 
-        if len(path) == 0:
-            raise ValueError(f'SvgParser: Отсутствует описание игрового поля для {self.svg_file}')
+                # прямоугольник
+                if elem2.tag == self.svg_prefix('rect'):
+                    attrs = ['id', 'width', 'height', 'x', 'y']
+                    if all([x in elem2.attrib for x in attrs]):
+                        self.elem_g_rect[elem2.attrib['id']] = float(elem2.attrib['x']), float(
+                            elem2.attrib['y']), float(elem2.attrib['width']), float(elem2.attrib['height'])
 
-        # разберемся где линии где дырки
-        # считаем что дыры path1 - path9
-        str_holes = []
-        key_holes = ['path' + str(i) for i in range(1, 10)]
-        for key in path.keys():
-            if key in key_holes:
-                str_holes.append((key, path[key], []))
+    def svg_prefix(self, tag):
+        return '{http://www.w3.org/2000/svg}' + tag
 
-        # разбираемся с направлениями - распределяем их по дыркам path1N в path1
-        # считаем что направления от 1 до 9 : path11 path12 path21 path22
-        for i, elem in enumerate(str_holes):
-            hole_id = elem[0]
-            hole_coord = elem[1]
-            hole_lines = elem[2]
-            key_lines = [hole_id + str(i) for i in range(1, 10)]
-            for key in key_lines:
-                if key in path.keys():
-                    hole_lines.append((key, path[key]))
-                    str_holes[i] = (hole_id, hole_coord, hole_lines)
+    def lineByID(self, id):
+        return self.elem_g_d[id] if id in self.elem_g_d else None
 
-            # print(f'--------------{hole_id}------------------')
-            # переводим в цирфовой вид дырку с направляющими
-            holeObject = RawHoleObject(str_holes[i])
-            holeObject.load()
-            # print(holeObject)
-            if self.holes is None:
-                self.holes = []
-            self.holes.append(holeObject)
-            # print('--------------------------------')
+    def rectByID(self, id):
+        return self.elem_g_rect[id] if id in self.elem_g_rect else None
 
 
-# разбор одной линии svg
+# разбор одной линии формата svg
+# на выходе список кортежей (x, y)
 '''
 M 353.79592,273.20516 252.81426,0.8626346
 m 588.4322,502.37288 -0.12711,-6.99152 3.17796,-5.72034 5.72034,-5.21187 6.1017,-1.52542 9.27966,-0.63559 
@@ -97,7 +82,9 @@ l - линия от текущего положения к этой точке
 h - горизонтальная линия
 v - вертикальная линия
 '''
-class SvgParserOneLine:
+
+
+class ParserSvgString(Gnuplot):
     #
     def __init__(self, path):
         self.coords = []
@@ -119,7 +106,7 @@ class SvgParserOneLine:
     def __parse(self, path):
         elems = path.strip().split()
         if len(elems) == 0:
-            raise ValueError('SvgParserOneLine: В path нет описания координат')
+            raise ValueError(f'{self.__class__.__name__}:{__name__}: в path нет описания координат')
 
         offset = False
         cmd = ''
@@ -136,19 +123,19 @@ class SvgParserOneLine:
             elif value.lower() == 'z':
                 # считаем что это последняя команда
                 if len(elems) > 1:
-                    raise ValueError('SvgParserOneLine: Завершающая команда z, но есть еще необработанные координаты')
+                    raise ValueError(
+                        f'{self.__class__.__name__}:{__name__} : завершающая команда z, но есть еще необработанные координаты')
                 self.coords.append(self.coords[0])
 
             else:
                 # по идее это координаты
-
                 if cmd in ['v', 'h']:
                     xy = self.__parseOneCoord(value)
                 else:
                     xy = self.__parseTwoCoords(value)
 
                 if xy is None:
-                    raise ValueError('SvgParserOneLine: Ошибочные данные в svg-path')
+                    raise ValueError(f'{self.__class__.__name__}:{__name__} : ошибочные данные в svg-path')
 
                 # подготовим смещение
                 prev_point = (0, 0)
@@ -160,14 +147,15 @@ class SvgParserOneLine:
                         # первая точка по идее абсолютные координаты
                         self.coords.append(xy)
                     else:
-                        # не первая точка разбираемся со смещениями
+                        # не первая точка, разбираемся со смещениями
                         self.coords.append((xy[0] + prev_point[0], xy[1] + prev_point[1]))
 
                 else:
                     if len(self.coords) == 0:
                         # такого не может быть если я все правильно понимаю
                         # первая команда обязательно m
-                        raise ValueError(f'SvgParserOneLine: Ошибка разбора первой команды {cmd} в svg-path')
+                        raise ValueError(
+                            f'{self.__class__.__name__}:{__name__} : ошибка разбора первой команды {cmd} в svg-path')
 
                     if cmd == 'l':
                         self.coords.append((xy[0] + prev_point[0], xy[1] + prev_point[1]))
@@ -182,102 +170,30 @@ class SvgParserOneLine:
 
     # для печати
     def __str__(self):
-        return GNUPLOT(self.coords)
+        return self.plot(self.coords)
 
 
-# перевод строковой дырки с направляющими в цифровой вид
-# на входе кортеж ид дырка, координаты дырки строкой, список кортежей направляющих: (ид, координаты строкой)
-class RawHoleObject:
-    def __init__(self, string_hole):
-        # сырые данные
-        self.string_hole = string_hole
-        # идентификатор дырки
-        self.id = None
-        # координаты дырки
-        self.coords_hole = None
-        # центр дырки
-        self.centre_hole = None
-        # направляющие
-        self.coord_lines = None
+# получение цифровых примитивов
+class LoaderSvgPrimitives(ParserSvgFileDict):
+    def __init__(self, svg_file):
+        super().__init__(svg_file)
 
-    def load(self):
-        self.__parseHole()
-        self.__parseLines()
-        if self.id is None or self.coords_hole is None or self.centre_hole is None or self.coord_lines is None:
-            raise ValueError(f'SvgParserOneHole: Что-то пошло не так с дыркой из карты {MAP_NUMBER}')
+    # получить габаритный прямоугольник по идентификатору
+    # возвращается лево верх ширина высота
+    def overallRectangle(self, id):
+        rect = self.rectByID(id)
+        if rect is not None:
+            return rect
 
-    def __parseHole(self):
-        self.id, string_coords, _ = self.string_hole
-        # разбираем координаты дырки
-        self.coords_hole = SvgParserOneLine(string_coords).coords
-        if len(self.coords_hole) == 0:
-            raise ValueError(f'SvgParserOneHole: Ошибка перевода в цифру дырки {self.id}')
+        coords = self.lineByID(id)
+        if coords is None or len(coords) == 0:
+            return None
 
-        # вычислим среднюю точку для установки амулетов и разворота направляющих если понадобится
-        # средняя точка как центр тяжести расположена так себе - будем брать центр габаритного прямоугольника
-        # вангую что все придет к тому, что и точку придется задавать руками
-
-        left = top = right = bottom = None
-        for x, y in self.coords_hole:
-            if left is None:
-                left = right = x
-                top = bottom = y
-            else:
-                left = min(left, x)
-                right = max(right, x)
-                top = min(top, y)
-                bottom = max(bottom, y)
-
-        self.centre_hole = (left + right) / 2, (top + bottom) / 2
-
-    def __parseLines(self):
-        self.coord_lines = []
-        _, _, string_lines = self.string_hole
-        for string_line in string_lines:
-            id, line_coords = string_line
-            line = SvgParserOneLine(line_coords).coords
-            if len(line) <= 1:
-                raise ValueError(f'SvgParserOneHole: Ошибка перевода в цифру направляющей {id} дырки {self.id}')
-            # разворачиваем направляющую чтобы она шла к центру дырки
-            dist_first = self.__distance2(line[0], self.centre_hole)
-            dist_last = self.__distance2(line[-1], self.centre_hole)
-            if dist_first < dist_last:
-                line = line[::-1]
-            # теряем идентификатор направляющей - он нам не нуже
-            self.coord_lines.append(line)
-
-    # квадрат расстояния между двумя точками
-    def __distance2(self, p_last, p_first):
-        return (p_last[0] - p_first[0])**2 + (p_last[1] - p_first[1])**2
-
-    # перекрываем для оладочной печати
-    def __str__(self):
-        res = []
-        res.append(GNUPLOT(self.centre_hole))
-        res.append(' ')
-        res.append(GNUPLOT(self.coords_hole))
-        res.append(' ')
-        for line in self.coord_lines:
-            res.append(GNUPLOT(line))
-            res.append(' ')
-        return '\n'.join(res)
-
-
-# объект с описанием карты
-class RawMapObject(SvgParserFile):
-    def __init__(self, map_number):
-        self.map_number = map_number
-        self.current_svg_file = CURRENT_DIRECTORY + '/maps/' + str(map_number) + '/' + str(map_number) + '.svg'
-        self.current_txt_file = CURRENT_DIRECTORY + '/temp/' + str(map_number) + '.txt'
-        super().__init__(self.current_svg_file)
-
-    def load(self):
-        super().load()
-        self.__print()
-
-    def __print(self):
-        with open(self.current_txt_file, 'wt') as fw:
-            for obj in self.holes:
-                res = obj.__str__()
-                print(res, file=fw)
-                print(' ', file=fw)
+        l = r = coords[0][0]
+        t = b = coords[0][1]
+        for x, y in coords:
+            l = min(x, l)
+            r = max(x, r)
+            t = min(y, t)
+            b = max(y, b)
+        return l, t, r - l, b - t
