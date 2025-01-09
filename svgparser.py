@@ -7,6 +7,9 @@ import os
 
 # отладочный вывод координат в формате gnuplot
 class Gnuplot:
+    def __init__(self):
+        pass
+
     def plot(self, coords):
         if coords is None:
             return 'Отсутствую координаты'
@@ -174,7 +177,7 @@ class ParserSvgString(Gnuplot):
 
 
 # получение цифровых примитивов
-class LoaderSvgPrimitives(ParserSvgFileDict):
+class VectorizerPictures(ParserSvgFileDict):
     def __init__(self, svg_file):
         super().__init__(svg_file)
 

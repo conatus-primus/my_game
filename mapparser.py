@@ -22,8 +22,10 @@ class Hole:
 # на входе кортеж ид дырка, координаты дырки строкой, список кортежей направляющих: (ид, координаты строкой)
 # на выходе аттрибуты класса ид дырки, вещественные координаты дырки, вещественные координаты центра дырки
 # и список кортежей неаправляющий (ид, вещественные координаты)
-class ConverterSvgStringsToHole(Gnuplot, Hole):
+class ParserHole(Gnuplot, Hole):
     def __init__(self, string_hole):
+        Gnuplot.__init__(self)
+        Hole.__init__(self)
         # сырые данные
         self.string_hole = string_hole
 
@@ -129,7 +131,7 @@ class ParserMapFile:
 
             # print(f'--------------{hole_id}------------------')
             # переводим в цирфовой вид дырку с направляющими
-            holeObject = ConverterSvgStringsToHole(str_holes[i])
+            holeObject = ParserHole(str_holes[i])
             holeObject.load()
             # print(holeObject)
             if self.holes is None:

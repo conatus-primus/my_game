@@ -8,3 +8,8 @@
 Подробное описание встроенных функций питона : https://docs.python.org/3/reference/datamodel.html
 
 звуки : https://zvukogram.com/category/zvuk-jestkih-knopok/
+
+Предпросмотр README перед пушем на github.com - grip : https://www.youtube.com/watch?v=26pHLqNmx3Q
+
+Что писать в readme.md : https://techrocks.ru/2019/04/16/good-readme-on-github/
+Что писать в readme.md : https://webdesign.ru.net/article/pravila-oformleniya-fayla-readmemd-na-github.html

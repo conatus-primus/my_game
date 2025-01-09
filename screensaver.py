@@ -1,7 +1,7 @@
 # начальная заставка
 import pygame
 from vars import *
-from svgparser import LoaderSvgPrimitives
+from svgparser import VectorizerPictures
 
 class ScreenSaver2:
     def __init__(self):
@@ -22,7 +22,7 @@ class ScreenSaver2:
         return l <= x <= r and t <= y <= b
 
 
-class ScreenSaver(LoaderSvgPrimitives):
+class ScreenSaver(VectorizerPictures):
     def __init__(self):
         self.base_name = CURRENT_DIRECTORY + '/vect_images/screensaver'
         super().__init__(self.base_name + '.svg')
