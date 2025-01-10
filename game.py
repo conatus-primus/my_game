@@ -24,7 +24,7 @@ class Game:
             obj, _ = item
             obj.load(map_number)
 
-        self.map.setLevelData(['path1', 'path11', 'path3', 'path32'])
+        #self.map.setLevelData(['path1', 'path11', 'path3', 'path32'])
 
     def render(self, screen):
         screen.fill(pygame.Color('white'))

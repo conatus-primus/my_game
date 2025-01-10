@@ -12,10 +12,15 @@ if __name__ == '__main__':
     config.read(CURRENT_DIRECTORY + '/data/system.ini')
 
     # TODO посмотреть что делать, если совсем нет картинок
-    if 'start' in config and 'map' in config['start']:
-        map_number = int(config['start']['map'])
-    else:
-        map_number = 1
+    map_number = 1
+    if 'start' in config:
+        if 'map' in config['start']:
+            map_number = int(config['start']['map'])
+
+        if 'level' in config['start']:
+            level = int(config['start']['level'])
+        else:
+            level = 'level1_var1'
 
     # стартовая заставка
     startScreen = ScreenSaver()

@@ -2,18 +2,19 @@
 import pygame
 from vars import *
 from block import Block
-from mapparser import LevelMap
+from vectormap import VectorMap
 from location import Location
+from py.amulet import AmuletUser
 
 
 class Map(Block):
     def __init__(self):
         super().__init__(WIDTH_MAP, HEIGHT_MAP)
         self.staticMap = None
-        self.levelMap = None
+        self.vectorMap = None
         self.location = None
-        self.current_hole = '1'
-        self.current_level = '1_1'
+        self.currentHoleID = 'path1'
+        self.currentLevelID = '1_1'
 
     def load(self, map_number):
         # грузим варианты уровней и движения клавиш
@@ -21,62 +22,53 @@ class Map(Block):
         self.location.load()
 
         # грузим векторное описание
-        self.levelMap = LevelMap(map_number)
-        self.levelMap.load()
+        self.vectorMap = VectorMap(map_number)
+        self.vectorMap.load()
 
         # обработка статики в карте (фон + дырки + направляющие)
-        self.staticMap = StaticMap(self.levelMap)
+        self.staticMap = StaticMap(map_number)
         self.staticMap.load()
 
-    # настройки карты в зависимости от уровня игры
-    def setLevelData(self, visible_holes=None):
-        self.levelMap.setLevelData(visible_holes)
+        # установить выбранный уровень
+        self.location.setLevelID(self.currentLevelID)
+        # установить текущую дырку
+        self.location.setHoleID(self.currentHoleID)
+        # устанавливаем в векторную карту описание текущего уровня
+        self.vectorMap.setCurrentLevelContent(self.location.currentLevelContent())
+
+        # пользовательский амулет
+        self.amuletUser = AmuletUser()
+        # задаем все дырки
+        self.amuletUser.load(self.vectorMap.holes)
+
+        # связываем амулет с локатором - изменится локатор - изменим и амулеты
+        self.amuletUser.setLocation(self.location)
+        # и сразу и обновляем первый раз
+        self.amuletUser.update()
 
     def render(self):
         pygame.draw.rect(self.surface, pygame.Color('blue'), (0, 0, self.width, self.height))
         self.staticMap.render(self.surface)
+        self.vectorMap.render(self.surface)
+        self.amuletUser.render(self.surface)
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def onPressed(self, pressed_keys):
-        print(self.current_hole)
-        self.current_hole = self.location.next_hole(pressed_keys, self.current_hole, self.current_level)
-        print(self.current_hole)
+        self.location.update(pressed_keys)
+        self.amuletUser.update()
 
 
 class StaticMap:
-    def __init__(self, mapObject):
-        self.mapObject = mapObject
+    def __init__(self, map_number):
+        # грузим фон
+        self.image = pygame.image.load(CURRENT_DIRECTORY + '/maps/' + str(map_number) + '.png')
+        self.image_test = pygame.image.load(CURRENT_DIRECTORY + '/images/nuage.png')
 
     def load(self):
-        # грузим фон
-        self.image = pygame.image.load(CURRENT_DIRECTORY + '/maps/' + str(self.mapObject.map_number) + '.png')
+        pass
 
     def render(self, surface):
         # рисуем фон
         surface.blit(self.image, (0, 0))
+        surface.blit(self.image_test, (100, 350))
         # рисуем дырки
-
-        pens = [
-            (pygame.Color(40, 40, 40), 11),
-            (pygame.Color(80, 80, 80), 9),
-            (pygame.Color(120, 120, 120), 7),
-            (pygame.Color(160, 160, 160), 5),
-            (pygame.Color(200, 200, 200), 3),
-            (pygame.Color(240, 240, 240), 1)
-        ]
-
-        for pen in pens:
-            color, h = pen
-            for n_hole, one_hole in enumerate(self.mapObject.holes):
-                # круги в точках перегиба дырки, чтобы сгладить широкую линию
-                for point in one_hole.coords_hole:
-                    pygame.draw.circle(surface, color, point, h // 2, h // 2)
-                # дырка
-                pygame.draw.lines(surface, color, True, one_hole.coords_hole, h)
-                # направляющие дырки
-                for n_line, line in enumerate(one_hole.lines):
-                    id, coords = line
-                    # закругление внешнего конца для красоты
-                    pygame.draw.circle(surface, color, coords[0], h // 2, h // 2)
-                    # сама направляющая
-                    pygame.draw.lines(surface, color, False, coords, h)

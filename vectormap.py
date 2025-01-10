@@ -2,7 +2,7 @@
 # базируется на разборе svg файла
 # считываются дырки и направлений движения
 # линии движения ориентированы по направлению к своим дырками
-import copy
+import pygame
 from vars import *
 from svgparser import ParserSvgFileDict, ParserSvgString, Gnuplot
 
@@ -17,6 +17,7 @@ class Hole:
         self.centre_hole = None
         # направляющие
         self.lines = None
+
 
 # перевод строковой дырки с направляющими в цифровой вид
 # на входе кортеж ид дырка, координаты дырки строкой, список кортежей направляющих: (ид, координаты строкой)
@@ -160,7 +161,7 @@ class RawMap(ParserMapFile):
 
 
 # объект с описанием карты в зависимости от уровня игры
-class LevelMap:
+class VectorMap:
     def __init__(self, map_number):
         self.map_number = map_number
         self.rawMap = RawMap(map_number)
@@ -171,12 +172,12 @@ class LevelMap:
             self.rawMap.load()
             self.holes = self.rawMap.holes
 
-    def setLevelData(self, visible_holes=None):
+    def setCurrentLevelContent(self, currentLevelContent=None):
 
         self.holes = []
 
         for hole in self.rawMap.holes:
-            if visible_holes is None or hole.id in visible_holes:
+            if currentLevelContent is None or hole.id in currentLevelContent:
                 new_hole = Hole()
                 new_hole.id = hole.id
                 # координаты дырки
@@ -186,9 +187,32 @@ class LevelMap:
                 # направляющие
                 new_hole.lines = []
                 for id_line, coords_line in hole.lines:
-                    if visible_holes is None or id_line in visible_holes:
+                    if currentLevelContent is None or id_line in currentLevelContent:
                         new_hole.lines.append((id_line, coords_line))
                 self.holes.append(new_hole)
 
+    def render(self, surface):
+        pens = [
+            (pygame.Color(40, 40, 40), 11),
+            (pygame.Color(80, 80, 80), 9),
+            (pygame.Color(120, 120, 120), 7),
+            (pygame.Color(160, 160, 160), 5),
+            (pygame.Color(200, 200, 200), 3),
+            (pygame.Color(240, 240, 240), 1)
+        ]
 
-
+        for pen in pens:
+            color, h = pen
+            for n_hole, one_hole in enumerate(self.holes):
+                # круги в точках перегиба дырки, чтобы сгладить широкую линию
+                for point in one_hole.coords_hole:
+                    pygame.draw.circle(surface, color, point, h // 2, h // 2)
+                # дырка
+                pygame.draw.lines(surface, color, True, one_hole.coords_hole, h)
+                # направляющие дырки
+                for n_line, line in enumerate(one_hole.lines):
+                    id, coords = line
+                    # закругление внешнего конца для красоты
+                    pygame.draw.circle(surface, color, coords[0], h // 2, h // 2)
+                    # сама направляющая
+                    pygame.draw.lines(surface, color, False, coords, h)
