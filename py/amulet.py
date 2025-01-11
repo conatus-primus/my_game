@@ -69,8 +69,7 @@ class Amulet:
 
     def load_image(self, name):
         # TODO сделать нормальную обработку
-        #image = pygame.image.load(os.path.join(CURRENT_DIRECTORY, 'images/amulets', name))
-        image = pygame.image.load('D:/YL/my_game/images/mobs/mob3_1.png')
+        image = pygame.image.load(os.path.join(CURRENT_DIRECTORY, 'images/amulets', name))
         image.set_colorkey(image.get_at((0, 0)))
         return image
 

@@ -1,26 +1,16 @@
 import pygame
 import random
-import configparser
 
 from vars import *
 from screensaver import ScreenSaver
-from game import Game
+from game import Game, Session
 from message import Message
 
 if __name__ == '__main__':
-    config = configparser.ConfigParser()
-    config.read(CURRENT_DIRECTORY + '/data/system.ini')
 
     # TODO посмотреть что делать, если совсем нет картинок
-    map_number = 1
-    if 'start' in config:
-        if 'map' in config['start']:
-            map_number = int(config['start']['map'])
-
-        if 'level' in config['start']:
-            level = int(config['start']['level'])
-        else:
-            level = 'level1_var1'
+    session = Session()
+    session.read()
 
     # стартовая заставка
     startScreen = ScreenSaver()
@@ -42,7 +32,7 @@ if __name__ == '__main__':
 
     # TODO посмотреть внимательное еще раз - определиться, где перехватывать исключения при загрузке
     try:
-        game.load(map_number)
+        game.load(session)
     except Exception as e:
         LOG.write(str(e))
         messageError = Message(str(e))
@@ -62,6 +52,8 @@ if __name__ == '__main__':
                         startScreen = None
                     else:
                         s_glass.play()
+                elif game is not None:
+                    game.onClick(event.pos)
 
             if event.type == pygame.KEYDOWN:
                 pressed = True
@@ -80,5 +72,7 @@ if __name__ == '__main__':
 
         if (pressed):
             game.onPressed(pygame.key.get_pressed())
+
+    session.write()
 
 pygame.quit()
