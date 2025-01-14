@@ -16,6 +16,9 @@ class Session:
         self.currentHoleID = 'path1'
         self.currentLevelID = 'level1_var1'
         self.path = CURRENT_DIRECTORY + '/data/system.ini'
+        self.soundsActive = False
+        self.chansonActive = False
+        self.volumeLevel = 0.1
 
     def read(self):
         config = configparser.ConfigParser()
@@ -24,9 +27,17 @@ class Session:
             if 'map' in config['start']:
                 self.map_number = int(config['start']['map'])
             if 'level' in config['start']:
-                self.currentLevelID  = config['start']['level']
+                self.currentLevelID = config['start']['level']
             if 'brightness' in config['start']:
                 self.brightness = int(config['start']['brightness'])
+                if self.brightness >= len(BRIGHTEN):
+                    self.brightness = len(BRIGHTEN) - 1
+            if 'soundsActive' in config['start']:
+                self.soundsActive = True if config['start']['soundsActive'] == '1' else False
+            if 'chansonActive' in config['start']:
+                self.chansonActive = True if config['start']['chansonActive'] == '1' else False
+            if 'volumeLevel' in config['start']:
+                self.volumeLevel = float(config['start']['volumeLevel'])
 
     def write(self):
         config = configparser.ConfigParser()
@@ -34,8 +45,12 @@ class Session:
         config['start']['map'] = str(self.map_number)
         config['start']['level'] = self.currentLevelID
         config['start']['brightness'] = str(self.brightness)
+        config['start']['soundsActive'] = '1' if self.soundsActive == True else '0'
+        config['start']['chansonActive'] = '1' if self.chansonActive == True else '0'
+        config['start']['volumeLevel'] = str(self.volumeLevel)
         with open(self.path, 'w') as configfile:
             config.write(configfile)
+
 
 class Game:
     def __init__(self):
@@ -57,6 +72,14 @@ class Game:
 
         # self.map.setLevelData(['path1', 'path11', 'path3', 'path32'])
 
+        # фоновая музыка
+        pygame.mixer.music.play(-1)
+        if not self.session.chansonActive:
+            pygame.mixer.music.pause()
+
+        # громкость
+        pygame.mixer.music.set_volume(self.session.volumeLevel)
+
     def render(self, screen):
         screen.fill(pygame.Color('white'))
 
@@ -75,7 +98,15 @@ class Game:
         self.field.onPressed(pressed_keys)
 
     # sender - кто инициировал обновление
-    def queryUpdate(self, sender):
+    def needUpdate(self, sender):
+        # переключаем звук
+        # переключаем музыку
+        if self.session.chansonActive:
+            pygame.mixer.music.unpause()
+        else:
+            pygame.mixer.music.pause()
+        print(f'volume={pygame.mixer.music.get_volume()}')
+
         for item in self.block:
             obj, offset = item
             obj.update(sender)

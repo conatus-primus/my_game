@@ -14,6 +14,7 @@ class Field(Block):
         self.staticMap = None
         self.vectorMap = None
         self.location = None
+        self.amulets = []
 
     def load(self, map_number):
         # грузим варианты уровней и движения клавиш
@@ -36,7 +37,7 @@ class Field(Block):
         self.vectorMap.setCurrentLevelContent(self.location.currentLevelContent())
 
         # пользовательский амулет
-        self.amuletUser = AmuletUser()
+        self.amuletUser = AmuletUser(self)
         # задаем все дырки
         self.amuletUser.load(self.vectorMap.holes)
 
@@ -44,6 +45,8 @@ class Field(Block):
         self.amuletUser.setLocation(self.location)
         # и сразу и обновляем первый раз
         self.amuletUser.update()
+        #
+        self.amulets.append(self.amuletUser)
 
     def render(self):
         pygame.draw.rect(self.surface, pygame.Color('blue'), (0, 0, self.width, self.height))
@@ -53,11 +56,21 @@ class Field(Block):
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def onPressed(self, pressed_keys):
-        self.location.update(pressed_keys)
-        self.amuletUser.update()
+        for a in self.amulets:
+            a.onPressed(pressed_keys)
+
+        # self.location.onPressedKey(pressed_keys)
+        # self.game.queryUpdate(self)
 
     def update(self, sender):
         self.staticMap.setBrightness(self.game.session.brightness)
+        self.amuletUser.update()
+        for a in self.amulets:
+            a.update()
+
+    def onClick(self, pos):
+        if self.amuletUser.onClick(pos):
+            self.game.needUpdate(self)
 
 
 class StaticMap:

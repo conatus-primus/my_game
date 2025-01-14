@@ -8,26 +8,27 @@ from message import Message
 
 if __name__ == '__main__':
 
-    # TODO посмотреть что делать, если совсем нет картинок
-    session = Session()
-    session.read()
-
     # стартовая заставка
     startScreen = ScreenSaver()
 
-    pygame.mixer.pre_init(44100, -16, 1, 512)  # важно прописать до pygame.init()
+    # важно прописать до pygame.init()
+    pygame.mixer.pre_init(44100, -16, 1, 512)
 
     pygame.init()
 
     pygame.mixer.init()
     pygame.mixer.music.load("sounds/fon.mp3")
-    # pygame.mixer.music.play(-1)
 
     s_glass = pygame.mixer.Sound('sounds/glass1.ogg')
+
+    # TODO посмотреть что делать, если совсем нет картинок
+    session = Session()
+    session.read()
 
     pygame.display.set_caption('Защита окон от монстров')
 
     game = Game()
+    dispatcher.game = game
     messageError = None
 
     # TODO посмотреть внимательное еще раз - определиться, где перехватывать исключения при загрузке

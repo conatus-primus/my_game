@@ -1,28 +1,47 @@
 # правый блоки игрового поля
-import pygame
 from vars import *
 from block import Block
+import enum
+
+
+class ButtonID(enum.Enum):
+    # переключение звуков
+    ID_BUTTON_SOUND = 1000
+    # переключение фоновой музыки
+    ID_BUTTON_CHANSON = 1001
 
 
 class MarginRight(Block):
     def __init__(self, game):
         super().__init__(game, WIDTH_MARGIN, HEIGHT_MAP)
         self.brightPanel = BrightPanel(self, WIDTH_MARGIN)
-        self.brightOffset = (self.brightPanel.w, self.brightPanel.w)
+        self.brightOffset = ((self.width - self.brightPanel.surface.get_width()) / 2, self.brightPanel.w)
+
+        self.buttonSound = SystemPushButton(ButtonID.ID_BUTTON_SOUND, 'sound', self, (20, 70))
+        self.buttonChanson = SystemPushButton(ButtonID.ID_BUTTON_CHANSON, 'chanson', self, (100, 70))
+
+    def load(self, session):
+        self.buttonSound.check(self.game.session.soundsActive)
+        self.buttonChanson.check(self.game.session.chansonActive)
 
     def render(self):
-        pygame.draw.rect(self.surface, pygame.Color('gray'), (0, 0, self.width, self.height))
+        pygame.draw.rect(self.surface, FON_COLOR, (0, 0, self.width, self.height))
         self.brightPanel.render()
         self.surface.blit(self.brightPanel.surface, self.brightOffset)
 
-
         dX = 20
-        image_sound = pygame.image.load(CURRENT_DIRECTORY + '/images/system/sound.png')
-        self.surface.blit(image_sound, (dX, 60))
-        image_chanson = pygame.image.load(CURRENT_DIRECTORY + '/images/system/chanson.png')
-        self.surface.blit(image_chanson, (dX + image_sound.get_width() + dX, 60))
+        dY = 70
 
+        self.buttonSound.render()
+        self.surface.blit(self.buttonSound.surface, self.buttonSound.offset)
 
+        self.buttonChanson.render()
+        self.surface.blit(self.buttonChanson.surface, self.buttonChanson.offset)
+
+        # image_sound = pygame.image.load(CURRENT_DIRECTORY + '/images/system/sound2.png')
+        # self.surface.blit(image_sound, (dX, 60))
+        # image_chanson = pygame.image.load(CURRENT_DIRECTORY + '/images/system/chanson3.png')
+        # self.surface.blit(image_chanson, (dX + image_sound.get_width() + dX, 60))
 
     # клик мыши
     def onClick(self, pos):
@@ -30,18 +49,39 @@ class MarginRight(Block):
             return
         x, y = pos
         self.brightPanel.onClick((x - self.brightOffset[0], y - self.brightOffset[1]))
+        self.buttonSound.onClick((x - self.buttonSound.offset[0], y - self.buttonSound.offset[1]))
+        self.buttonChanson.onClick((x - self.buttonChanson.offset[0], y - self.buttonChanson.offset[1]))
+
+    def onPressedPushButton(self, buttonID, bChecked):
+        bNeedUpdate = False
+        if buttonID == ButtonID.ID_BUTTON_SOUND:
+            bNeedUpdate = True
+            self.game.session.soundsActive = bChecked
+            v = self.game.session.volumeLevel - 0.1
+            if v <= 0:
+                v = 1
+            pygame.mixer.music.set_volume(v)
+            self.game.session.volumeLevel = v
+
+        if buttonID == ButtonID.ID_BUTTON_CHANSON:
+            bNeedUpdate = True
+            self.game.session.chansonActive = bChecked
+
+        print(f'button {buttonID} : check={bChecked}')
+        if bNeedUpdate:
+            dispatcher.needUpdate(self)
 
 
 class BrightPanel:
     def __init__(self, block, width):
         self.block = block
         self.w = width // (len(BRIGHTEN) + 2)
-        self.h = self.w
+        self.h = 26
         self.surface = pygame.Surface((len(BRIGHTEN) * self.w, self.h))
 
     # нарисовать панель яркости с выделенным квадратом текущей яркости
     def render(self):
-        baseColor = pygame.Color("blue")
+        baseColor = pygame.Color("black")
 
         for i in range(len(BRIGHTEN)):
             imageSquare = pygame.Surface([self.w, self.h])
@@ -60,6 +100,47 @@ class BrightPanel:
         x, y = pos
         if 0 <= x < len(BRIGHTEN) * self.w and 0 <= y < self.h:
             # поменяли атрибут в сессии
-            self.block.game.session.brightness = x // self.w
+            self.block.game.session.brightness = int(x // self.w)
             #  сообщаем всем что было изменение
-            self.block.queryUpdate(self.block)
+            dispatcher.needUpdate(self)
+
+
+class PushButton:
+    def __init__(self, buttonID, parent):
+        self.imagePressed = None
+        self.imagePressedOut = None
+        self.image = None
+        self.buttonID = buttonID
+        self.parent = parent
+        self.image = None
+        self.surface = None
+
+    def render(self):
+        self.surface.fill(FON_COLOR)
+        self.surface.blit(self.image, (0, 0))
+
+    def check(self, bPush):
+        self.image = self.imagePressed if bPush else self.imagePressedOut
+
+    def isChecked(self):
+        return True if self.imagePressed == self.image else False
+
+    # клик мыши
+    def onClick(self, pos):
+        x, y = pos
+        if 0 <= x < self.image.get_width() and 0 <= y < self.image.get_height():
+            # меняем состояние
+            self.check(not self.isChecked())
+            #  сообщаем всем что было нажатие
+            self.parent.onPressedPushButton(self.buttonID, self.isChecked())
+
+
+class SystemPushButton(PushButton):
+    def __init__(self, buttonID, name, parent, offset):
+        super().__init__(buttonID, parent)
+        self.offset = offset
+        self.imagePressed = pygame.image.load(CURRENT_DIRECTORY + '/images/system/' + name + '_on.png')
+        self.imagePressedOut = pygame.image.load(CURRENT_DIRECTORY + '/images/system/' + name + '_off.png')
+        self.surface = pygame.Surface(
+            (max(self.imagePressed.get_width(), self.imagePressedOut.get_width()),
+             max(self.imagePressed.get_height(), self.imagePressedOut.get_height())))

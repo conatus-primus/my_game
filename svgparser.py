@@ -6,6 +6,9 @@ import os
 
 
 # отладочный вывод координат в формате gnuplot
+# на входе
+# или кортеж из пары координат (одна точка)
+# или список кортежей из пары координат
 class Gnuplot:
     def __init__(self):
         pass
@@ -29,7 +32,8 @@ class Gnuplot:
 
 
 # разбор svg файла
-# на выходе словарь идентификатор -> текстовая строка с геометрией объекта в формате svg
+# на выходе словарь линий идентификатор -> текстовая строка с геометрией объекта в формате svg
+# на выходе словарь прямоугольников идентификатор -> текстовая строка с геометрией объекта в формате svg
 class ParserSvgFileDict:
     def __init__(self, svg_file):
         self.svg_file = svg_file
@@ -187,16 +191,5 @@ class VectorizerPictures(ParserSvgFileDict):
         rect = self.rectByID(id)
         if rect is not None:
             return rect
-
-        coords = self.lineByID(id)
-        if coords is None or len(coords) == 0:
-            return None
-
-        l = r = coords[0][0]
-        t = b = coords[0][1]
-        for x, y in coords:
-            l = min(x, l)
-            r = max(x, r)
-            t = min(y, t)
-            b = max(y, b)
-        return l, t, r - l, b - t
+        else:
+            return OVERALL_RECT(self.lineByID(id))

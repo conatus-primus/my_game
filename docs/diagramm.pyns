@@ -1,0 +1,57 @@
+# PynSource Version 1.2
+{'type':'meta', 'info1':'Lorem ipsum dolor sit amet, consectetur adipiscing elit is latin. Comments are saved.'}
+{'type':'umlshape', 'id':'Block', 'x':783, 'y':267, 'width':98, 'height':218, 'attrs': 'game|height|surface|width', 'meths': '__init__|isInBlock|load|onClick|queryUpdate|update'}
+{'type':'umlshape', 'id':'pygame.Surface', 'x':633, 'y':669, 'width':150, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Field', 'x':1002, 'y':275, 'width':90, 'height':202, 'attrs': 'amuletUser|location|staticMap|vectorMap', 'meths': '__init__|load|onPressed|render|update'}
+{'type':'umlshape', 'id':'StaticMap', 'x':851, 'y':630, 'width':114, 'height':202, 'attrs': 'brightenImage|brightness|image|image_test|path', 'meths': '__init__|load|render|setBrightness'}
+{'type':'umlshape', 'id':'AmuletUser', 'x':1271, 'y':551, 'width':110, 'height':80, 'attrs': '', 'meths': '__init__|update'}
+{'type':'umlshape', 'id':'Location', 'x':1645, 'y':552, 'width':162, 'height':234, 'attrs': 'currentHoleID|currentLevelID|holeByKey|levels|location_file', 'meths': '__init__|currentLevelContent|load|setHoleID|setLevelID|update'}
+{'type':'umlshape', 'id':'VectorMap', 'x':1033, 'y':634, 'width':186, 'height':170, 'attrs': 'holes|map_number|rawMap', 'meths': '__init__|load|render|setCurrentLevelContent'}
+{'type':'umlshape', 'id':'Footer', 'x':371, 'y':383, 'width':74, 'height':80, 'attrs': '', 'meths': '__init__|render'}
+{'type':'umlshape', 'id':'Session', 'x':1355, 'y':316, 'width':122, 'height':186, 'attrs': 'brightness|currentHoleID|currentLevelID|map_number|path', 'meths': '__init__|read|write'}
+{'type':'umlshape', 'id':'Game', 'x':1328, 'y':55, 'width':98, 'height':218, 'attrs': 'block|field|session', 'meths': '__init__|isSession|load|onClick|onPressed|queryUpdate|render'}
+{'type':'umlshape', 'id':'Header', 'x':424, 'y':271, 'width':74, 'height':80, 'attrs': '', 'meths': '__init__|render'}
+{'type':'umlshape', 'id':'logger', 'x':316, 'y':253, 'width':74, 'height':80, 'attrs': '', 'meths': '__init__|write'}
+{'type':'umlshape', 'id':'MarginLeft', 'x':209, 'y':502, 'width':110, 'height':80, 'attrs': '', 'meths': '__init__|render'}
+{'type':'umlshape', 'id':'MarginRight', 'x':161, 'y':615, 'width':120, 'height':138, 'attrs': 'brightOffset|brightPanel', 'meths': '__init__|onClick|render'}
+{'type':'umlshape', 'id':'BrightPanel', 'x':410, 'y':599, 'width':120, 'height':170, 'attrs': 'block|h|surface|w', 'meths': '__init__|onClick|render'}
+{'type':'umlshape', 'id':'Message', 'x':411, 'y':803, 'width':80, 'height':122, 'attrs': 'image|surface', 'meths': '__init__|render'}
+{'type':'umlshape', 'id':'ScreenSaver', 'x':688, 'y':23, 'width':120, 'height':186, 'attrs': 'base_name|image|offset|rect', 'meths': '__init__|__load|onClick|render'}
+{'type':'umlshape', 'id':'VectorizerPictures', 'x':858, 'y':88, 'width':190, 'height':80, 'attrs': '', 'meths': '__init__|overallRectangle'}
+{'type':'umlshape', 'id':'Gnuplot', 'x':1672, 'y':19, 'width':80, 'height':80, 'attrs': '', 'meths': '__init__|plot'}
+{'type':'umlshape', 'id':'ParserSvgFileDict', 'x':1098, 'y':31, 'width':180, 'height':186, 'attrs': 'elem_g_d|elem_g_rect|svg_file', 'meths': '__init__|__svg_prefix|lineByID|load|rectByID'}
+{'type':'umlshape', 'id':'ParserSvgString', 'x':1705, 'y':203, 'width':160, 'height':154, 'attrs': 'coords', 'meths': '__init__|__parse|__parseOneCoord|__parseTwoCoords|__str__'}
+{'type':'umlshape', 'id':'Hole', 'x':1451, 'y':9, 'width':98, 'height':138, 'attrs': 'centre_hole|coords_hole|id|lines', 'meths': '__init__'}
+{'type':'umlshape', 'id':'ParserHole', 'x':1567, 'y':201, 'width':110, 'height':234, 'attrs': 'centre_hole|coords_hole|id|lines|string_hole', 'meths': '__distance2|__init__|__parseHole|__parseLines|__str__|load'}
+{'type':'umlshape', 'id':'ParserMapFile', 'x':1270, 'y':681, 'width':140, 'height':122, 'attrs': 'holes|svg_file', 'meths': '__init__|load'}
+{'type':'umlshape', 'id':'RawMap', 'x':1080, 'y':881, 'width':138, 'height':138, 'attrs': 'current_svg_file|current_txt_file', 'meths': '__init__|__print|load'}
+{'type':'umlshape', 'id':'AmuletSprite', 'x':1709, 'y':858, 'width':130, 'height':250, 'attrs': 'active|centre|color|coords_hole|id|image|pens|rect', 'meths': '__init__|load|render|update'}
+{'type':'umlshape', 'id':'Amulet', 'x':1496, 'y':695, 'width':98, 'height':202, 'attrs': 'amulets|color|image|location', 'meths': '__init__|load|load_image|render|setLocation'}
+{'type':'umlshape', 'id':'pygame.sprite.Sprite', 'x':1375, 'y':1145, 'width':210, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'pygame.Color', 'x':1183, 'y':1146, 'width':130, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'edge', 'id':'pygame.Surface_to_Block', 'source':'pygame.Surface', 'target':'Block', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Field_to_Block', 'source':'Field', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'AmuletUser_to_Field', 'source':'AmuletUser', 'target':'Field', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'StaticMap_to_Field', 'source':'StaticMap', 'target':'Field', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Location_to_Field', 'source':'Location', 'target':'Field', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'VectorMap_to_Field', 'source':'VectorMap', 'target':'Field', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Footer_to_Block', 'source':'Footer', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'Session_to_Game', 'source':'Session', 'target':'Game', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Field_to_Game', 'source':'Field', 'target':'Game', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Header_to_Block', 'source':'Header', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'MarginLeft_to_Block', 'source':'MarginLeft', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'MarginRight_to_Block', 'source':'MarginRight', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'BrightPanel_to_MarginRight', 'source':'BrightPanel', 'target':'MarginRight', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'pygame.Surface_to_BrightPanel', 'source':'pygame.Surface', 'target':'BrightPanel', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'pygame.Surface_to_Message', 'source':'pygame.Surface', 'target':'Message', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'ScreenSaver_to_VectorizerPictures', 'source':'ScreenSaver', 'target':'VectorizerPictures', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'VectorizerPictures_to_ParserSvgFileDict', 'source':'VectorizerPictures', 'target':'ParserSvgFileDict', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'ParserSvgString_to_Gnuplot', 'source':'ParserSvgString', 'target':'Gnuplot', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'ParserHole_to_Hole', 'source':'ParserHole', 'target':'Hole', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'ParserHole_to_Gnuplot', 'source':'ParserHole', 'target':'Gnuplot', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'RawMap_to_ParserMapFile', 'source':'RawMap', 'target':'ParserMapFile', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'RawMap_to_VectorMap', 'source':'RawMap', 'target':'VectorMap', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'AmuletSprite_to_pygame.sprite.Sprite', 'source':'AmuletSprite', 'target':'pygame.sprite.Sprite', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'AmuletUser_to_Amulet', 'source':'AmuletUser', 'target':'Amulet', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'AmuletSprite_to_Amulet', 'source':'AmuletSprite', 'target':'Amulet', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'pygame.Color_to_Amulet', 'source':'pygame.Color', 'target':'Amulet', 'uml_edge_type': 'composition'}

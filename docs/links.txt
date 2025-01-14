@@ -13,3 +13,8 @@
 
 Что писать в readme.md : https://techrocks.ru/2019/04/16/good-readme-on-github/
 Что писать в readme.md : https://webdesign.ru.net/article/pravila-oformleniya-fayla-readmemd-na-github.html
+
+
+Pynsource - UML for Python : https://pynsource.com/index.html
+
+Управление звуком: https://codingfleet.com/transformation-details/building-a-music-player-with-pygame/

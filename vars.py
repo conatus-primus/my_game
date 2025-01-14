@@ -1,7 +1,9 @@
 # общие переменные для всех классов
 import os
-from logger import logger
 
+import pygame
+
+from logger import logger
 
 # размер карты
 WIDTH_MAP = 900
@@ -21,7 +23,85 @@ SIZE_GAME = WIDTH_GAME, HEIGHT_GAME
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 # массив яркостей, чтобы регулировать яркость фона
-BRIGHTEN = [0, 48, 64, 80, 96, 112, 128, 144, 160, 196][:7]
+BRIGHTEN = [0, 40, 55, 66, 77, 88, 99, 110, 121, 135]
+
+# цвет заливки всех полей игры
+FON_COLOR = pygame.Color('gray')
 
 # лог на сессию
 LOG = logger()
+
+
+# расстояние между двумя точками
+def dist2(p1, p2):
+    return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
+
+
+# найти точку в контуре, ближайшую к заданной точке
+def findeClosedPoint(anglePoint, coords):
+    minPoint = coords[0][0], coords[0][1], dist2(anglePoint, coords[0])
+    for x, y in coords:
+        d = dist2(anglePoint, (x, y))
+        if d < minPoint[2]:
+            minPoint = x, y, d
+    return minPoint
+
+
+# получить огибающий прямоугольник
+# на входе список кортежей (x, y)
+# на входе кортеж лево, верх, ширина, высота
+def OVERALL_RECT(coords):
+    if coords is None or len(coords) == 0:
+        return None
+
+    l = r = coords[0][0]
+    t = b = coords[0][1]
+    for x, y in coords:
+        l = min(x, l)
+        r = max(x, r)
+        t = min(y, t)
+        b = max(y, b)
+    return pygame.Rect(l, t, r - l, b - t)
+
+
+# построить огибающий контур для замкнутого контура прямоугольного вида
+def OVERALL_CONTOUR(coords, h):
+    rect = OVERALL_RECT(coords)
+
+    ret = [findeClosedPoint(rect.topleft, coords), findeClosedPoint(rect.topright, coords),
+           findeClosedPoint(rect.bottomright, coords), findeClosedPoint(rect.bottomleft, coords)]
+
+    w = (2 * h ** 2) ** 0.5 * 0.55
+
+    ret2 = [
+        (ret[0][0] - h, ret[0][1]),
+        (ret[0][0] - w, ret[0][1] - w),
+        (ret[0][0], ret[0][1] - h),
+
+        (ret[1][0], ret[1][1] - h),
+        (ret[1][0] + w, ret[1][1] - w),
+        (ret[1][0] + h, ret[1][1]),
+
+        (ret[2][0] + h, ret[2][1]),
+        (ret[2][0] + w, ret[2][1] + w),
+        (ret[2][0], ret[2][1] + h),
+
+        (ret[3][0], ret[3][1] + h),
+        (ret[3][0] - w, ret[3][1] + w),
+        (ret[3][0] - h, ret[3][1]),
+
+        (ret[0][0] - h, ret[0][1])
+    ]
+
+    return ret2
+
+
+class Dispatcher:
+    def __init__(self):
+        self.game = None
+
+    def needUpdate(self, sender):
+        self.game.needUpdate(sender)
+        print(f'{sender.__class__.__name__}.needUpdate : sender={sender}')
+
+dispatcher = Dispatcher()

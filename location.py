@@ -63,11 +63,11 @@ class Location:
 
     # получить следующую дырку при нажатии на клавиши
     # user_keys = pygame.key.get_pressed()
-    def update(self, user_keys):
+    def onPressedKey(self, user_keys):
         key_dict = {pygame.K_LEFT: 'L', pygame.K_a: 'L',
                     pygame.K_RIGHT: 'R', pygame.K_d: 'R',
                     pygame.K_UP: 'U', pygame.K_w: 'U',
-                    pygame.K_DOWN: 'D', pygame.K_s: 'U'
+                    pygame.K_DOWN: 'D', pygame.K_s: 'D'
                     }
         for fixed_key, direct in key_dict.items():
             if user_keys[fixed_key]:

@@ -24,5 +24,5 @@ class Block:
         pass
 
     # запрос на обновление
-    def queryUpdate(self, sender):
-        self.game.queryUpdate(sender)
+    def needUpdate(self, sender):
+        self.game.needUpdate(sender)
