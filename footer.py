@@ -9,4 +9,4 @@ class Footer(Block):
         super().__init__(game, WIDTH_GAME, HEIGHT_FOOTER)
 
     def render(self):
-        pygame.draw.rect(self.surface, pygame.Color('green'), (0, 0, self.width, self.height))
+        pygame.draw.rect(self.surface, pygame.Color(159, 168, 127), (0, 0, self.width, self.height))

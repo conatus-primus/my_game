@@ -12,6 +12,7 @@ class MarginLeft(Block):
         self.amuletHandles = None
         self.amuletButton = None
         self.bFirstRender = True
+        self.buttonAcheter = None
 
     def load(self, map_number):
         self.loadAmulets()
@@ -57,10 +58,18 @@ class MarginLeft(Block):
             dX = 15
             self.surface.blit(text1, (b.offset[0] + b.surface.get_width() + dX, b.offset[1] + dH))
             self.surface.blit(text2,
-                              (b.offset[0] + b.surface.get_width() + dX, b.offset[1] + dH + text1.get_height() + dH))
-            lastOffsetY = b.offset[1] + dH + text1.get_height() + dH + text2.get_height() + 3 * dH
+                              (b.offset[0] + b.surface.get_width() + dX,
+                               b.offset[1] + dH + text1.get_height() + dH))
+            lastOffsetY = b.offset[1] + b.surface.get_height() + 3 * dH
 
         dY = lastOffsetY
+
+        if self.buttonAcheter is None:
+            posButton = (self.width - 120) // 2, dY
+            self.buttonAcheter = ImagePushButton('acheter', 'images/system/button_120x40', 'Забрать', self, posButton)
+
+        self.buttonAcheter.render()
+        self.surface.blit(self.buttonAcheter.surface, self.buttonAcheter.offset)
 
         if self.bFirstRender:
             self.bFirstRender = False
@@ -107,8 +116,24 @@ class MarginLeft(Block):
         x, y = pos
         for i, b in enumerate(self.amuletButton):
             b.onClick((x - b.offset[0], y - b.offset[1]))
+
+        if self.buttonAcheter is not None:
+            e = pygame.event
+            e.type = pygame.MOUSEBUTTONDOWN
+            e.pos = pos
+            self.buttonAcheter.onClickExtend(e)
         return True
 
     def onPressedButton(self, buttonID, bChecked):
         bNeedUpdate = False
         print(f'{self.__class__.__name__} pressed buttonID={buttonID} bChecked={bChecked}')
+
+    def onClickExtend(self, event):
+        if not super().isInBlock(event.pos):
+            return False
+        if self.buttonAcheter is not None:
+            self.buttonAcheter.onClickExtend(event)
+
+    def onPushedButton(self, buttonID):
+        bNeedUpdate = False
+        print(f'{self.__class__.__name__} pushed buttonID={buttonID}')

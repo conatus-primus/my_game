@@ -32,3 +32,6 @@ class Block:
 
     def onPressedKey(self, pressed_keys):
         return False
+
+    def onClickExtend(self, event):
+        pass

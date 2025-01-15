@@ -104,7 +104,7 @@ class Game:
             pygame.mixer.music.unpause()
         else:
             pygame.mixer.music.pause()
-        print(f'volume={pygame.mixer.music.get_volume()}')
+        # print(f'volume={pygame.mixer.music.get_volume()}')
 
         for item in self.block:
             obj, offset = item
@@ -127,3 +127,12 @@ class Game:
         for item in self.block:
             obj, offset = item
             obj.onTimer(currentTime)
+
+    def onClickExtend(self, event):
+        e = event
+        x, y = e.pos
+
+        for item in self.block:
+            obj, offset = item
+            e.pos = x - offset[0], y - offset[1]
+            obj.onClickExtend(e)

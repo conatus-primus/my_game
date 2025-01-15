@@ -1,10 +1,24 @@
 import pygame
 import random
-
+import enum
 from vars import *
 from screensaver import ScreenSaver
 from game import Game, Session
 from message import Message
+
+
+class MouseButton(enum.Enum):
+    # левая кнопка мыши
+    LEFT = 1,
+    # правая кнопка мыши
+    RIGHT = 3,
+    # средняя кнопка мыши
+    MIDDLE = 2,
+    # прокрутка вперед
+    SCROLL_FRONT = 4,
+    # прокрутка назад
+    SCROLL_BACK = 5
+
 
 if __name__ == '__main__':
 
@@ -18,7 +32,6 @@ if __name__ == '__main__':
     pygame.font.init()
     pygame.mixer.init()
     pygame.mixer.music.load("sounds/fon.mp3")
-
 
     s_glass = pygame.mixer.Sound('sounds/glass1.ogg')
 
@@ -52,6 +65,10 @@ if __name__ == '__main__':
 
             if event.type == pygame.QUIT:
                 running = False
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                if startScreen is None and game is not None:
+                    game.onClickExtend(event)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if startScreen is not None:

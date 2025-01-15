@@ -109,7 +109,7 @@ class Dispatcher:
 
     def needUpdate(self, sender):
         self.game.needUpdate(sender)
-        print(f'{sender.__class__.__name__}.needUpdate : sender={sender}')
+        # print(f'{sender.__class__.__name__}.needUpdate : sender={sender}')
 
     def onTimer(self):
         self.game.onTimer(time.time())
