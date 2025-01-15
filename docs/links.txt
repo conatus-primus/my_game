@@ -18,3 +18,6 @@
 Pynsource - UML for Python : https://pynsource.com/index.html
 
 Управление звуком: https://codingfleet.com/transformation-details/building-a-music-player-with-pygame/
+
+Смешение цвета в картинке : https://www.programcreek.com/python/example/121885/pygame.BLEND_ADD
+Смешение цвета в картинке : https://www.reddit.com/r/pygame/comments/nncr4v/is_there_some_tutorial_on_all_the_blend_xxx_flags/?rdt=53252

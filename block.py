@@ -21,8 +21,14 @@ class Block:
         return 0 <= x < self.width and 0 <= y < self.height
 
     def onClick(self, pos):
-        pass
+        return False
 
     # запрос на обновление
     def needUpdate(self, sender):
         self.game.needUpdate(sender)
+
+    def onTimer(self, currentTime):
+        return False
+
+    def onPressedKey(self, pressed_keys):
+        return False

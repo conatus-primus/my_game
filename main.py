@@ -15,9 +15,10 @@ if __name__ == '__main__':
     pygame.mixer.pre_init(44100, -16, 1, 512)
 
     pygame.init()
-
+    pygame.font.init()
     pygame.mixer.init()
     pygame.mixer.music.load("sounds/fon.mp3")
+
 
     s_glass = pygame.mixer.Sound('sounds/glass1.ogg')
 
@@ -28,6 +29,8 @@ if __name__ == '__main__':
     pygame.display.set_caption('Защита окон от монстров')
 
     game = Game()
+    # делаем после инита pygame
+    dispatcher.load()
     dispatcher.game = game
     messageError = None
 
@@ -44,6 +47,9 @@ if __name__ == '__main__':
     while running:
         pressed = False
         for event in pygame.event.get():
+            if event.type == TIMER_EVENT_ONE_SEC:
+                dispatcher.onTimer()
+
             if event.type == pygame.QUIT:
                 running = False
 
@@ -72,7 +78,7 @@ if __name__ == '__main__':
         pygame.display.flip()
 
         if (pressed):
-            game.onPressed(pygame.key.get_pressed())
+            game.onPressedKey(pygame.key.get_pressed())
 
     session.write()
 

@@ -1,5 +1,6 @@
 # правый блоки игрового поля
 from vars import *
+from py.button import *
 from block import Block
 import enum
 
@@ -17,8 +18,8 @@ class MarginRight(Block):
         self.brightPanel = BrightPanel(self, WIDTH_MARGIN)
         self.brightOffset = ((self.width - self.brightPanel.surface.get_width()) / 2, self.brightPanel.w)
 
-        self.buttonSound = SystemPushButton(ButtonID.ID_BUTTON_SOUND, 'sound', self, (20, 70))
-        self.buttonChanson = SystemPushButton(ButtonID.ID_BUTTON_CHANSON, 'chanson', self, (100, 70))
+        self.buttonSound = DrawnCheckButton(ButtonID.ID_BUTTON_SOUND, 'sound', self, (20, 70))
+        self.buttonChanson = DrawnCheckButton(ButtonID.ID_BUTTON_CHANSON, 'chanson', self, (100, 70))
 
     def load(self, session):
         self.buttonSound.check(self.game.session.soundsActive)
@@ -46,13 +47,14 @@ class MarginRight(Block):
     # клик мыши
     def onClick(self, pos):
         if not super().isInBlock(pos):
-            return
+            return False
         x, y = pos
         self.brightPanel.onClick((x - self.brightOffset[0], y - self.brightOffset[1]))
         self.buttonSound.onClick((x - self.buttonSound.offset[0], y - self.buttonSound.offset[1]))
         self.buttonChanson.onClick((x - self.buttonChanson.offset[0], y - self.buttonChanson.offset[1]))
+        return True
 
-    def onPressedPushButton(self, buttonID, bChecked):
+    def onPressedButton(self, buttonID, bChecked):
         bNeedUpdate = False
         if buttonID == ButtonID.ID_BUTTON_SOUND:
             bNeedUpdate = True
@@ -104,43 +106,3 @@ class BrightPanel:
             #  сообщаем всем что было изменение
             dispatcher.needUpdate(self)
 
-
-class PushButton:
-    def __init__(self, buttonID, parent):
-        self.imagePressed = None
-        self.imagePressedOut = None
-        self.image = None
-        self.buttonID = buttonID
-        self.parent = parent
-        self.image = None
-        self.surface = None
-
-    def render(self):
-        self.surface.fill(FON_COLOR)
-        self.surface.blit(self.image, (0, 0))
-
-    def check(self, bPush):
-        self.image = self.imagePressed if bPush else self.imagePressedOut
-
-    def isChecked(self):
-        return True if self.imagePressed == self.image else False
-
-    # клик мыши
-    def onClick(self, pos):
-        x, y = pos
-        if 0 <= x < self.image.get_width() and 0 <= y < self.image.get_height():
-            # меняем состояние
-            self.check(not self.isChecked())
-            #  сообщаем всем что было нажатие
-            self.parent.onPressedPushButton(self.buttonID, self.isChecked())
-
-
-class SystemPushButton(PushButton):
-    def __init__(self, buttonID, name, parent, offset):
-        super().__init__(buttonID, parent)
-        self.offset = offset
-        self.imagePressed = pygame.image.load(CURRENT_DIRECTORY + '/images/system/' + name + '_on.png')
-        self.imagePressedOut = pygame.image.load(CURRENT_DIRECTORY + '/images/system/' + name + '_off.png')
-        self.surface = pygame.Surface(
-            (max(self.imagePressed.get_width(), self.imagePressedOut.get_width()),
-             max(self.imagePressed.get_height(), self.imagePressedOut.get_height())))

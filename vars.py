@@ -1,6 +1,6 @@
 # общие переменные для всех классов
 import os
-
+import time
 import pygame
 
 from logger import logger
@@ -26,10 +26,13 @@ CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 BRIGHTEN = [0, 40, 55, 66, 77, 88, 99, 110, 121, 135]
 
 # цвет заливки всех полей игры
-FON_COLOR = pygame.Color('gray')
+FON_COLOR = pygame.Color(198, 210, 159)
 
 # лог на сессию
 LOG = logger()
+
+# событие таймера
+TIMER_EVENT_ONE_SEC = pygame.USEREVENT + 1
 
 
 # расстояние между двумя точками
@@ -100,8 +103,25 @@ class Dispatcher:
     def __init__(self):
         self.game = None
 
+    def load(self):
+        # запускаем общий таймер для на 1 сек постоянно
+        pygame.time.set_timer(TIMER_EVENT_ONE_SEC, 500)
+
     def needUpdate(self, sender):
         self.game.needUpdate(sender)
         print(f'{sender.__class__.__name__}.needUpdate : sender={sender}')
 
+    def onTimer(self):
+        self.game.onTimer(time.time())
+
+
 dispatcher = Dispatcher()
+
+
+class AmuletHandler:
+    def __init__(self):
+        self.id = None
+        self.fileName = None
+        self.name = None
+        self.prix = None
+        self.life = None

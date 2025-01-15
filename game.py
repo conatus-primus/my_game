@@ -19,6 +19,7 @@ class Session:
         self.soundsActive = False
         self.chansonActive = False
         self.volumeLevel = 0.1
+        self.money = 80
 
     def read(self):
         config = configparser.ConfigParser()
@@ -38,6 +39,8 @@ class Session:
                 self.chansonActive = True if config['start']['chansonActive'] == '1' else False
             if 'volumeLevel' in config['start']:
                 self.volumeLevel = float(config['start']['volumeLevel'])
+            if 'money' in config['start']:
+                self.money = int(config['start']['money'])
 
     def write(self):
         config = configparser.ConfigParser()
@@ -48,6 +51,7 @@ class Session:
         config['start']['soundsActive'] = '1' if self.soundsActive == True else '0'
         config['start']['chansonActive'] = '1' if self.chansonActive == True else '0'
         config['start']['volumeLevel'] = str(self.volumeLevel)
+        config['start']['money'] = str(self.money)
         with open(self.path, 'w') as configfile:
             config.write(configfile)
 
@@ -93,14 +97,9 @@ class Game:
     def isSession(self):
         return True
 
-    # вход - нажатые клавиши pygame.key.get_pressed()
-    def onPressed(self, pressed_keys):
-        self.field.onPressed(pressed_keys)
-
     # sender - кто инициировал обновление
     def needUpdate(self, sender):
-        # переключаем звук
-        # переключаем музыку
+        # переключаем звук и музыку
         if self.session.chansonActive:
             pygame.mixer.music.unpause()
         else:
@@ -111,9 +110,20 @@ class Game:
             obj, offset = item
             obj.update(sender)
 
+    # вход - нажатые клавиши pygame.key.get_pressed()
+    def onPressedKey(self, pressed_keys):
+        for item in self.block:
+            obj, offset = item
+            obj.onPressedKey(pressed_keys)
+
     def onClick(self, pos):
         x, y = pos
         for item in self.block:
             obj, offset = item
             blockPos = x - offset[0], y - offset[1]
             obj.onClick(blockPos)
+
+    def onTimer(self, currentTime):
+        for item in self.block:
+            obj, offset = item
+            obj.onTimer(currentTime)
