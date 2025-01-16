@@ -67,6 +67,7 @@ class MarginLeft(Block):
         if self.buttonAcheter is None:
             posButton = (self.width - 120) // 2, dY
             self.buttonAcheter = ImagePushButton('acheter', 'images/system/button_120x40', 'Забрать', self, posButton)
+            self.buttonAcheter.setEnable(False)
 
         self.buttonAcheter.render()
         self.surface.blit(self.buttonAcheter.surface, self.buttonAcheter.offset)

@@ -77,7 +77,8 @@ class Location:
                 oldActiveHoleID = activeHoleID
                 activeHoleID = self.holeByKey[activeHoleID][key_dict[fixed_key]]
                 print(f'{oldActiveHoleID} --> {activeHoleID}')
-                return activeHoleID
+                break
+        return activeHoleID
 
     # установить выбранный уровень
     def setLevelID(self, level):

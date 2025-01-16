@@ -114,17 +114,18 @@ class ImagePushButton:
         self.surface = pygame.Surface((self.imageUp.get_width(), self.imageUp.get_height()))
 
     def render(self):
+        font = pygame.font.Font(None, 26)
         self.surface.fill(FON_COLOR)
+
         if self.enabled:
             if self.pushed:
                 self.surface.blit(self.imagePush, (0, 0))
             else:
                 self.surface.blit(self.imageUp, (0, 0))
+            self.buttonText = font.render(self.text, True, (0, 0, 0))
         else:
-            self.surface.blit(self.imageDisable, (0, 0))
-
-        font = pygame.font.Font(None, 26)
-        self.buttonText = font.render(self.text, True, (0, 0, 0))
+            self.surface.blit(self.imageUp, (0, 0))
+            self.buttonText = font.render(self.text, True, pygame.Color(128, 128, 128))
 
         offsetText = (self.imagePush.get_width() - self.buttonText.get_width()) // 2, (
                     self.imagePush.get_height() - self.buttonText.get_height()) // 2

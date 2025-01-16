@@ -33,12 +33,12 @@ if __name__ == '__main__':
     pygame.mixer.init()
     pygame.mixer.music.load("sounds/fon.mp3")
 
-    s_glass = pygame.mixer.Sound('sounds/glass1.ogg')
 
     # TODO посмотреть что делать, если совсем нет картинок
     session = Session()
     session.read()
 
+    sounds = Sounds()
     pygame.display.set_caption('Защита окон от монстров')
 
     game = Game()
@@ -74,8 +74,9 @@ if __name__ == '__main__':
                 if startScreen is not None:
                     if startScreen.onClick(event.pos):
                         startScreen = None
+                        sounds.sVgux.play()
                     else:
-                        s_glass.play()
+                        sounds.sGlass.play()
                 elif game is not None:
                     game.onClick(event.pos)
 

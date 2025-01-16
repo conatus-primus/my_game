@@ -125,3 +125,8 @@ class AmuletHandler:
         self.name = None
         self.prix = None
         self.life = None
+
+class Sounds:
+    def __init__(self):
+        self.sGlass = pygame.mixer.Sound('sounds/glass1.ogg')
+        self.sVgux = pygame.mixer.Sound('sounds/bruit_silence.ogg')

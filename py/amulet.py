@@ -33,26 +33,11 @@ class AmuletSprite(pygame.sprite.Sprite):
         # ставим большой прямоугольник - нам надо столкновение моба именно с площадным объектом
         self.rect = OVERALL_RECT(coords_hole)
         self.contour = OVERALL_CONTOUR(coords_hole, 11)
-        self.contour2 = OVERALL_CONTOUR(coords_hole, 21)
 
         r, g, b = self.color.r, self.color.g, self.color.b
 
         self.pens = [
 
-            (pygame.Color(r * 3 // 15, g * 3 // 15, b * 3 // 15), 9),
-            (pygame.Color(r * 7 // 15, g * 7 // 15, b * 7 // 15), 7),
-            (pygame.Color(r * 11 // 15, g * 11 // 15, b * 11 // 15), 5),
-            (pygame.Color(r * 15 // 15, g * 15 // 15, b * 15 // 15), 3),
-            (pygame.Color(255, 255, 255), 1)
-        ]
-
-        self.pens2 = [
-            (pygame.Color(0, 0, 0), 17),
-            (pygame.Color(255, 255, 255), 13),
-        ]
-
-        r, g, b = 207, 101, 0
-        self.pens3 = [
             (pygame.Color(r * 3 // 15, g * 3 // 15, b * 3 // 15), 9),
             (pygame.Color(r * 7 // 15, g * 7 // 15, b * 7 // 15), 7),
             (pygame.Color(r * 11 // 15, g * 11 // 15, b * 11 // 15), 5),
@@ -88,25 +73,11 @@ class AmuletSprite(pygame.sprite.Sprite):
         # дырка
         if montrerState == AmuletState.MONTRER_UNE_PARTIE:
 
-            # for i, pen in enumerate(self.pens2):
-            #     color, h = pen
-            #     for point in self.coords_hole:
-            #         pygame.draw.circle(surface, color, point, h // 2, h // 2)
-            #     # дырка
-            #     pygame.draw.lines(surface, color, True, self.coords_hole, h)
-
             for i, pen in enumerate(self.pens):
                 color, h = pen
                 for point in self.contour:
                     pygame.draw.circle(surface, color, point, h // 2, h // 2)
                 pygame.draw.lines(surface, color, True, self.contour, h)
-        #
-        #     # color, h = self.pens2[i]
-        #     # for point in self.contour2:
-        #     #     pygame.draw.circle(surface, color, point, h // 2, h // 2)
-        #     # pygame.draw.lines(surface, color, True, self.contour2, h)
-        #
-        #     pass
 
 
 # базовый класс для поддержки амулетов
@@ -126,7 +97,6 @@ class Amulet:
         else:
             self.color = self.image.get_at((self.image.get_width() // 2, self.image.get_height() // 2))
         # список амулетов
-        # не делаем группу у нас необычные спрайты с поли линией
         self.amuletSprites = []
         self.activeHoleID = 'path1'
         self.montrerState = AmuletState.MONTRER_EN_ENTIER
@@ -138,8 +108,8 @@ class Amulet:
         return image
 
     # создаем спрайты, одна дырка - один спрайт
-    def load(self, vectorMapHoles):
-        for hole in vectorMapHoles:
+    def load(self, vMapHoles):
+        for hole in vMapHoles:
             self.amuletSprites.append(AmuletSprite(self))
             self.amuletSprites[-1].load(self.image, hole.id, hole.coords_hole, hole.centre_hole, self.color)
 
@@ -173,7 +143,7 @@ class AmuletUser(Amulet):
     # обновляем настройку отображения спрайтов в зависимости от текущей дырки
     def update(self):
         for a in self.amuletSprites:
-            a.update(self.location.currentHoleID)
+            a.update(self.activeHoleID)
 
     def onClick(self, pos):
         # меняем положение пользовательского амулета

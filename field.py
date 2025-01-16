@@ -51,7 +51,6 @@ class Field(Block):
         self.amulets.append(amuletPassive)
 
         amuletPassive = AmuletPassive(self, 'sapphire.png', ['path5', 'path4'], [2, 0.1])
-        # self.amuletPassive = AmuletPassive(self, 'ruby.png', ['path5'], [2, 0.1])
         amuletPassive.load(self.vectorMap.holes)
         amuletPassive.start()
         self.amulets.append(amuletPassive)
@@ -69,7 +68,6 @@ class Field(Block):
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def onPressedKey(self, pressed_keys):
-        # пересчитать положение амулетов
         # пересчитать положение амулетов
         if any([a.onPressedKey(pressed_keys) for a in self.amulets]):
             self.recalcAmuletRelativePosition()
