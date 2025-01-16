@@ -6,6 +6,8 @@ from screensaver import ScreenSaver
 from game import Game, Session
 from message import Message
 
+FPS = 60
+
 
 class MouseButton(enum.Enum):
     # левая кнопка мыши
@@ -33,7 +35,6 @@ if __name__ == '__main__':
     pygame.mixer.init()
     pygame.mixer.music.load("sounds/fon.mp3")
 
-
     # TODO посмотреть что делать, если совсем нет картинок
     session = Session()
     session.read()
@@ -55,6 +56,8 @@ if __name__ == '__main__':
         messageError = Message(str(e))
 
     screen = pygame.display.set_mode(SIZE_GAME)
+
+    clock = pygame.time.Clock()
 
     running = True
     while running:
@@ -82,9 +85,11 @@ if __name__ == '__main__':
 
             if event.type == pygame.KEYDOWN:
                 pressed = True
+ 
+        tick = clock.tick(FPS)
 
         if startScreen is not None:
-            startScreen.render(screen)
+            startScreen.render(screen, tick)
         else:
             # TODO вынести в константы
             screen.fill((240, 155, 89))
@@ -96,7 +101,11 @@ if __name__ == '__main__':
         pygame.display.flip()
 
         if (pressed):
-            game.onPressedKey(pygame.key.get_pressed())
+            if startScreen is not None:
+                startScreen = None
+                sounds.sVgux.play()
+            else:
+                game.onPressedKey(pygame.key.get_pressed())
 
     session.write()
 

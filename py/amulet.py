@@ -32,7 +32,7 @@ class AmuletSprite(pygame.sprite.Sprite):
         self.color = color
         # ставим большой прямоугольник - нам надо столкновение моба именно с площадным объектом
         self.rect = OVERALL_RECT(coords_hole)
-        self.contour = OVERALL_CONTOUR(coords_hole, 11)
+        self.contour = OVERALL_CONTOUR(coords_hole, 10)
 
         r, g, b = self.color.r, self.color.g, self.color.b
 
@@ -256,3 +256,6 @@ class AmuletPassive(Amulet):
             return None
         activeHoleID, _, startSecs = self.rules[0]
         return activeHoleID, startSecs, self
+
+    def load(self, vMapHoles):
+        super().load(vMapHoles)
