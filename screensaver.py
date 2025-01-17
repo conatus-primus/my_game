@@ -6,29 +6,27 @@ from svgparser import VectorizerPictures
 
 class ScreenSaver(VectorizerPictures):
     def __init__(self):
-        self.base_name = CURRENT_DIRECTORY + '/vect_images/screensaver'
-        super().__init__(self.base_name + '.svg')
-        self.image = None
         self.rectText = None
         self.offset = None
+        self.imageTitle = None
+        self.imageClick = None
+        super().__init__('vect_images/text2.svg')
         self.__load()
-
-        self.image2 = pygame.image.load(self.base_name + '2.png')
-        self.image3 = pygame.image.load(self.base_name + '3.png')
         self.tickCount = None
         self.angle = 0
         self.sign = 1
 
     def __load(self):
         try:
-            self.image3 = pygame.image.load(self.base_name + '.png')
+            self.imageTitle = pygame.image.load('vect_images/text1.png')
+            self.imageClick = pygame.image.load('vect_images/text2.png')
             super().load()
             self.rectText = self.overallRectangle('rect1')
             if self.rectText is None:
-                raise (f'{self.__class__.__name__}:{__name__}: ошибка загрузки {self.base_name}')
+                raise (f'{self.__class__.__name__}:{__name__}: ошибка загрузки {self.svg_file}')
 
-            self.offset = (SIZE_GAME[0] - self.image3.get_width()) // 2, (
-                    SIZE_GAME[1] - self.image3.get_height()) // 2
+            self.offset = (SIZE_GAME[0] - self.imageClick.get_width()) // 2, (
+                    SIZE_GAME[1] - self.imageClick.get_height()) // 2
 
         except Exception as e:
             LOG.write(str(e))
@@ -36,8 +34,10 @@ class ScreenSaver(VectorizerPictures):
 
     def render(self, screen, tick):
 
-        screen.fill(pygame.Color(0, 148, 255))
-        screen.blit(self.image3, self.offset)
+        screen.fill(FON_COLOR)
+        pygame.draw.rect(screen, FON_COLOR_DARK, (0, 0, WIDTH_GAME, HEIGHT_HEADER))
+        pygame.draw.rect(screen, FON_COLOR_DARK, (0, HEIGHT_GAME - HEIGHT_FOOTER, WIDTH_GAME, HEIGHT_FOOTER))
+        screen.blit(self.imageClick, self.offset)
 
         if self.tickCount == None:
             self.tickCount = 0
@@ -55,7 +55,7 @@ class ScreenSaver(VectorizerPictures):
                 elif self.angle < - ANGLE:
                     self.sign = -self.sign
 
-        surf = pygame.transform.rotate(self.image2, self.angle)
+        surf = pygame.transform.rotate(self.imageTitle, self.angle)
         rotateRect = surf.get_rect()
 
         _, _, _, h = self.rectText

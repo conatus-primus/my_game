@@ -78,14 +78,12 @@ if __name__ == '__main__':
                     if startScreen.onClick(event.pos):
                         startScreen = None
                         sounds.sVgux.play()
-                    else:
-                        sounds.sGlass.play()
                 elif game is not None:
                     game.onClick(event.pos)
 
             if event.type == pygame.KEYDOWN:
                 pressed = True
- 
+
         tick = clock.tick(FPS)
 
         if startScreen is not None:

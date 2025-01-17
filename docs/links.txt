@@ -10,6 +10,7 @@
 звуки : https://zvukogram.com/category/zvuk-jestkih-knopok/
 
 Предпросмотр README перед пушем на github.com - grip : https://www.youtube.com/watch?v=26pHLqNmx3Q
+запуск - перейти в каталог с README и запустить grip, в окне пишет адрес такого типа http://localhost:6419
 
 Что писать в readme.md : https://techrocks.ru/2019/04/16/good-readme-on-github/
 Что писать в readme.md : https://webdesign.ru.net/article/pravila-oformleniya-fayla-readmemd-na-github.html
