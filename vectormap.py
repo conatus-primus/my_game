@@ -113,18 +113,18 @@ class ParserMapFile:
         # разберемся, где линии, где дырки
         # считаем что дыры path1 - path9
         str_holes = []
-        key_holes = ['path' + str(i) for i in range(1, 10)]
+        key_holes = ['path' + str(i) for i in range(1, 100)]
         for key in path.keys():
             if key in key_holes:
                 str_holes.append((key, path[key], []))
 
-        # разбираемся с направлениями - распределяем их по дыркам path1N в path1
-        # считаем что направления от 1 до 9 : path11 path12 path21 path22
+        # разбираемся с направлениями - распределяем их по дыркам path1_N в path1
+        # считаем что направления от 1 до 99 : path1_1 path1_2 path2_1 path2_2
         for i, elem in enumerate(str_holes):
             hole_id = elem[0]
             hole_coord = elem[1]
             hole_lines = elem[2]
-            key_lines = [hole_id + str(i) for i in range(1, 10)]
+            key_lines = [hole_id + '_' + str(i) for i in range(1, 100)]
             for key in key_lines:
                 if key in path.keys():
                     hole_lines.append((key, path[key]))
