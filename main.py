@@ -2,7 +2,7 @@ import pygame
 import random
 import enum
 from vars import *
-from screensaver import ScreenSaver
+from invite import Invite
 from game import Game, Session
 from message import Message
 
@@ -25,7 +25,7 @@ class MouseButton(enum.Enum):
 if __name__ == '__main__':
 
     # стартовая заставка
-    startScreen = ScreenSaver()
+    invite = Invite()
 
     # важно прописать до pygame.init()
     pygame.mixer.pre_init(44100, -16, 1, 512)
@@ -70,13 +70,13 @@ if __name__ == '__main__':
                 running = False
 
             if event.type == pygame.MOUSEBUTTONUP:
-                if startScreen is None and game is not None:
+                if invite is None and game is not None:
                     game.onClickExtend(event)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if startScreen is not None:
-                    if startScreen.onClick(event.pos):
-                        startScreen = None
+                if invite is not None:
+                    if invite.onClick(event.pos):
+                        invite = None
                         sounds.sVgux.play()
                 elif game is not None:
                     game.onClick(event.pos)
@@ -86,8 +86,8 @@ if __name__ == '__main__':
 
         tick = clock.tick(FPS)
 
-        if startScreen is not None:
-            startScreen.render(screen, tick)
+        if invite is not None:
+            invite.render(screen, tick)
         else:
             # TODO вынести в константы
             screen.fill((240, 155, 89))
@@ -99,11 +99,7 @@ if __name__ == '__main__':
         pygame.display.flip()
 
         if (pressed):
-            if startScreen is not None:
-                startScreen = None
-                sounds.sVgux.play()
-            else:
-                game.onPressedKey(pygame.key.get_pressed())
+            game.onPressedKey(pygame.key.get_pressed())
 
     session.write()
 

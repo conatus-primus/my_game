@@ -4,13 +4,13 @@ from vars import *
 from svgparser import VectorizerPictures
 
 
-class ScreenSaver(VectorizerPictures):
+class Invite(VectorizerPictures):
     def __init__(self):
         self.rectText = None
         self.offset = None
         self.imageTitle = None
         self.imageClick = None
-        super().__init__('vect_images/text2.svg')
+        super().__init__('vect_images/invite2.svg')
         self.__load()
         self.tickCount = None
         self.angle = 0
@@ -18,8 +18,8 @@ class ScreenSaver(VectorizerPictures):
 
     def __load(self):
         try:
-            self.imageTitle = pygame.image.load('vect_images/text1.png')
-            self.imageClick = pygame.image.load('vect_images/text2.png')
+            self.imageTitle = pygame.image.load('vect_images/invite1.png')
+            self.imageClick = pygame.image.load('vect_images/invite2.png')
             super().load()
             self.rectText = self.overallRectangle('rect1')
             if self.rectText is None:
@@ -59,7 +59,7 @@ class ScreenSaver(VectorizerPictures):
         rotateRect = surf.get_rect()
 
         _, _, _, h = self.rectText
-        __offset = (SIZE_GAME[0] - rotateRect.width) // 2, (SIZE_GAME[1] - rotateRect.height) // 2 - 3 * h
+        __offset = (SIZE_GAME[0] - rotateRect.width) // 2, (SIZE_GAME[1] - rotateRect.height) // 2 - 2 * h
         screen.blit(surf, __offset)
 
     def onClick(self, pos):

@@ -20,6 +20,7 @@ class Session:
         self.chansonActive = False
         self.volumeLevel = 0.1
         self.money = 80
+        self.user = ''
 
     def read(self):
         config = configparser.ConfigParser()
@@ -41,6 +42,8 @@ class Session:
                 self.volumeLevel = float(config['start']['volumeLevel'])
             if 'money' in config['start']:
                 self.money = int(config['start']['money'])
+            if 'user' in config['start']:
+                self.user = config['start']['user']
 
     def write(self):
         config = configparser.ConfigParser()
@@ -52,6 +55,7 @@ class Session:
         config['start']['chansonActive'] = '1' if self.chansonActive == True else '0'
         config['start']['volumeLevel'] = str(self.volumeLevel)
         config['start']['money'] = str(self.money)
+        config['start']['user'] = str(self.user)
         with open(self.path, 'w') as configfile:
             config.write(configfile)
 
