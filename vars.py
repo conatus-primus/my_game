@@ -143,7 +143,7 @@ class Session:
                 self.user = config[section]['user'].strip()
 
         if self.user == '':
-            self.user = 'GUEST'
+            self.user = 'ГОСТЬ'
 
         # пользовательские настройки
         config.read('users/' + self.user + '.ini', 'utf-8')

@@ -88,19 +88,23 @@ class Login(EditText, EventObject):
         # это для рамки
         d = 5
         self.ramka = pygame.Rect(x - d, y - d, super().get_width() + 2 * d, super().get_height() + 2 * d)
-        self.image_warning = pygame.image.load('images/system/warning_login.png')
-        self.show_warning = False
+        self.image_warning = None
 
     def render(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), self.ramka, 1)
-        if self.show_warning == True:
+        if self.image_warning is not None:
             d = 10
             screen.blit(self.image_warning, (self.ramka.x, self.ramka.bottom + d))
         super().render(screen)
 
     def updated(self, new_text):
         new_text = new_text.strip()
-        self.show_warning = new_text.lower() in ['гость', 'guest', '']
+        if new_text.lower() == '':
+            self.image_warning = pygame.image.load('images/system/warning_empty_login.png')
+        elif new_text.lower() == 'гость':
+            self.image_warning = pygame.image.load('images/system/warning_guest_login.png')
+        else:
+            self.image_warning = None
         # выводим предупреждение
         self.start_window.updated(new_text)
 

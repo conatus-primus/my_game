@@ -88,39 +88,39 @@
     <path
        style="fill:none;stroke:#000000;stroke-width:7.55905512;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
        d="M 304.64936,333.68143 1.2055734,1.131018"
-       id="path11"
+       id="path1_1"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:7.55905512;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
        d="M 353.79592,273.20516 252.81426,0.8626346"
-       id="path12"
+       id="path1_2"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:7.55905512;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
        d="M 0.50847454,227.28814 218.13559,477.45763"
-       id="path32"
+       id="path3_2"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:7.55905512;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
        d="M -1.3460524e-8,455.08475 209.49153,573.55932"
-       id="path31"
+       id="path3_1"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:7.55905512;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
        d="M 587.28814,266.44068 653.89831,-0.50847458"
-       id="path21" />
+       id="path2_1" />
     <path
        style="fill:none;stroke:#000000;stroke-width:7.55905512;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
        d="M 637.11864,300 898.47458,37.627119"
-       id="path22" />
+       id="path2_2" />
     <path
        style="fill:none;stroke:#000000;stroke-width:7.55905512;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
        d="M 645.02521,483.94868 900.66229,234.42387"
-       id="path41"
+       id="path4_1"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:7.55905512;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
        d="M 658.3284,545.07146 900.30274,460.93774"
-       id="path42" />
+       id="path4_2" />
   </g>
 </svg>

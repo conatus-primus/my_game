@@ -63,10 +63,10 @@ class EditText:
                 #
                 if self.event_object is not None:
                     self.event_object.updated(self.text_edit)
+                    # смотрим может мы нажали сразу на начало игры тогда надо это окно убратьy
                     ret = self.event_object.onClick((mouse[0], mouse[1]))
                     if self.event_object.onClick((mouse[0], mouse[1])) == True:
                         dispatcher.game.start = True
-                        print(dispatcher.game.start)
 
         if self.input_rect.collidepoint(mouse[0], mouse[1]) and click[0]:
             # начинаем редактировать
