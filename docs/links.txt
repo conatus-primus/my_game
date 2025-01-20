@@ -24,3 +24,8 @@ Pynsource - UML for Python : https://pynsource.com/index.html
 Смешение цвета в картинке : https://www.reddit.com/r/pygame/comments/nncr4v/is_there_some_tutorial_on_all_the_blend_xxx_flags/?rdt=53252
 
 Пример вводе текста : https://www.youtube.com/watch?v=75m44JFR198
+
+Рисование с маской : http://www.codingwithruss.com/pygame/how-to-use-pygame-masks-for-pixel-perfect-collision/
+
+Как делать контроль столкновений : https://proproprogs.ru/modules/kak-delat-kontrol-stolknoveniy
+Стрелялка с Pygame №3: столкновения и стрельба : https://pythonru.com/primery/streljalka-s-pygame-3-stolknovenija-i-strelba

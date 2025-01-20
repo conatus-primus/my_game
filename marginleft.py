@@ -26,7 +26,7 @@ class MarginLeft(Block):
         dH = 10
 
         font = pygame.font.Font(None, 26)
-        text = font.render(f'{dispatcher.game.session.money} кредитов', True, (0, 0, 0))
+        text = font.render(f'{dispatcher.session.money} кредитов', True, (0, 0, 0))
         self.surface.blit(text, ((self.width - text.get_width()) / 2, dY))
         dY += text.get_height() + dH
 
@@ -47,7 +47,7 @@ class MarginLeft(Block):
 
             self.surface.blit(b.surface, b.offset)
             writeText = f'{self.amuletHandles[i].name}'
-            if self.amuletHandles[i].prix > dispatcher.game.session.money:
+            if self.amuletHandles[i].prix > dispatcher.session.money:
                 writeText += (' (не доступно)')
 
             text1 = font.render(writeText, True, (0, 0, 0))
@@ -107,7 +107,7 @@ class MarginLeft(Block):
                                            (dX, i * (imageButton.get_height() + dY)))
             button.check(False)
             button.setEnable(False)
-            if a.prix <= dispatcher.game.session.money:
+            if a.prix <= dispatcher.session.money:
                 button.setEnable(True)
             self.amuletButton.append(button)
 

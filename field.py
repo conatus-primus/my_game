@@ -26,13 +26,13 @@ class Field(Block):
         self.vectorMap.load()
 
         # обработка статики в карте (фон + дырки + направляющие)
-        self.staticMap = StaticMap(map_number, self.game.session)
+        self.staticMap = StaticMap(map_number)
         self.staticMap.load()
 
         # установить выбранный уровень
-        self.location.setLevelID(self.game.session.currentLevelID)
+        self.location.setLevelID(dispatcher.session.currentLevelID)
         # установить текущую дырку
-        self.location.setHoleID(self.game.session.currentHoleID)
+        self.location.setHoleID(dispatcher.session.currentHoleID)
         # устанавливаем в векторную карту описание текущего уровня
         self.vectorMap.setCurrentLevelContent(self.location.currentLevelContent())
 
@@ -76,7 +76,7 @@ class Field(Block):
         return False
 
     def update(self, sender):
-        self.staticMap.setBrightness(self.game.session.brightness)
+        self.staticMap.setBrightness(dispatcher.session.brightness)
         for a in self.amulets:
             a.update()
 
@@ -124,7 +124,7 @@ class Field(Block):
 
 
 class StaticMap:
-    def __init__(self, map_number, session):
+    def __init__(self, map_number):
         # грузим фон
         self.path = CURRENT_DIRECTORY + '/maps/' + str(map_number) + '.png'
         # базовый фон
@@ -132,7 +132,7 @@ class StaticMap:
         # фон с яркостью
         self.brightenImage = pygame.image.load(self.path)
         # ставим яркость по умолчанию
-        self.brightness = session.brightness
+        self.brightness = dispatcher.session.brightness
         self.setBrightness(self.brightness)
         self.image_test = pygame.image.load(CURRENT_DIRECTORY + '/images/nuage.png')
 

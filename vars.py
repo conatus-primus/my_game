@@ -2,6 +2,7 @@
 import os
 import time
 import pygame
+import configparser
 
 from logger import logger
 
@@ -13,7 +14,7 @@ WIDTH_MARGIN = 250
 # высота чердака
 HEIGHT_HEADER = 50
 # высота подвала
-HEIGHT_FOOTER = 50
+HEIGHT_FOOTER = 70
 # полные размеры игрового поля
 WIDTH_GAME = WIDTH_MAP + 2 * WIDTH_MARGIN
 HEIGHT_GAME = HEIGHT_MAP + HEIGHT_HEADER + HEIGHT_FOOTER
@@ -100,11 +101,105 @@ def OVERALL_CONTOUR(coords, h):
     return ret2
 
 
+class AmuletHandler:
+    def __init__(self):
+        self.id = None
+        self.fileName = None
+        self.name = None
+        self.prix = None
+        self.life = None
+
+
+class Sounds:
+    def __init__(self):
+        self.sGlass = pygame.mixer.Sound('sounds/glass1.ogg')
+        self.sVgux = pygame.mixer.Sound('sounds/bruit_silence.ogg')
+        pygame.mixer.music.load("sounds/fon.mp3")
+
+
+class Session:
+    def __init__(self):
+        self.path = 'data/system.ini'
+
+        self.brightness = 0
+        # TODO задать кривой номер и нормально показать ошибку
+        self.map_number = 101
+        self.currentHoleID = 'path1'
+        self.currentLevelID = 'level1_var1'
+        self.soundsActive = False
+        self.chansonActive = False
+        self.volumeLevel = 0.1
+        self.money = 80
+        self.user = ''
+
+    def read(self):
+        section = 'start'
+
+        # считываем текущего пользователя
+        config = configparser.ConfigParser()
+        config.read(self.path, 'utf-8')
+        if section in config:
+            if 'user' in config[section]:
+                self.user = config[section]['user'].strip()
+
+        if self.user == '':
+            self.user = 'guest'
+
+        # пользовательские настройки
+        config.read('users/' + self.user + '.ini', 'utf-8')
+
+        if section in config:
+            if 'map' in config[section]:
+                self.map_number = int(config[section]['map'])
+            if 'level' in config[section]:
+                self.currentLevelID = config[section]['level']
+            if 'brightness' in config[section]:
+                self.brightness = int(config[section]['brightness'])
+                if self.brightness >= len(BRIGHTEN):
+                    self.brightness = len(BRIGHTEN) - 1
+            if 'soundsActive' in config[section]:
+                self.soundsActive = True if config[section]['soundsActive'] == '1' else False
+            if 'chansonActive' in config[section]:
+                self.chansonActive = True if config[section]['chansonActive'] == '1' else False
+            if 'volumeLevel' in config[section]:
+                self.volumeLevel = float(config[section]['volumeLevel'])
+            if 'money' in config[section]:
+                self.money = int(config[section]['money'])
+
+    def write(self):
+        section = 'start'
+
+        # записываем имя текущего пользователя
+        with open(self.path, 'w', encoding='utf-8') as f:
+            config = configparser.ConfigParser()
+            if section not in config:
+                config[section] = {}
+            config[section]['user'] = '' if self.user == 'guest' else self.user
+            config.write(f)
+
+        # формируем файл пользовательских настроек
+        config = configparser.ConfigParser()
+        config[section] = {}
+        config[section]['map'] = str(self.map_number)
+        config[section]['level'] = self.currentLevelID
+        config[section]['brightness'] = str(self.brightness)
+        config[section]['soundsActive'] = '1' if self.soundsActive == True else '0'
+        config[section]['chansonActive'] = '1' if self.chansonActive == True else '0'
+        config[section]['volumeLevel'] = str(self.volumeLevel)
+        config[section]['money'] = str(self.money)
+
+        with open('users/' + self.user + '.ini', 'w', encoding='utf-8') as f:
+            config.write(f)
+
+
 class Dispatcher:
     def __init__(self):
         self.game = None
+        self.session = Session()
 
-    def load(self):
+    def load(self, game):
+        self.game = game
+        self.session.read()
         # запускаем общий таймер для на 1 сек постоянно
         pygame.time.set_timer(TIMER_EVENT_ONE_SEC, 500)
 
@@ -117,17 +212,3 @@ class Dispatcher:
 
 
 dispatcher = Dispatcher()
-
-
-class AmuletHandler:
-    def __init__(self):
-        self.id = None
-        self.fileName = None
-        self.name = None
-        self.prix = None
-        self.life = None
-
-class Sounds:
-    def __init__(self):
-        self.sGlass = pygame.mixer.Sound('sounds/glass1.ogg')
-        self.sVgux = pygame.mixer.Sound('sounds/bruit_silence.ogg')

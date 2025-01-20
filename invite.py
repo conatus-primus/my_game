@@ -2,6 +2,7 @@
 import pygame
 from vars import *
 from svgparser import VectorizerPictures
+from py.edit import EditText
 
 
 class Invite(VectorizerPictures):
@@ -67,3 +68,39 @@ class Invite(VectorizerPictures):
         offset_x, offset_y = self.offset
         l, t, w, h = self.rectText
         return l <= x - offset_x <= l + w and t <= y - offset_y <= t + h
+
+
+class Login(EditText):
+    def __init__(self, x, y):
+        super().__init__(x, y, 50, 10, pygame.Color(0,0,0), FON_COLOR_DARK)
+
+
+class Start:
+    def __init__(self):
+        # super().__init__('vect_images/start.svg')
+        self.imageSynopsis = pygame.image.load('images/system/synopsis.png')
+        self.imageWindow2 = pygame.image.load('images/system/window2.png')
+        self.loginPos = None
+        self.login = None
+
+    def load(self):
+        self.login = Login(150, 700)
+
+    def render(self, screen, tick):
+        screen.fill(FON_COLOR)
+        pygame.draw.rect(screen, FON_COLOR_DARK, (0, 0, WIDTH_GAME, HEIGHT_HEADER))
+        pygame.draw.rect(screen, FON_COLOR_DARK, (0, HEIGHT_GAME - HEIGHT_FOOTER, WIDTH_GAME, HEIGHT_FOOTER))
+
+        D = HEIGHT_HEADER // 2
+        screen.blit(self.imageSynopsis, ((WIDTH_GAME - self.imageSynopsis.get_width()) // 2, HEIGHT_HEADER + D))
+        screen.blit(self.imageWindow2, (D, HEIGHT_HEADER + D))
+        screen.blit(self.imageWindow2, (WIDTH_GAME - D - self.imageWindow2.get_width(),
+                                        HEIGHT_GAME - HEIGHT_FOOTER - D - self.imageWindow2.get_height()))
+
+        self.login.render(screen)
+
+    def onClick(self, pos):
+        if pos[0] > 800:
+            return True
+        else:
+            return False

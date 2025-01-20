@@ -22,8 +22,8 @@ class MarginRight(Block):
         self.buttonChanson = DrawnCheckButton(ButtonID.ID_BUTTON_CHANSON, 'chanson', self, (100, 70))
 
     def load(self, session):
-        self.buttonSound.check(self.game.session.soundsActive)
-        self.buttonChanson.check(self.game.session.chansonActive)
+        self.buttonSound.check(dispatcher.session.soundsActive)
+        self.buttonChanson.check(dispatcher.session.chansonActive)
 
     def render(self):
         pygame.draw.rect(self.surface, FON_COLOR, (0, 0, self.width, self.height))
@@ -58,16 +58,16 @@ class MarginRight(Block):
         bNeedUpdate = False
         if buttonID == ButtonID.ID_BUTTON_SOUND:
             bNeedUpdate = True
-            self.game.session.soundsActive = bChecked
-            v = self.game.session.volumeLevel - 0.1
+            dispatcher.session.soundsActive = bChecked
+            v = dispatcher.session.volumeLevel - 0.1
             if v <= 0:
                 v = 1
             pygame.mixer.music.set_volume(v)
-            self.game.session.volumeLevel = v
+            dispatcher.session.volumeLevel = v
 
         if buttonID == ButtonID.ID_BUTTON_CHANSON:
             bNeedUpdate = True
-            self.game.session.chansonActive = bChecked
+            dispatcher.session.chansonActive = bChecked
 
         print(f'button {buttonID} : check={bChecked}')
         if bNeedUpdate:
@@ -92,9 +92,9 @@ class BrightPanel:
             imageSquare.fill(brightColor, special_flags=pygame.BLEND_RGB_ADD)
             self.surface.blit(imageSquare, (i * self.w, 0))
 
-        if self.block.game.session.brightness < len(BRIGHTEN):
+        if dispatcher.session.brightness < len(BRIGHTEN):
             D = 2
-            brightRect = (self.block.game.session.brightness * self.w + D, D, self.w - 2 * D, self.h - 2 * D)
+            brightRect = (dispatcher.session.brightness * self.w + D, D, self.w - 2 * D, self.h - 2 * D)
             pygame.draw.rect(self.surface, pygame.Color('white'), brightRect, 1)
 
     # клик мыши
@@ -102,7 +102,7 @@ class BrightPanel:
         x, y = pos
         if 0 <= x < len(BRIGHTEN) * self.w and 0 <= y < self.h:
             # поменяли атрибут в сессии
-            self.block.game.session.brightness = int(x // self.w)
+            dispatcher.session.brightness = int(x // self.w)
             #  сообщаем всем что было изменение
             dispatcher.needUpdate(self)
 
