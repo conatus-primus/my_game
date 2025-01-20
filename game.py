@@ -14,6 +14,7 @@ class Game:
         self.field = None
         # игровой блок и смещение блока относительно всего игрового поля
         self.block = None
+        self.start = False
 
     def load(self):
         self.field = Field(self)

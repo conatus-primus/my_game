@@ -71,10 +71,10 @@ if __name__ == '__main__':
                 if runList is not None:
                     if runList[0].onClick(event.pos):
 
+                        # ---------------------------------------------
                         runList.pop(0)
                         if len(runList) == 0:
                             runList = None
-                            dispatcher.session.user = 'inna'
                             # TODO посмотреть внимательное еще раз - определиться, где перехватывать исключения при загрузке
                             try:
                                 game.load()
@@ -83,10 +83,8 @@ if __name__ == '__main__':
                                 messageError = Message(str(e))
                         else:
                             runList[0].load()
-
-
-
                         sounds.sVgux.play()
+                        # ---------------------------------------------
 
                 elif game is not None:
                     game.onClick(event.pos)
@@ -96,8 +94,24 @@ if __name__ == '__main__':
 
         tick = clock.tick(FPS)
 
+
         if runList is not None:
             runList[0].render(screen, tick)
+
+            # ---------------------------------------------
+            if game is not None and game.start == True:
+                # некрасиво конечно но как смогли...
+                game.start = False
+                runList = None
+                # TODO посмотреть внимательное еще раз - определиться, где перехватывать исключения при загрузке
+                try:
+                    game.load()
+                except Exception as e:
+                    LOG.write(str(e))
+                    messageError = Message(str(e))
+                sounds.sVgux.play()
+            # ---------------------------------------------
+
         else:
             # TODO вынести в константы
             screen.fill((240, 155, 89))

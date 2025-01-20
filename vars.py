@@ -14,7 +14,7 @@ WIDTH_MARGIN = 250
 # высота чердака
 HEIGHT_HEADER = 50
 # высота подвала
-HEIGHT_FOOTER = 70
+HEIGHT_FOOTER = 50
 # полные размеры игрового поля
 WIDTH_GAME = WIDTH_MAP + 2 * WIDTH_MARGIN
 HEIGHT_GAME = HEIGHT_MAP + HEIGHT_HEADER + HEIGHT_FOOTER
@@ -143,7 +143,7 @@ class Session:
                 self.user = config[section]['user'].strip()
 
         if self.user == '':
-            self.user = 'guest'
+            self.user = 'GUEST'
 
         # пользовательские настройки
         config.read('users/' + self.user + '.ini', 'utf-8')
@@ -174,7 +174,7 @@ class Session:
             config = configparser.ConfigParser()
             if section not in config:
                 config[section] = {}
-            config[section]['user'] = '' if self.user == 'guest' else self.user
+            config[section]['user'] = '' if self.user.lower() in ['гость'] else self.user
             config.write(f)
 
         # формируем файл пользовательских настроек
