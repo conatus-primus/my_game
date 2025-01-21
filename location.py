@@ -91,4 +91,6 @@ class Location:
     def currentLevelContent(self):
         return ['path1', 'path1_1', 'path1_2', 'path2', 'path2_1', 'path2_2', 'path3', 'path3_1', 'path3_2', 'path4',
                 'path4_1',
-                'path4_2', 'path5', 'path5_1', 'path5_2']
+                'path4_2', 'path5', 'path5_1', 'path5_2',
+                'path6', 'path6_1', 'path7', 'path7_1',
+                ]
