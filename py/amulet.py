@@ -1,7 +1,7 @@
-import pygame
 from vars import *
 import configparser
 import enum
+from py.mob import Mob
 
 
 class AmuletState(enum.Enum):
@@ -76,8 +76,10 @@ class AmuletSprite(pygame.sprite.Sprite):
             for i, pen in enumerate(self.pens):
                 color, h = pen
                 for point in self.contour:
-                    pygame.draw.circle(surface, color, point, h // 2, h // 2)
-                pygame.draw.lines(surface, color, True, self.contour, h)
+                    pygame.draw.circle(surface, color, point, (h + 2) // 2, (h + 2) // 2)
+                # неожиданный эффект если рамку не рисовать а оставить только узлы
+                # но выглядит неплохо, оставим пока так
+                # pygame.draw.lines(surface, color, True, self.contour, h)
 
 
 # базовый класс для поддержки амулетов
@@ -203,11 +205,18 @@ class AmuletPassive(Amulet):
                 self.rules.append((holeID, intervals[0], intervals[0]))
 
         self.startTime = None
+        self.mob = None
+        # координаты центров для плавного перемещения
+        self.centre_hole = dict()
 
     def start(self):
         self.startTime = time.time()
         newActiveHoleID, newSampleInterval, _ = self.rules[0]
         self.rules[0] = newActiveHoleID, newSampleInterval, self.startTime
+
+        if self.mob is None:
+            self.mob = Mob(self, 100, (0, 0), (500, 500), 'images/amulets/amethyst.png')
+            self.mob.set_start()
 
     def stop(self):
         pass
@@ -259,3 +268,12 @@ class AmuletPassive(Amulet):
 
     def load(self, vMapHoles):
         super().load(vMapHoles)
+        # координаты центров для плавного перемещения
+        for hole in vMapHoles:
+            if hole.id in self.listHolesID:
+                self.centre_hole[hole.id] = hole.centre_hole
+        print(self.centre_hole)
+
+    def render(self, surface):
+        super().render(surface)
+        self.mob.render(surface)

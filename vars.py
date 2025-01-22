@@ -43,13 +43,13 @@ def dist2(p1, p2):
 
 
 # найти точку в контуре, ближайшую к заданной точке
-def findeClosedPoint(anglePoint, coords):
-    minPoint = coords[0][0], coords[0][1], dist2(anglePoint, coords[0])
+def find_closed_point(angle_point, coords):
+    min_point = coords[0][0], coords[0][1], dist2(angle_point, coords[0])
     for x, y in coords:
-        d = dist2(anglePoint, (x, y))
-        if d < minPoint[2]:
-            minPoint = x, y, d
-    return minPoint
+        d = dist2(angle_point, (x, y))
+        if d < min_point[2]:
+            min_point = x, y, d
+    return min_point
 
 
 # получить огибающий прямоугольник
@@ -59,22 +59,22 @@ def OVERALL_RECT(coords):
     if coords is None or len(coords) == 0:
         return None
 
-    l = r = coords[0][0]
+    left = r = coords[0][0]
     t = b = coords[0][1]
     for x, y in coords:
-        l = min(x, l)
+        left = min(x, left)
         r = max(x, r)
         t = min(y, t)
         b = max(y, b)
-    return pygame.Rect(l, t, r - l, b - t)
+    return pygame.Rect(left, t, r - left, b - t)
 
 
 # построить огибающий контур для замкнутого контура прямоугольного вида
 def OVERALL_CONTOUR(coords, h):
     rect = OVERALL_RECT(coords)
 
-    ret = [findeClosedPoint(rect.topleft, coords), findeClosedPoint(rect.topright, coords),
-           findeClosedPoint(rect.bottomright, coords), findeClosedPoint(rect.bottomleft, coords)]
+    ret = [find_closed_point(rect.topleft, coords), find_closed_point(rect.topright, coords),
+           find_closed_point(rect.bottomright, coords), find_closed_point(rect.bottomleft, coords)]
 
     w = (2 * h ** 2) ** 0.5 * 0.55
 
@@ -183,8 +183,8 @@ class Session:
         config[section]['map'] = str(self.map_number)
         config[section]['level'] = self.currentLevelID
         config[section]['brightness'] = str(self.brightness)
-        config[section]['soundsActive'] = '1' if self.soundsActive == True else '0'
-        config[section]['chansonActive'] = '1' if self.chansonActive == True else '0'
+        config[section]['soundsActive'] = '1' if self.soundsActive is True else '0'
+        config[section]['chansonActive'] = '1' if self.chansonActive is True else '0'
         config[section]['volumeLevel'] = str(self.volumeLevel)
         config[section]['money'] = str(self.money)
 
@@ -196,6 +196,8 @@ class Dispatcher:
     def __init__(self):
         self.game = None
         self.session = Session()
+        # размер текущего тика
+        self.tick = 0
 
     def load(self, game):
         self.game = game
