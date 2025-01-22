@@ -25,13 +25,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="1.3906434"
-     inkscape:cx="425.70224"
-     inkscape:cy="449.07272"
+     inkscape:zoom="2.7812868"
+     inkscape:cx="323.23168"
+     inkscape:cy="397.83743"
      inkscape:window-width="1920"
-     inkscape:window-height="1129"
-     inkscape:window-x="1912"
-     inkscape:window-y="-124"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="g1"
      showgrid="false" />
@@ -96,8 +96,9 @@
        id="path5" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 669.15253,600.50846 230.33898,76.27119"
-       id="path5_1" />
+       d="m 667.11863,594.15253 232.37288,82.62712"
+       id="path5_1"
+       sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:40px;line-height:1.25;font-family:sans-serif;fill:#ff0000"
@@ -152,5 +153,25 @@
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 504.08323,263.90663 703.27161,1.4381833"
        id="path2_1" />
+    <path
+       style="fill:#ff0000;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 245.539,357.75857 49.32203,-0.25424"
+       id="strip1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 448.13308,369.64603 71.69491,0.50848"
+       id="strip2" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 255.63932,564.62796 66.35593,-0.76272"
+       id="strip3" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 446.06614,554.98501 h 76.27118"
+       id="strip4" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 608.07387,639.69713 55.16949,-3.05085"
+       id="strip5" />
   </g>
 </svg>

@@ -17,20 +17,22 @@ class Mob(pygame.sprite.Sprite):
         self.image = self.load_image(mob_path)
         self.rect = self.image.get_rect()
         self.vx, self.vy = self.__get_components(velocity, pos_start, pos_stop)
+        self.velocity = velocity
         self.start = False
         self.tick = 0
 
         x, y = pos_start
         self.rect.left = x - self.rect.width // 2
         self.rect.top = y - self.rect.height // 2
+        self.dx = self.dy = 0
 
     def __get_components(self, velocity, pos_start, pos_stop):
-        dX, dy = pos_stop[0] - pos_start[0], pos_stop[1] - pos_start[1]
+        dx, dy = pos_stop[0] - pos_start[0], pos_stop[1] - pos_start[1]
         dist = dist2(pos_start, pos_stop) ** 0.5
         if dist == 0:
             return 0, 0
         else:
-            return velocity * dX / dist, velocity * dy / dist
+            return velocity * dx / dist, velocity * dy / dist
 
     def load_image(self, fullname):
         if not os.path.isfile(fullname):
@@ -47,8 +49,10 @@ class Mob(pygame.sprite.Sprite):
             return
 
         x_center, y_center = self.rect.left + self.rect.width // 2, self.rect.top + self.rect.height // 2
-
+        # смотрим попадание в центр
         new_x, new_y = x_center + self.vx * dispatcher.tick / 1000, y_center + self.vy * dispatcher.tick / 1000
+
+        # смотрим попадание в центр
         d = 3
         temp_rect = pygame.Rect(new_x - d, new_y, 2 * d, 2 * d)
         if temp_rect.collidepoint(self.pos_stop):
@@ -58,9 +62,35 @@ class Mob(pygame.sprite.Sprite):
             x, y = self.pos_stop
             self.rect.left = x - self.rect.width // 2
             self.rect.top = y - self.rect.height // 2
+
         else:
             # еще плывем
-            self.rect = self.rect.move((self.vx * dispatcher.tick / 1000, self.vy * dispatcher.tick / 1000))
+            dx, dy = self.vx * dispatcher.tick / 1000, self.vy * dispatcher.tick / 1000
+            new_dx, new_dy = self.dx + dx, self.dy + dy
+
+            # TODO закинуть после отлкдаки в отдельную функцию
+            delta = 0.5
+            if abs(new_dx) < 1:
+                # накапливаем изменение
+                self.dx = new_dx
+                dx = 0
+            else:
+                self.dx = new_dx
+                dx = int(self.dx + delta)
+                self.dx = new_dx - dx
+
+            if abs(new_dy) < 1:
+                # накапливаем изменение
+                self.dy = new_dy
+                dy = 0
+            else:
+                self.dy = new_dy
+                dy = int(self.dy + delta)
+                self.dy = new_dy - dy
+
+            # подрулим направление скорости из-за потери точности
+            self.rect = self.rect.move((dx, dy))
+            self.vx, self.vy = self.__get_components(self.velocity, self.rect.center, self.pos_stop)
 
     def render(self, screen):
         self.update()

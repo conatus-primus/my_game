@@ -36,6 +36,8 @@ LOG = logger()
 # событие таймера
 TIMER_EVENT_ONE_SEC = pygame.USEREVENT + 1
 
+# время показа пассивного амулета в одной дырке
+SHOW_TIME_IN_HOLE_SEC = 2
 
 # расстояние между двумя точками
 def dist2(p1, p2):

@@ -23,6 +23,8 @@ class AmuletSprite(pygame.sprite.Sprite):
         self.coords_hole = None
         self.centre = None
         self.contour = None
+        # в процессе переползания в соседнюю дырку в текущей дырке не светим амулет если светили
+        self.extended_state_show = True
 
     def load(self, image, id, coords_hole, centre_hole, color):
         self.image = image
@@ -37,7 +39,6 @@ class AmuletSprite(pygame.sprite.Sprite):
         r, g, b = self.color.r, self.color.g, self.color.b
 
         self.pens = [
-
             (pygame.Color(r * 3 // 15, g * 3 // 15, b * 3 // 15), 9),
             (pygame.Color(r * 7 // 15, g * 7 // 15, b * 7 // 15), 7),
             (pygame.Color(r * 11 // 15, g * 11 // 15, b * 11 // 15), 5),
@@ -60,8 +61,10 @@ class AmuletSprite(pygame.sprite.Sprite):
 
         # сам амулет
         if montrerState == AmuletState.MONTRER_EN_ENTIER:
-            surface.blit(self.image,
-                         (self.centre[0] - self.image.get_width() // 2, self.centre[1] - self.image.get_height() // 2))
+            if self.extended_state_show:
+                surface.blit(self.image,
+                             (self.centre[0] - self.image.get_width() // 2,
+                              self.centre[1] - self.image.get_height() // 2))
 
             for i, pen in enumerate(self.pens):
                 color, h = pen
@@ -70,20 +73,21 @@ class AmuletSprite(pygame.sprite.Sprite):
                 # дырка
                 pygame.draw.lines(surface, color, True, self.coords_hole, h)
 
+        # не будем рисовать обводку - перешли на панели
         # дырка
-        if montrerState == AmuletState.MONTRER_UNE_PARTIE:
-
-            for i, pen in enumerate(self.pens):
-                color, h = pen
-                for point in self.contour:
-                    pygame.draw.circle(surface, color, point, (h + 2) // 2, (h + 2) // 2)
-                # неожиданный эффект если рамку не рисовать а оставить только узлы
-                # но выглядит неплохо, оставим пока так
-                # pygame.draw.lines(surface, color, True, self.contour, h)
+        # if montrerState == AmuletState.MONTRER_UNE_PARTIE:
+        #     for i, pen in enumerate(self.pens):
+        #         color, h = pen
+        #         for point in self.contour:
+        #             pygame.draw.circle(surface, color, point, (h + 2) // 2, (h + 2) // 2)
+        #         pygame.draw.lines(surface, color, True, self.contour, h)
 
 
 # базовый класс для поддержки амулетов
 class Amulet:
+    # минимальное расстояние между точками планки (увязано с размером окружности при отрисовке)
+    strip_max_length = 2 * 11
+
     def __init__(self, amuletName, parent):
         self.parent = parent
         self.location = None
@@ -136,6 +140,31 @@ class Amulet:
     def setMontrerState(self, montrerState):
         self.montrerState = montrerState
 
+    def set_extended_state_show(self, hole_id, state):
+        for a in self.amuletSprites:
+            if a.id == hole_id:
+                a.extended_state_show = state
+
+    def render_last(self, surface):
+        pass
+
+    # рисуем элемент планки в заданном месте
+    def render_strip(self, point, screen):
+        r, g, b = self.color.r, self.color.g, self.color.b
+        pens = [
+            (pygame.Color(128, 128, 128,), 14),
+            (pygame.Color(r * 5 // 15, g * 5 // 15, b * 5 // 15), 13),
+            (pygame.Color(r * 7 // 15, g * 7 // 15, b * 7 // 15), 11),
+            (pygame.Color(r * 9 // 15, g * 9 // 15, b * 9 // 15), 9),
+            (pygame.Color(r * 11 // 15, g * 11 // 15, b * 11 // 15), 7),
+            (pygame.Color(r * 13 // 15, g * 13 // 15, b * 13 // 15), 5),
+            (pygame.Color(r * 15 // 15, g * 15 // 15, b * 15 // 15), 3),
+            (pygame.Color(128, 128, 128, ), 1),
+        ]
+        for i, pen in enumerate(pens):
+            color, h = pen
+            pygame.draw.circle(screen, color, point, (h + 2) // 2, (h + 2) // 2)
+
 
 # пользовательский амулет - управление с клавиатуры
 class AmuletUser(Amulet):
@@ -187,36 +216,31 @@ class AmuletUser(Amulet):
 # потом исчезает на заданное время Т2
 # далее переходит на следующую дырку
 class AmuletPassive(Amulet):
-    def __init__(self, parent, amuletName, listHolesID, intervals):
-        super().__init__(amuletName, parent)
+    def __init__(self, parent, amulet_name, listHolesID, interval):
+        super().__init__(amulet_name, parent)
         # список дырок назначенных для амулета
         self.listHolesID = listHolesID
-        self.intervals = intervals if intervals is not None and len(intervals) == 2 else [5, 1]
-        self.currentInterval = 99999999999
+        self.amulet_name = amulet_name
 
         # разметим показ амулета по дыркам
         self.rules = []
         # задаем правила по которым показываем и прячем амулеты по дыркам
-        if len(listHolesID) == 1:
-            self.rules.append((listHolesID[0], intervals[0], intervals[0]))
-            self.rules.append(('', intervals[1], intervals[0]))
-        else:
-            for holeID in listHolesID:
-                self.rules.append((holeID, intervals[0], intervals[0]))
+        self.listHolesID.append(self.listHolesID[0])
+        for i in range(len(listHolesID) - 1):
+            self.rules.append((listHolesID[i], interval, interval))
+            self.rules.append((listHolesID[i], 0, 0))
 
         self.startTime = None
         self.mob = None
+        self.mob2 = None
         # координаты центров для плавного перемещения
         self.centre_hole = dict()
+        self.velocity = 100
 
     def start(self):
         self.startTime = time.time()
         newActiveHoleID, newSampleInterval, _ = self.rules[0]
         self.rules[0] = newActiveHoleID, newSampleInterval, self.startTime
-
-        if self.mob is None:
-            self.mob = Mob(self, 100, (0, 0), (500, 500), 'images/amulets/amethyst.png')
-            self.mob.set_start()
 
     def stop(self):
         pass
@@ -235,7 +259,7 @@ class AmuletPassive(Amulet):
 
     # таймер на передвижение амулетов
     def onTimer(self, currentTime):
-        # print(f'{self.__class__.__name__}.{__name__} {currentTime}')
+        # print(f'{self.__class__.__name__}.{__name__} {current_time}')
 
         if self.startTime is None:
             return False
@@ -248,19 +272,55 @@ class AmuletPassive(Amulet):
             # оставляем эту дырку
             return False
         else:
-            # двигаемся дальше
-            # первый элемент передвигаем в конец
-            self.rules.append((activeHoleID, sampleInterval, 0))
-            # отсекаем его из начала
-            self.rules = self.rules[1:]
-            # корректируем новый первый - ставим текущее время
-            newActiveHoleID, newSampleInterval, _ = self.rules[0]
-            self.rules[0] = newActiveHoleID, newSampleInterval, currentTime
+            next = False
+
+            if sampleInterval == 0:
+                if self.mob is not None and self.mob.start is False:
+                    self.set_extended_state_show(activeHoleID, True)
+                    self.mob = None
+                    next = True
+            else:
+                # стоим на дырке надо начинать переход
+                next_active_hole_id, next_sample_interval, _ = self.rules[1]
+                next_hole_id, _, _ = self.rules[2]
+                if next_sample_interval == 0:
+
+                    # пускаем моба
+                    if self.mob is not None:
+                        # для текущей дырки возвращаем прежнее состояние
+                        self.set_extended_state_show(activeHoleID, True)
+                        self.mob = None
+
+                    self.mob = Mob(self, self.velocity, self.centre_hole[activeHoleID], self.centre_hole[next_hole_id],
+                                   'images/amulets/' + self.amulet_name)
+                    self.mob.set_start()
+                    self.set_extended_state_show(activeHoleID, False)
+
+                    # двигаемся дальше
+                    # первый элемент передвигаем в конец
+                    self.rules.append((activeHoleID, sampleInterval, 0))
+                    # отсекаем его из начала
+                    self.rules = self.rules[1:]
+                    # корректируем новый первый - ставим текущее время
+                    newActiveHoleID, newSampleInterval, _ = self.rules[0]
+                    self.rules[0] = newActiveHoleID, newSampleInterval, currentTime
+
+            if next:
+                # двигаемся дальше
+                # первый элемент передвигаем в конец
+                self.rules.append((activeHoleID, sampleInterval, 0))
+                # отсекаем его из начала
+                self.rules = self.rules[1:]
+                # корректируем новый первый - ставим текущее время
+                newActiveHoleID, newSampleInterval, _ = self.rules[0]
+                self.rules[0] = newActiveHoleID, newSampleInterval, currentTime
+
             dispatcher.needUpdate(self)
+
             return True
 
     # дырка, чтобы разобраться в порядке отображения когда несколько амулетов стоят на одной дырке
-    def currentHole(self):
+    def currentHole(self) -> tuple:
         if self.startTime is None:
             return None
         activeHoleID, _, startSecs = self.rules[0]
@@ -276,4 +336,7 @@ class AmuletPassive(Amulet):
 
     def render(self, surface):
         super().render(surface)
-        self.mob.render(surface)
+
+    def render_last(self, surface):
+        if self.mob is not None:
+            self.mob.render(surface)

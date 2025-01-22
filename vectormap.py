@@ -2,9 +2,9 @@
 # базируется на разборе svg файла
 # считываются дырки и направлений движения
 # линии движения ориентированы по направлению к своим дырками
-import pygame
+import copy
 from vars import *
-from svgparser import ParserSvgFileDict, ParserSvgString, Gnuplot
+from svgparser import ParserSvgFileDict, ParserSvgString, Gnuplot, VectorizerPictures
 
 
 class Hole:
@@ -96,7 +96,7 @@ class ParserHole(Gnuplot, Hole):
 class ParserMapFile:
     def __init__(self, svg_file):
         self.svg_file = svg_file
-        self.holes = None
+        self.holes: ParserHole = None
 
     # загрузка данных из файла
     def load(self):
@@ -144,8 +144,8 @@ class ParserMapFile:
 # объект с описанием карты
 class RawMap(ParserMapFile):
     def __init__(self, map_number):
-        self.current_svg_file = CURRENT_DIRECTORY + '/maps/' + str(map_number) + '/' + str(map_number) + '.svg'
-        self.current_txt_file = CURRENT_DIRECTORY + '/temp/' + str(map_number) + '.txt'
+        self.current_svg_file = 'maps/' + str(map_number) + '/' + str(map_number) + '.svg'
+        self.current_txt_file = 'temp/' + str(map_number) + '.txt'
         super().__init__(self.current_svg_file)
 
     def load(self):
@@ -166,11 +166,31 @@ class VectorMap:
         self.map_number = map_number
         self.rawMap = RawMap(map_number)
         self.holes = None
+        self.strips = dict()
 
     def load(self):
         if self.rawMap is not None:
             self.rawMap.load()
             self.holes = self.rawMap.holes
+
+        # нда, наблюдаем некую стихийность разработки
+        # наконец, определились...
+        # вводим панели для показа наличия нескольких амулетов на одной дырке
+        # уходим от концепции обводки дырки если на ней несколько амулетов
+        # будем все пассивные амулеты рисовать на панели, расположенной около дырки
+        # панели векторизуются одной линией с идентификатором stripN, где N - номер дырки
+
+        # откроем отдельно еще раз svg и скачаем оттуда наши панели
+        vect_map = VectorizerPictures(self.rawMap.current_svg_file)
+        vect_map.load()
+
+        for hole in self.holes:
+            strip_id = hole.id.replace('path', 'strip')
+            # находим в файле такой идентификатор
+            strip_string = vect_map.lineByID(strip_id)
+            if strip_string is not None:
+                self.strips[hole.id] = copy.deepcopy(ParserSvgString(strip_string).coords)
+        print(self.strips)
 
     def setCurrentLevelContent(self, currentLevelContent=None):
 

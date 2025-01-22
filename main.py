@@ -92,7 +92,7 @@ if __name__ == '__main__':
             if event.type == pygame.KEYDOWN:
                 pressed = True
 
-        tick = clock.tick(FPS)
+        dispatcher.tick = tick = clock.tick(FPS)
 
 
         if runList is not None:

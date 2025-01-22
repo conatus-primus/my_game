@@ -25,13 +25,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="2.4041631"
-     inkscape:cx="728.31998"
-     inkscape:cy="67.175144"
+     inkscape:zoom="1.2020816"
+     inkscape:cx="387.66089"
+     inkscape:cy="384.74927"
      inkscape:window-width="1920"
-     inkscape:window-height="1009"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-height="1129"
+     inkscape:window-x="1912"
+     inkscape:window-y="-124"
      inkscape:window-maximized="1"
      inkscape:current-layer="g1" />
   <g
@@ -200,5 +200,36 @@
        d="m 420.52055,306.13564 43.67425,-1.24783 43.2583,0.20797 -2.91162,137.05393 -38.05898,3.53553 -44.50613,-4.78336 -1.24784,-56.98449 z"
        id="path2"
        sodipodi:nodetypes="cccccccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 261.17646,362.35294 0.58824,92.35293"
+       id="strip1"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 519.99999,318.23529 -2.94118,100"
+       id="strip2"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:#ff6000;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 696.08681,321.01225 14.20729,81.34069"
+       id="strip3"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 213.52941,536.47058 -8.2353,68.82353"
+       id="strip4" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 513.5294,538.23528 0.58824,92.94118"
+       id="strip5" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 702.35293,556.47058 -7.64706,95.29411"
+       id="strip6" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 858.23528,665.29411 -9.41177,94.11764"
+       id="strip7" />
   </g>
 </svg>

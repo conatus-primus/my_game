@@ -1,7 +1,4 @@
 # карта игрового поля
-import pygame
-import copy
-from vars import *
 from block import Block
 from vectormap import VectorMap
 from location import Location
@@ -15,6 +12,9 @@ class Field(Block):
         self.vectorMap = None
         self.location = None
         self.amulets = []
+        self.amuletUser = None
+        # данные для панелей пассивных амулетов
+        self.strips: dict[str, list(Amulet)] = {}
 
     def load(self, map_number):
         # грузим варианты уровней и движения клавиш
@@ -44,13 +44,13 @@ class Field(Block):
         self.amuletUser.setLocation(self.location)
         self.amulets.append(self.amuletUser)
 
-        amuletPassive = AmuletPassive(self, 'ruby.png', ['path2', 'path3'], [2, 0.1])
+        amuletPassive = AmuletPassive(self, 'ruby.png', ['path2', 'path3'], SHOW_TIME_IN_HOLE_SEC)
         # self.amuletPassive = AmuletPassive(self, 'ruby.png', ['path5'], [2, 0.1])
         amuletPassive.load(self.vectorMap.holes)
         amuletPassive.start()
         self.amulets.append(amuletPassive)
 
-        amuletPassive = AmuletPassive(self, 'sapphire.png', ['path5', 'path4'], [2, 0.1])
+        amuletPassive = AmuletPassive(self, 'sapphire.png', ['path2', 'path3', 'path5'], SHOW_TIME_IN_HOLE_SEC)
         amuletPassive.load(self.vectorMap.holes)
         amuletPassive.start()
         self.amulets.append(amuletPassive)
@@ -62,9 +62,14 @@ class Field(Block):
         pygame.draw.rect(self.surface, pygame.Color('blue'), (0, 0, self.width, self.height))
         self.staticMap.render(self.surface)
         self.vectorMap.render(self.surface)
-
+        # рисуем все амулеты
         for a in self.amulets:
             a.render(self.surface)
+        # рисуем переходные состояния
+        for a in self.amulets:
+            a.render_last(self.surface)
+        # рисуем планки если они есть
+        self.render_strips()
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def onPressedKey(self, pressed_keys):
@@ -76,7 +81,7 @@ class Field(Block):
         return False
 
     def update(self, sender):
-        self.staticMap.setBrightness(dispatcher.session.brightness)
+        self.staticMap.set_brightness(dispatcher.session.brightness)
         for a in self.amulets:
             a.update()
 
@@ -88,9 +93,9 @@ class Field(Block):
             return True
         return False
 
-    def onTimer(self, currentTime):
+    def onTimer(self, current_time):
         # пересчитать положение амулетов
-        if any([a.onTimer(currentTime) for a in self.amulets]):
+        if any([a.onTimer(current_time) for a in self.amulets]):
             self.recalcAmuletRelativePosition()
             dispatcher.needUpdate(self)
             return True
@@ -99,19 +104,20 @@ class Field(Block):
     # пересчитать положение амулетов
     def recalcAmuletRelativePosition(self):
         # есть хотя бы один амулет гарантировано
-        holePosition = []
+        hole_position: list[tuple[str, int, Amulet]] = []
         for a in self.amulets:
             res = a.currentHole()
             if res is not None and res[0] != '':
-                holePosition.append(res)
+                hole_position.append(res)
 
         # activeHoleID, startSecs, self
         # слепляем ключ для сортировки время, сдвинутое на 100 плюс номер дырки (номер точно меньше 100)
-        holePosition = sorted(holePosition, key=lambda x: -(int(x[0].replace('path', '')) * 100 + x[1]))
+        hole_position = sorted(hole_position, key=lambda x: -(int(x[0].replace('path', '')) * 100 + x[1]))
         state = AmuletState.MONTRER_EN_ENTIER
 
         pos = dict()
-        for i, item in enumerate(holePosition):
+        self.strips = {}
+        for i, item in enumerate(hole_position):
             activeHoleID, _, amulet = item
             state = pos.get(activeHoleID)
             if state is None:
@@ -121,6 +127,36 @@ class Field(Block):
                 amulet.setMontrerState(state)
                 if state == AmuletState.MONTRER_UNE_PARTIE:
                     pos[activeHoleID] = AmuletState.NE_MONTRER_PAS
+            # заполним данные для отрисовки панелей
+            if activeHoleID not in self.strips.keys():
+                self.strips[activeHoleID] = []
+            self.strips[activeHoleID].append(amulet)
+
+    # рисуем планки если они есть
+    def render_strips(self):
+        for hole_id, list_amulet in self.strips.items():
+            if hole_id in self.vectorMap.strips:
+                coords = self.vectorMap.strips[hole_id]
+                if len(coords) <= 1:
+                    continue
+                if len(list_amulet) <= 1:
+                    continue
+
+                pos_start, pos_stop = coords[0], coords[-1]
+                dx, dy = abs(pos_stop[0] - pos_start[0]), abs(pos_stop[1] - pos_start[1])
+                dist = (dx ** 2 + dy ** 2) ** 0.5
+                if dist == 0:
+                    dx, dy = 0, 0
+                else:
+                    dx, dy = Amulet.strip_max_length * dx / dist, Amulet.strip_max_length * dy / dist
+
+                num = 0
+                for i, a in enumerate(list_amulet):
+                    if a == self.amuletUser:
+                        continue
+                    point = pos_start[0] + num * dx, pos_start[1] + num * dy
+                    a.render_strip(point, self.surface)
+                    num += 1
 
 
 class StaticMap:
@@ -133,19 +169,19 @@ class StaticMap:
         self.brightenImage = pygame.image.load(self.path)
         # ставим яркость по умолчанию
         self.brightness = dispatcher.session.brightness
-        self.setBrightness(self.brightness)
+        self.set_brightness(self.brightness)
         self.image_test = pygame.image.load(CURRENT_DIRECTORY + '/images/nuage.png')
 
     def load(self):
         pass
 
-    def setBrightness(self, brightness):
+    def set_brightness(self, brightness):
         self.brightness = brightness
         if self.brightness >= len(BRIGHTEN):
             self.brightness = 0
-        brightColor = (BRIGHTEN[self.brightness], BRIGHTEN[self.brightness], BRIGHTEN[self.brightness])
+        bright_color = (BRIGHTEN[self.brightness], BRIGHTEN[self.brightness], BRIGHTEN[self.brightness])
         self.brightenImage = pygame.image.load(self.path)
-        self.brightenImage.fill(brightColor, special_flags=pygame.BLEND_RGB_SUB)
+        self.brightenImage.fill(bright_color, special_flags=pygame.BLEND_RGB_SUB)
 
     def render(self, surface):
         # рисуем фон
