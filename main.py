@@ -1,7 +1,4 @@
-import pygame
-import random
 import enum
-from vars import *
 from invite import Invite, Start
 from game import Game
 from message import Message
@@ -75,7 +72,7 @@ if __name__ == '__main__':
                         runList.pop(0)
                         if len(runList) == 0:
                             runList = None
-                            # TODO посмотреть внимательное еще раз - определиться, где перехватывать исключения при загрузке
+                            # TODO посмотреть внимательное - определиться, где перехватывать исключения при загрузке
                             try:
                                 game.load()
                             except Exception as e:
@@ -94,12 +91,11 @@ if __name__ == '__main__':
 
         dispatcher.tick = tick = clock.tick(FPS)
 
-
         if runList is not None:
             runList[0].render(screen, tick)
 
             # ---------------------------------------------
-            if game is not None and game.start == True:
+            if game is not None and game.start is True:
                 # некрасиво конечно но как смогли...
                 game.start = False
                 runList = None
@@ -122,7 +118,7 @@ if __name__ == '__main__':
 
         pygame.display.flip()
 
-        if (pressed):
+        if pressed:
             game.onPressedKey(pygame.key.get_pressed())
 
     dispatcher.session.write()

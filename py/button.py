@@ -1,13 +1,11 @@
 # разнообразные реализации примитивных кнопок
-import pygame
-
 from vars import *
 
 
 class CheckButton:
     def __init__(self, buttonID, parent):
-        self.imagePressed = None
-        self.imagePressedOut = None
+        self.image_pressed = None
+        self.image_pressed_out = None
         self.buttonID = buttonID
         self.parent = parent
         self.image = None
@@ -17,12 +15,12 @@ class CheckButton:
     def render(self):
         self.surface.fill(FON_COLOR)
         if self.checked:
-            self.surface.blit(self.imagePressed, (0, 0))
+            self.surface.blit(self.image_pressed, (0, 0))
         else:
-            self.surface.blit(self.imagePressedOut, (0, 0))
+            self.surface.blit(self.image_pressed_out, (0, 0))
 
-    def check(self, bCheck):
-        self.checked = bCheck
+    def check(self, checked):
+        self.checked = checked
 
     def isChecked(self):
         return self.checked
@@ -30,7 +28,7 @@ class CheckButton:
     # клик мыши
     def onClick(self, pos):
         x, y = pos
-        if 0 <= x < self.imagePressed.get_width() and 0 <= y < self.imagePressed.get_height():
+        if 0 <= x < self.image_pressed.get_width() and 0 <= y < self.image_pressed.get_height():
             # меняем состояние
             self.check(not self.isChecked())
             #  сообщаем всем что было нажатие
@@ -42,46 +40,46 @@ class DrawnCheckButton(CheckButton):
     def __init__(self, buttonID, name, parent, offset):
         super().__init__(buttonID, parent)
         self.offset = offset
-        self.imagePressed = pygame.image.load('images/system/' + name + '_on.png')
-        self.imagePressedOut = pygame.image.load('images/system/' + name + '_off.png')
+        self.image_pressed = pygame.image.load('images/system/' + name + '_on.png')
+        self.image_pressed_out = pygame.image.load('images/system/' + name + '_off.png')
         self.surface = pygame.Surface(
-            (max(self.imagePressed.get_width(), self.imagePressedOut.get_width()),
-             max(self.imagePressed.get_height(), self.imagePressedOut.get_height())))
+            (max(self.image_pressed.get_width(), self.image_pressed_out.get_width()),
+             max(self.image_pressed.get_height(), self.image_pressed_out.get_height())))
 
 
 # нарисованная кнопка с наложением картинки
 # button : (path, name без _on.png/_off.png)
 # image : (pathActive pathDisable)
 class ImageDrawnCheckButton(CheckButton):
-    def __init__(self, buttonID, buttonPath, imagePath, parent, offset):
+    def __init__(self, buttonID, buttonPath, image_path, parent, offset):
         super().__init__(buttonID, parent)
         self.offset = offset
 
-        self.imagePressed = pygame.image.load(buttonPath + '_on.png')
-        self.imagePressedOut = pygame.image.load(buttonPath + '_off.png')
+        self.image_pressed = pygame.image.load(buttonPath + '_on.png')
+        self.image_pressed_out = pygame.image.load(buttonPath + '_off.png')
 
-        self.image = pygame.image.load(imagePath)
-        self.disableImage = pygame.image.load(imagePath.replace('.png', '_gray.png'))
+        self.image = pygame.image.load(image_path)
+        self.disableImage = pygame.image.load(image_path.replace('.png', '_gray.png'))
 
         self.surface = pygame.Surface(
-            (max(self.imagePressed.get_width(), self.imagePressedOut.get_width()),
-             max(self.imagePressed.get_height(), self.imagePressedOut.get_height())))
-        self.imageOffset = (self.surface.get_width() - self.image.get_width()) // 2, (
+            (max(self.image_pressed.get_width(), self.image_pressed_out.get_width()),
+             max(self.image_pressed.get_height(), self.image_pressed_out.get_height())))
+        self.image_offset = (self.surface.get_width() - self.image.get_width()) // 2, (
                 self.surface.get_height() - self.image.get_height()) // 2
 
-        # начальная инициализаци
+        # начальная инициализация
         super().check(False)
         self.enabled = False
 
     def render(self):
         super().render()
         if self.enabled:
-            self.surface.blit(self.image, self.imageOffset)
+            self.surface.blit(self.image, self.image_offset)
         else:
-            self.surface.blit(self.disableImage, self.imageOffset)
+            self.surface.blit(self.disableImage, self.image_offset)
 
-    def setEnable(self, bEnable):
-        self.enabled = bEnable
+    def setEnable(self, enabled):
+        self.enabled = enabled
 
     # клик мыши
     def onClick(self, pos):
@@ -94,12 +92,11 @@ class ImageDrawnCheckButton(CheckButton):
 # button : (path, name без _on.png/_off.png)
 # image : (pathActive pathDisable)
 class ImagePushButton:
-    def __init__(self, buttonID, buttonPath, text, parent, offset):
-
-        self.imageUp = None
-        self.imagePush = None
-        self.imageDisable = None
-        self.buttonID = buttonID
+    def __init__(self, button_id, button_path, text, parent, offset):
+        self.image_up = None
+        self.image_push = None
+        self.image_disable = None
+        self.button_id = button_id
         self.parent = parent
         self.surface = None
         self.enabled = True
@@ -107,11 +104,11 @@ class ImagePushButton:
         self.offset = offset
         self.text = text
 
-        self.imageUp = pygame.image.load(buttonPath + '.png')
-        self.imagePush = pygame.image.load(buttonPath + '_push.png')
-        self.imageDisable = pygame.image.load(buttonPath + '_gray.png')
+        self.image_up = pygame.image.load(button_path + '.png')
+        self.image_push = pygame.image.load(button_path + '_push.png')
+        self.image_disable = pygame.image.load(button_path + '_gray.png')
 
-        self.surface = pygame.Surface((self.imageUp.get_width(), self.imageUp.get_height()))
+        self.surface = pygame.Surface((self.image_up.get_width(), self.image_up.get_height()))
 
     def render(self):
         font = pygame.font.Font(None, 26)
@@ -119,17 +116,17 @@ class ImagePushButton:
 
         if self.enabled:
             if self.pushed:
-                self.surface.blit(self.imagePush, (0, 0))
+                self.surface.blit(self.image_push, (0, 0))
             else:
-                self.surface.blit(self.imageUp, (0, 0))
-            self.buttonText = font.render(self.text, True, (0, 0, 0))
+                self.surface.blit(self.image_up, (0, 0))
+            self.button_text = font.render(self.text, True, (0, 0, 0))
         else:
-            self.surface.blit(self.imageUp, (0, 0))
-            self.buttonText = font.render(self.text, True, pygame.Color(128, 128, 128))
+            self.surface.blit(self.image_up, (0, 0))
+            self.button_text = font.render(self.text, True, pygame.Color(128, 128, 128))
 
-        offsetText = (self.imagePush.get_width() - self.buttonText.get_width()) // 2, (
-                    self.imagePush.get_height() - self.buttonText.get_height()) // 2
-        self.surface.blit(self.buttonText, offsetText)
+        offset_text = (self.image_push.get_width() - self.button_text.get_width()) // 2, (
+                self.image_push.get_height() - self.button_text.get_height()) // 2
+        self.surface.blit(self.button_text, offset_text)
 
     def setEnable(self, bEnable):
         self.enabled = bEnable
@@ -139,22 +136,21 @@ class ImagePushButton:
         if not self.enabled:
             return
 
-        relativePos = event.pos[0] - self.offset[0], event.pos[1] - self.offset[1]
+        relative_pos = event.pos[0] - self.offset[0], event.pos[1] - self.offset[1]
         rect = self.surface.get_rect()
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.surface.get_rect().collidepoint(relativePos[0], relativePos[1]):
+            if self.surface.get_rect().collidepoint(relative_pos[0], relative_pos[1]):
                 self.pushed = True
             else:
                 self.pushed = False
             dispatcher.needUpdate(self)
 
-
         if event.type == pygame.MOUSEBUTTONUP:
-            if self.surface.get_rect().collidepoint(relativePos[0], relativePos[1]):
+            if self.surface.get_rect().collidepoint(relative_pos[0], relative_pos[1]):
                 if self.pushed:
                     self.pushed = False
                     dispatcher.needUpdate(self)
-                    self.parent.onPushedButton(self.buttonID)
+                    self.parent.onPushedButton(self.button_id)
 
             self.pushed = False
 

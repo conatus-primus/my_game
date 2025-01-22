@@ -142,13 +142,14 @@ class Session:
         config.read(self.path, 'utf-8')
         if section in config:
             if 'user' in config[section]:
-                self.user = config[section]['user'].strip()
+                self.user = config[section]['user'].strip().lower()
 
         if self.user == '':
             self.user = 'ГОСТЬ'
 
         # пользовательские настройки
         config.read('users/' + self.user + '.ini', 'utf-8')
+        self.user = self.user.upper()
 
         if section in config:
             if 'map' in config[section]:

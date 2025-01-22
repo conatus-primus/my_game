@@ -2,9 +2,6 @@
 # по дороге моб через заданное количество тиков меняет свой вид
 # моб доходит до заданной точки и там останавливается, если по пути его не убили
 import sys
-
-import pygame
-
 from vars import *
 
 
@@ -14,9 +11,9 @@ class Mob(pygame.sprite.Sprite):
         self.parent = parent
         self.pos_start = pos_start
         self.pos_stop = pos_stop
-        self.image = self.load_image(mob_path)
+        self.image = Mob.load_image(mob_path)
         self.rect = self.image.get_rect()
-        self.vx, self.vy = self.__get_components(velocity, pos_start, pos_stop)
+        self.vx, self.vy = Mob.__get_components(velocity, pos_start, pos_stop)
         self.velocity = velocity
         self.start = False
         self.tick = 0
@@ -26,7 +23,8 @@ class Mob(pygame.sprite.Sprite):
         self.rect.top = y - self.rect.height // 2
         self.dx = self.dy = 0
 
-    def __get_components(self, velocity, pos_start, pos_stop):
+    @staticmethod
+    def __get_components(velocity, pos_start, pos_stop):
         dx, dy = pos_stop[0] - pos_start[0], pos_stop[1] - pos_start[1]
         dist = dist2(pos_start, pos_stop) ** 0.5
         if dist == 0:
@@ -34,7 +32,8 @@ class Mob(pygame.sprite.Sprite):
         else:
             return velocity * dx / dist, velocity * dy / dist
 
-    def load_image(self, fullname):
+    @staticmethod
+    def load_image(fullname):
         if not os.path.isfile(fullname):
             print(f'Файл с изображением {fullname} не найден')
             sys.exit()
@@ -58,7 +57,7 @@ class Mob(pygame.sprite.Sprite):
         if temp_rect.collidepoint(self.pos_stop):
             # приплыли
             self.start = False
-            # четко фиксируем моба в крайней точке
+            # четко фиксируем моб в крайней точке
             x, y = self.pos_stop
             self.rect.left = x - self.rect.width // 2
             self.rect.top = y - self.rect.height // 2
@@ -68,7 +67,7 @@ class Mob(pygame.sprite.Sprite):
             dx, dy = self.vx * dispatcher.tick / 1000, self.vy * dispatcher.tick / 1000
             new_dx, new_dy = self.dx + dx, self.dy + dy
 
-            # TODO закинуть после отлкдаки в отдельную функцию
+            # TODO закинуть после отладки в отдельную функцию
             delta = 0.5
             if abs(new_dx) < 1:
                 # накапливаем изменение
@@ -90,7 +89,7 @@ class Mob(pygame.sprite.Sprite):
 
             # подрулим направление скорости из-за потери точности
             self.rect = self.rect.move((dx, dy))
-            self.vx, self.vy = self.__get_components(self.velocity, self.rect.center, self.pos_stop)
+            self.vx, self.vy = Mob.__get_components(self.velocity, self.rect.center, self.pos_stop)
 
     def render(self, screen):
         self.update()

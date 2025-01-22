@@ -52,15 +52,15 @@ class AmuletSprite(pygame.sprite.Sprite):
     def update(self, currentHoleID):
         self.active = True if currentHoleID == self.id else False
 
-    def render(self, surface, montrerState):
+    def render(self, surface, montrer_state):
         if not self.active:
             return
 
-        if montrerState == AmuletState.NE_MONTRER_PAS:
+        if montrer_state == AmuletState.NE_MONTRER_PAS:
             return
 
         # сам амулет
-        if montrerState == AmuletState.MONTRER_EN_ENTIER:
+        if montrer_state == AmuletState.MONTRER_EN_ENTIER:
             if self.extended_state_show:
                 surface.blit(self.image,
                              (self.centre[0] - self.image.get_width() // 2,
@@ -75,7 +75,7 @@ class AmuletSprite(pygame.sprite.Sprite):
 
         # не будем рисовать обводку - перешли на панели
         # дырка
-        # if montrerState == AmuletState.MONTRER_UNE_PARTIE:
+        # if montrer_state == AmuletState.MONTRER_UNE_PARTIE:
         #     for i, pen in enumerate(self.pens):
         #         color, h = pen
         #         for point in self.contour:
@@ -320,7 +320,7 @@ class AmuletPassive(Amulet):
             return True
 
     # дырка, чтобы разобраться в порядке отображения когда несколько амулетов стоят на одной дырке
-    def currentHole(self) -> tuple:
+    def currentHole(self):
         if self.startTime is None:
             return None
         activeHoleID, _, startSecs = self.rules[0]

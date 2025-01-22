@@ -105,4 +105,3 @@ class BrightPanel:
             dispatcher.session.brightness = int(x // self.w)
             #  сообщаем всем что было изменение
             dispatcher.needUpdate(self)
-

@@ -62,14 +62,18 @@ class Field(Block):
         pygame.draw.rect(self.surface, pygame.Color('blue'), (0, 0, self.width, self.height))
         self.staticMap.render(self.surface)
         self.vectorMap.render(self.surface)
+
         # рисуем все амулеты
         for a in self.amulets:
             a.render(self.surface)
-        # рисуем переходные состояния
-        for a in self.amulets:
-            a.render_last(self.surface)
+
         # рисуем планки если они есть
         self.render_strips()
+
+        # рисуем переходные состояния - они самые последние
+        for a in self.amulets:
+            a.render_last(self.surface)
+
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def onPressedKey(self, pressed_keys):
@@ -136,14 +140,18 @@ class Field(Block):
     def render_strips(self):
         for hole_id, list_amulet in self.strips.items():
             if hole_id in self.vectorMap.strips:
+                # координаты планки
                 coords = self.vectorMap.strips[hole_id]
+
                 if len(coords) <= 1:
                     continue
                 if len(list_amulet) <= 1:
                     continue
 
                 pos_start, pos_stop = coords[0], coords[-1]
-                dx, dy = abs(pos_stop[0] - pos_start[0]), abs(pos_stop[1] - pos_start[1])
+                if pos_start[1] >  pos_stop[1]:
+                    pos_start, pos_stop = pos_stop, pos_start
+                dx, dy = pos_stop[0] - pos_start[0], pos_stop[1] - pos_start[1]
                 dist = (dx ** 2 + dy ** 2) ** 0.5
                 if dist == 0:
                     dx, dy = 0, 0
@@ -152,8 +160,6 @@ class Field(Block):
 
                 num = 0
                 for i, a in enumerate(list_amulet):
-                    if a == self.amuletUser:
-                        continue
                     point = pos_start[0] + num * dx, pos_start[1] + num * dy
                     a.render_strip(point, self.surface)
                     num += 1

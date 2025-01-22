@@ -1,6 +1,4 @@
 # левый блоки игрового поля
-import pygame
-from vars import *
 from py.button import *
 from block import Block
 import configparser
@@ -9,10 +7,10 @@ import configparser
 class MarginLeft(Block):
     def __init__(self, game):
         super().__init__(game, WIDTH_MARGIN, HEIGHT_MAP)
-        self.amuletHandles = None
-        self.amuletButton = None
-        self.bFirstRender = True
-        self.buttonAcheter = None
+        self.amulet_handles = None
+        self.amulet_button = None
+        self.first_render = True
+        self.button_acheter = None
 
     def load(self, map_number):
         self.loadAmulets()
@@ -38,20 +36,20 @@ class MarginLeft(Block):
         # амулеты
         font = pygame.font.Font(None, 18)
 
-        lastOffsetY = 0
-        for i, b in enumerate(self.amuletButton):
+        last_offset_y = 0
+        for i, b in enumerate(self.amulet_button):
             b.render()
             # корректируем положение один раз
-            if self.bFirstRender:
+            if self.first_render:
                 b.offset = b.offset[0], b.offset[1] + dY
 
             self.surface.blit(b.surface, b.offset)
-            writeText = f'{self.amuletHandles[i].name}'
-            if self.amuletHandles[i].prix > dispatcher.session.money:
-                writeText += (' (не доступно)')
+            write_text = f'{self.amulet_handles[i].name}'
+            if self.amulet_handles[i].prix > dispatcher.session.money:
+                write_text += (' (не доступно)')
 
-            text1 = font.render(writeText, True, (0, 0, 0))
-            text2 = font.render(f'{self.amuletHandles[i].prix} кредитов', True, (0, 0, 0))
+            text1 = font.render(write_text, True, (0, 0, 0))
+            text2 = font.render(f'{self.amulet_handles[i].prix} кредитов', True, (0, 0, 0))
 
             dH = (b.surface.get_height() - text1.get_height() - text2.get_height()) // 3
 
@@ -60,81 +58,81 @@ class MarginLeft(Block):
             self.surface.blit(text2,
                               (b.offset[0] + b.surface.get_width() + dX,
                                b.offset[1] + dH + text1.get_height() + dH))
-            lastOffsetY = b.offset[1] + b.surface.get_height() + 3 * dH
+            last_offset_y = b.offset[1] + b.surface.get_height() + 3 * dH
 
-        dY = lastOffsetY
+        dY = last_offset_y
 
-        if self.buttonAcheter is None:
-            posButton = (self.width - 120) // 2, dY
-            self.buttonAcheter = ImagePushButton('acheter', 'images/system/button_120x40', 'Забрать', self, posButton)
-            self.buttonAcheter.setEnable(False)
+        if self.button_acheter is None:
+            pos_button = (self.width - 120) // 2, dY
+            self.button_acheter = ImagePushButton('acheter', 'images/system/button_120x40', 'Забрать', self, pos_button)
+            self.button_acheter.setEnable(False)
 
-        self.buttonAcheter.render()
-        self.surface.blit(self.buttonAcheter.surface, self.buttonAcheter.offset)
+        self.button_acheter.render()
+        self.surface.blit(self.button_acheter.surface, self.button_acheter.offset)
 
-        if self.bFirstRender:
-            self.bFirstRender = False
+        if self.first_render:
+            self.first_render = False
 
     # загрузка описания амулетов
     def loadAmulets(self):
 
-        amuletNames = ['diamond.png', 'amethyst.png', 'emerald.png', 'ruby.png', 'topaz.png', 'sapphire.png']
-        self.amuletHandles = []
+        amulet_names = ['diamond.png', 'amethyst.png', 'emerald.png', 'ruby.png', 'topaz.png', 'sapphire.png']
+        self.amulet_handles = []
         config = configparser.ConfigParser()
         config.read('data/amulets.ini', 'utf-8')
-        for amuletName in amuletNames:
-            if amuletName in config:
+        for name in amulet_names:
+            if name in config:
                 amulet = AmuletHandler()
-                amulet.id, amulet.name, amulet.prix, amulet.life = amuletName, config[amuletName]['name'], int(
-                    config[amuletName]['prix']), int(config[amuletName]['life'])
-                amulet.fileName = 'images/amulets/' + amuletName
-                self.amuletHandles.append(amulet)
+                amulet.id, amulet.name, amulet.prix, amulet.life = name, config[name]['name'], int(
+                    config[name]['prix']), int(config[name]['life'])
+                amulet.fileName = 'images/amulets/' + name
+                self.amulet_handles.append(amulet)
         # отсортируем по цене
-        self.amuletHandles = sorted(self.amuletHandles, key=lambda x: x.prix)
+        self.amulet_handles = sorted(self.amulet_handles, key=lambda x: x.prix)
 
         # временно подгрузили, чтобы узнать размеры кнопки
-        imageButton = pygame.image.load('images/system/amulet_on.png')
+        image_button = pygame.image.load('images/system/amulet_on.png')
 
         dX, dY = 15, 15
 
         # создаем кнопки
-        self.amuletButton = []
-        for i, a in enumerate(self.amuletHandles):
+        self.amulet_button = []
+        for i, a in enumerate(self.amulet_handles):
             button = ImageDrawnCheckButton(a.id,
                                            'images/system/amulet',
                                            a.fileName,
                                            self,
-                                           (dX, i * (imageButton.get_height() + dY)))
+                                           (dX, i * (image_button.get_height() + dY)))
             button.check(False)
             button.setEnable(False)
             if a.prix <= dispatcher.session.money:
                 button.setEnable(True)
-            self.amuletButton.append(button)
+            self.amulet_button.append(button)
 
     def onClick(self, pos):
         if not super().isInBlock(pos):
             return False
         x, y = pos
-        for i, b in enumerate(self.amuletButton):
+        for i, b in enumerate(self.amulet_button):
             b.onClick((x - b.offset[0], y - b.offset[1]))
 
-        if self.buttonAcheter is not None:
+        if self.button_acheter is not None:
             e = pygame.event
             e.type = pygame.MOUSEBUTTONDOWN
             e.pos = pos
-            self.buttonAcheter.onClickExtend(e)
+            self.button_acheter.onClickExtend(e)
         return True
 
-    def onPressedButton(self, buttonID, bChecked):
-        bNeedUpdate = False
-        print(f'{self.__class__.__name__} pressed buttonID={buttonID} bChecked={bChecked}')
+    def onPressedButton(self, button_id, checked):
+        need_update = False
+        print(f'{self.__class__.__name__} pressed buttonID={button_id} bChecked={checked}')
 
     def onClickExtend(self, event):
         if not super().isInBlock(event.pos):
             return False
-        if self.buttonAcheter is not None:
-            self.buttonAcheter.onClickExtend(event)
+        if self.button_acheter is not None:
+            self.button_acheter.onClickExtend(event)
 
-    def onPushedButton(self, buttonID):
-        bNeedUpdate = False
-        print(f'{self.__class__.__name__} pushed buttonID={buttonID}')
+    def onPushedButton(self, button_id):
+        need_update = False
+        print(f'{self.__class__.__name__} pushed buttonID={button_id}')
