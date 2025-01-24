@@ -49,7 +49,12 @@ if __name__ == '__main__':
 
     clock = pygame.time.Clock()
 
+    # эмуляция двойного клика мыши (предлагают 0.5 сек между двумя кликами)
+    double_click_time = 0.5
+    click_time = time.time()
+
     running = True
+
     while running:
         pressed = False
         for event in pygame.event.get():
@@ -60,6 +65,12 @@ if __name__ == '__main__':
                 running = False
 
             if event.type == pygame.MOUSEBUTTONUP:
+
+                # эмуляция двойного клика мыши
+                if time.time() - click_time < double_click_time:
+                    print("Double click detected")
+                click_time = time.time()
+
                 if runList is None and game is not None:
                     game.onClickExtend(event)
 
@@ -95,8 +106,11 @@ if __name__ == '__main__':
             runList[0].render(screen, tick)
 
             # ---------------------------------------------
+            # отрабатываем случай когда курсор стоит на логине и нажали на кнопку продолжения
+            # из-за того что логин перехватывает ввод пришлось ввести game.start
+            # флаг меняется в логине и тогда здесь можно отработать переход на игру
+            # некрасиво конечно, но как смогли... надо еще получше осознать все это...
             if game is not None and game.start is True:
-                # некрасиво конечно но как смогли...
                 game.start = False
                 runList = None
                 # TODO посмотреть внимательное еще раз - определиться, где перехватывать исключения при загрузке

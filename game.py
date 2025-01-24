@@ -7,6 +7,7 @@ from marginright import MarginRight
 from field import Field
 from vars import *
 from py.shared import *
+from collection import *
 
 
 class Game:
@@ -14,17 +15,32 @@ class Game:
         self.field = None
         # игровой блок и смещение блока относительно всего игрового поля
         self.block = None
+        # для выхода из логина
         self.start = False
+        self.block_collect = None
+        self.block_game = None
 
     def load(self):
         self.field = Field(self)
+        self.collection = Collection(self)
+
         # игровой блок и смещение блока относительно всего игрового поля
-        self.block = [(self.field, (WIDTH_MARGIN, HEIGHT_HEADER)),
-                      (Header(self), (0, 0)),
-                      (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
-                      (MarginLeft(self), (0, HEIGHT_HEADER)),
-                      (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
-                      ]
+        self.block_game = [(self.field, (WIDTH_MARGIN, HEIGHT_HEADER)),
+                           (Header(self), (0, 0)),
+                           (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                           (MarginLeft(self), (0, HEIGHT_HEADER)),
+                           (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
+                           ]
+
+        self.block_collect = [(self.collection, (WIDTH_MARGIN, HEIGHT_HEADER)),
+                            (Header(self), (0, 0)),
+                            (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                            (MarginLeft(self), (0, HEIGHT_HEADER)),
+                            (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
+                            ]
+
+        # self.block = self.block_game
+        self.block = self.block_collect
 
         for item in self.block:
             obj, _ = item

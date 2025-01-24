@@ -215,5 +215,12 @@ class Dispatcher:
     def onTimer(self):
         self.game.onTimer(time.time())
 
+    @staticmethod
+    def load_image(fullname):
+        if not os.path.isfile(fullname):
+            print(f'Файл с изображением {fullname} не найден')
+            return None
+        image = pygame.image.load(fullname)
+        return image
 
 dispatcher = Dispatcher()

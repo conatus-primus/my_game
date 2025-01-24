@@ -16,6 +16,7 @@ class Mob(pygame.sprite.Sprite):
         self.vx, self.vy = Mob.__get_components(velocity, pos_start, pos_stop)
         self.velocity = velocity
         self.start = False
+
         self.tick = 0
 
         x, y = pos_start
@@ -97,11 +98,14 @@ class Mob(pygame.sprite.Sprite):
 
 
 class ChangedMob(Mob):
-    count_tick = 60
+    count_tick = 20
 
     def __init__(self, parent, velocity, pos_start, pos_stop, mob_path):
-        super().__init__(parent, velocity, pos_start, pos_stop, mob_path + '1')
-        self.image_next = self.load_image(mob_path + '2')
+        super().__init__(parent, velocity, pos_start, pos_stop, mob_path + '1.png')
+        self.image_list = []
+        self.image_list.append(self.image)
+        for i in range(2, 7):
+            self.image_list.append(self.load_image(mob_path + str(i) + '.png'))
         self.tick_change = ChangedMob.count_tick
 
     def set_start(self):
@@ -112,5 +116,14 @@ class ChangedMob(Mob):
 
         if self.tick_change == 0:
             # обновляем изображение
-            self.image_next, self.image = self.image, self.image_next
+            self.image = self.image_list[0]
+            self.image_list.pop(0)
+            self.image_list.append(self.image)
+
+            temp_center = self.rect.center
+            self.rect = self.image.get_rect()
+            self.rect.center = temp_center
+
             self.tick_change = ChangedMob.count_tick
+
+        super().render(screen)

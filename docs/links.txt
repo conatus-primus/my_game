@@ -29,3 +29,5 @@ Pynsource - UML for Python : https://pynsource.com/index.html
 
 Как делать контроль столкновений : https://proproprogs.ru/modules/kak-delat-kontrol-stolknoveniy
 Стрелялка с Pygame №3: столкновения и стрельба : https://pythonru.com/primery/streljalka-s-pygame-3-stolknovenija-i-strelba
+
+Двойной клик : https://gamedevacademy.org/pygame-double-click-tutorial-complete-guide/

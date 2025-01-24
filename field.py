@@ -3,6 +3,7 @@ from block import Block
 from vectormap import VectorMap
 from location import Location
 from py.amulet import *
+from py.mob import *
 
 
 class Field(Block):
@@ -15,8 +16,13 @@ class Field(Block):
         self.amuletUser = None
         # данные для панелей пассивных амулетов
         self.strips: dict[str, list(Amulet)] = {}
+        self.mob = None
 
     def load(self, map_number):
+
+        self.mob = ChangedMob(self, 100, (0,0), (900,900), 'images/mobs/mob7_')
+        self.mob.set_start()
+
         # грузим варианты уровней и движения клавиш
         self.location = Location(map_number)
         self.location.load()
@@ -73,6 +79,8 @@ class Field(Block):
         # рисуем переходные состояния - они самые последние
         for a in self.amulets:
             a.render_last(self.surface)
+
+        self.mob.render(self.surface)
 
 
     # вход - нажатые клавиши pygame.key.get_pressed()
