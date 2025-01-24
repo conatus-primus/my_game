@@ -31,3 +31,6 @@ Pynsource - UML for Python : https://pynsource.com/index.html
 Стрелялка с Pygame №3: столкновения и стрельба : https://pythonru.com/primery/streljalka-s-pygame-3-stolknovenija-i-strelba
 
 Двойной клик : https://gamedevacademy.org/pygame-double-click-tutorial-complete-guide/
+
+Ресурс с мобами : https://ru.freepik.com/vectors/%25D0%25BF%25D1%2580%25D0%25B8%25D0%25B7%25D1%2580%25D0%25B0%25D0%25BA
+Ресурс с мобами : https://www.google.com/search?q=%D0%BF%D0%B8%D0%BA%D1%81%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D0%BF%D1%80%D0%B8%D0%B7%D1%80%D0%B0%D0%BA&udm=2&sa=X&ved=0CCQQtI8BahcKEwjY2MCi4IuLAxUAAAAAHQAAAAAQFg&biw=1902&bih=910&dpr=1#vhid=XBch3sJxGuCkWM&vssid=mosaic

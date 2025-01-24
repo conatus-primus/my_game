@@ -24,7 +24,7 @@ SIZE_GAME = WIDTH_GAME, HEIGHT_GAME
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 # массив яркостей, чтобы регулировать яркость фона
-BRIGHTEN = [0, 40, 55, 66, 77, 88, 99, 110, 121, 135]
+BRIGHTEN = [0, 40, 55, 66, 77, 88, 99, 110, 115, 130, 150, 170]
 
 # цвет заливки всех полей игры
 FON_COLOR = pygame.Color(198, 210, 159)
@@ -38,6 +38,7 @@ TIMER_EVENT_ONE_SEC = pygame.USEREVENT + 1
 
 # время показа пассивного амулета в одной дырке
 SHOW_TIME_IN_HOLE_SEC = 2
+
 
 # расстояние между двумя точками
 def dist2(p1, p2):
@@ -222,5 +223,6 @@ class Dispatcher:
             return None
         image = pygame.image.load(fullname)
         return image
+
 
 dispatcher = Dispatcher()

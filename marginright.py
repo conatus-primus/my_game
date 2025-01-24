@@ -83,13 +83,17 @@ class BrightPanel:
 
     # нарисовать панель яркости с выделенным квадратом текущей яркости
     def render(self):
-        baseColor = pygame.Color("black")
+        baseColor = pygame.Color(FON_COLOR_DARK)
 
         for i in range(len(BRIGHTEN)):
             imageSquare = pygame.Surface([self.w, self.h])
             imageSquare.fill(baseColor)
-            brightColor = (BRIGHTEN[i], BRIGHTEN[i], BRIGHTEN[i])
-            imageSquare.fill(brightColor, special_flags=pygame.BLEND_RGB_ADD)
+            brightColor = (abs(BRIGHTEN[i]), abs(BRIGHTEN[i]), abs(BRIGHTEN[i]))
+            if BRIGHTEN[i] < 0:
+                imageSquare.fill(brightColor, special_flags=pygame.BLEND_RGB_ADD)
+            else:
+                imageSquare.fill(brightColor, special_flags=pygame.BLEND_RGB_SUB)
+
             self.surface.blit(imageSquare, (i * self.w, 0))
 
         if dispatcher.session.brightness < len(BRIGHTEN):

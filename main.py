@@ -52,6 +52,7 @@ if __name__ == '__main__':
     # эмуляция двойного клика мыши (предлагают 0.5 сек между двумя кликами)
     double_click_time = 0.5
     click_time = time.time()
+    click_pos = pygame.mouse.get_pos()
 
     running = True
 
@@ -67,9 +68,13 @@ if __name__ == '__main__':
             if event.type == pygame.MOUSEBUTTONUP:
 
                 # эмуляция двойного клика мыши
-                if time.time() - click_time < double_click_time:
+
+
+
+                if time.time() - click_time < double_click_time and click_pos == pygame.mouse.get_pos():
                     print("Double click detected")
                 click_time = time.time()
+                click_pos = pygame.mouse.get_pos()
 
                 if runList is None and game is not None:
                     game.onClickExtend(event)

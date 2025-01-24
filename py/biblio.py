@@ -201,12 +201,11 @@ class Biblio:
 
         # TODO лучше бы перенести в Biblio
         if self.active_map_index is not None:
-            delta = 10
             left, top = self.map_dscr_list[self.active_map_index].dscr_offset
             w, _ = self.map_dscr_list[self.active_map_index].image_size
             pygame.draw.rect(screen, Biblio.color_ramka,
                              (left - Biblio.margin, top - Biblio.margin, w + 2 * Biblio.margin, w + 2 * Biblio.margin),
-                             Biblio.margin, 2 * Biblio.margin)
+                             int(Biblio.margin * 0.75), 2 * Biblio.margin)
 
     def on_click(self, pos):
         self.active_map_index = None
