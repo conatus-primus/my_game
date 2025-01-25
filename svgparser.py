@@ -2,7 +2,6 @@
 # линии движения ориентированы по направлению к своему окну
 from vars import *
 import xml.etree.ElementTree as ET
-import os
 
 
 # отладочный вывод координат в формате gnuplot
@@ -13,7 +12,8 @@ class Gnuplot:
     def __init__(self):
         pass
 
-    def plot(self, coords):
+    @staticmethod
+    def plot(coords):
         if coords is None:
             return 'Отсутствую координаты'
 
@@ -91,7 +91,9 @@ l - линия от текущего положения к этой точке
 h - горизонтальная линия
 v - вертикальная линия
 '''
-class ParserSvgString(Gnuplot):
+
+
+class ParserSvgString():
     #
     def __init__(self, path):
         self.coords = []
@@ -177,7 +179,7 @@ class ParserSvgString(Gnuplot):
 
     # для печати
     def __str__(self):
-        return self.plot(self.coords)
+        return Gnuplot.plot(self.coords)
 
 
 # получение цифровых примитивов

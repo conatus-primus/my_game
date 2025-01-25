@@ -1,5 +1,4 @@
 # правый блоки игрового поля
-from vars import *
 from py.button import *
 from block import Block
 import enum

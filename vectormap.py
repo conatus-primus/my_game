@@ -23,9 +23,8 @@ class Hole:
 # на входе кортеж ид дырка, координаты дырки строкой, список кортежей направляющих: (ид, координаты строкой)
 # на выходе аттрибуты класса ид дырки, вещественные координаты дырки, вещественные координаты центра дырки
 # и список кортежей неаправляющий (ид, вещественные координаты)
-class ParserHole(Gnuplot, Hole):
+class ParserHole(Hole):
     def __init__(self, string_hole):
-        Gnuplot.__init__(self)
         Hole.__init__(self)
         # сырые данные
         self.string_hole = string_hole
@@ -82,12 +81,12 @@ class ParserHole(Gnuplot, Hole):
     # перекрываем для оладочной печати
     def __str__(self):
         res = []
-        res.append(self.plot(self.centre_hole))
+        res.append(Gnuplot.plot(self.centre_hole))
         res.append(' ')
-        res.append(self.plot(self.coords_hole))
+        res.append(Gnuplot.plot(self.coords_hole))
         res.append(' ')
         for id, one_line in self.lines:
-            res.append(self.plot(one_line))
+            res.append(Gnuplot.plot(one_line))
             res.append(' ')
         return '\n'.join(res)
 

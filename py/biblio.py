@@ -3,6 +3,7 @@ from vars import *
 import glob
 import random
 import copy
+from py.panel import *
 
 
 def load_image(fullname):
@@ -24,6 +25,8 @@ class MapDscr:
         self.dscr_offset = None
         self.image_size = None
         self.surface = None
+        self.stars = ImagePanel(self, pygame.Color('white'))
+        self.levels_panel = ImagePanel(self, pygame.Color('white'))
 
     def load(self) -> bool:
         map_name = os.path.basename(self.filename).split('.')[0]
@@ -96,6 +99,12 @@ class MapDscr:
 
         # грузим картинку - сожмем исходную
         self.image = load_image('maps/' + str(self.map_number) + '.png')
+        self.stars.load('images/system/star_panel.png', 'images/system/star_panel_disable.png', (22, 22),
+                        self.complexity)
+        self.stars.set_enabled_count(self.complexity)
+
+        self.levels_panel.load('images/system/star_panel.png', 'images/system/star_panel_disable.png', (22, 22), 5)
+        self.levels_panel.set_enabled_count(3)
 
         # разбираем файл
         return True
@@ -133,6 +142,11 @@ class MapDscr:
 
         rect_complexity = pygame.Rect(offx, offy + width + Biblio.margin + 5, width, (height - width) // 2)
         pygame.draw.rect(screen, pygame.Color('black'), rect_complexity, 1)
+
+        # screen.blit(self.stars.image_enabled, rect_complexity.topleft)
+
+        self.stars.render(screen, rect_complexity.topleft)
+        self.levels_panel.render(screen, rect_complexity.bottomleft)
 
     def on_click(self, pos):
         print(pos)
