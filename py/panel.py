@@ -1,3 +1,6 @@
+# универсальная панель отображается активные квадраты и пассивные квадраты
+# можно кликать на активные квадраты, по клику выделяется и идет нотификация о выборе
+# можно использовать для показа уровней (3 активных из 5), сложности (без клика), медалей
 from vars import *
 import pygame
 
@@ -42,11 +45,8 @@ class ImagePanel:
             self.width, self.height = max_count * width_cell, height_cell
             self.max_count = max_count
 
-            self.surface = pygame.Surface((self.width, self.height))
-            self.surface = self.surface.convert_alpha()
-            self.surface.fill((0, 0, 0, 0))
-
-
+            # внтури сразу подготовится панель
+            self.set_enabled_count(0)
             self.loaded = True
 
         except Exception as e:
@@ -61,11 +61,29 @@ class ImagePanel:
             self.enabled_count = count
         else:
             self.enabled_count = 0
-        # формируем прямоугольники
-        # self.surface.blit(self.image_enabled, (0, 0, self.enabled_count * self.width, self.height))
-        # self.surface.blit(self.image_disabled,
-        #                   (self.enabled_count * self.width, 0,
-        #                    (self.max_count - self.enabled_count) * self.width, self.height))
+        # пересчитываем вид панели
+        self.update()
+
+    # пересчитываем вид панели
+    def update(self):
+        image_pos = [(self.image_enabled, self.enabled_count, (0, 0)),
+                     (self.image_disabled, self.max_count - self.enabled_count,
+                      (self.enabled_count * self.size_cell[0], 0))
+                     ]
+
+        w, h = self.size_cell
+        self.surface = pygame.Surface((self.width, self.height))
+        self.surface = self.surface.convert_alpha()
+        self.surface.fill((0, 0, 0, 0))
+        pygame.draw.rect(self.surface, self.color_fon, (0, 0, self.width, self.height), 0, 5)
+
+        for x in image_pos:
+            image, count, offset = x
+            surface = pygame.Surface((w * count, h))
+            surface = self.surface.convert_alpha()
+            surface.fill((0, 0, 0, 0))
+            surface.blit(image, (0, 0))
+            self.surface.blit(surface, offset)
 
     def set_active_index(self, index):
         if self.loaded is False:
@@ -79,42 +97,9 @@ class ImagePanel:
 
     # нарисовать панель с выделенным квадратом текущей яркости
     def render(self, screen, offset):
-
-        w, _ = self.size_cell
-
-        self.surface.blit(self.image_enabled, (0, 0))
-        screen.blit(self.surface, offset)
-
-
-        # surface = pygame.Surface((self.enabled_count * w, self.height))
-        # surface = surface.convert_alpha()
-        # surface.fill((0, 0, 0, 0))
-        # surface.blit(self.image_enabled, (0, 0))
-        #
-        # screen.blit(surface, offset)
-
-
-
-        # print(('@@@@@@@', offset[0], offset[1], self.height, self.height))
-        # screen.blit(self.image_enabled, (offset[0], offset[1], self.height, self.height))
-
-
-        if self.loaded is False or self.offset is None:
+        if self.loaded is False:
             return
-
-        #screen.blit(self.image_enabled, offset)
-
-        # w, _ = self.size_cell
-        # screen.blit(self.image_enabled, (offset[0], offset[1], self.enabled_count * w, self.height))
-
-
-        # self.surface.blit(self.image_enabled, (0, 0, self.enabled_count * w, self.height))
-        # screen.blit(self.surface, offset)
-
-        #screen.blit(self.image_enabled, offset)
-        return
-
-        # self.surface.blit(screen, offset)
+        screen.blit(self.surface, offset)
 
     # клик мыши
     def on_click(self, pos):

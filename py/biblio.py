@@ -1,9 +1,14 @@
 # поддержка коллекции картинок
-from vars import *
 import glob
 import random
 import copy
 from py.panel import *
+
+
+class Show:
+    # отступ и ширина фокусной рамки вокруг картинки
+    margin = 8
+    color_ramka = pygame.Color(111, 117, 88)
 
 
 def load_image(fullname):
@@ -16,17 +21,20 @@ def load_image(fullname):
 class MapDscr:
     def __init__(self, filename):
         self.filename = filename
-        self.map_number = None
+        self.map_number : int = None
         self.complexity = None
         self.count_path = None
         self.max_count_holes = None
-        self.levels: dict[int, list] = {}
+        self.levels: list[list] = []
         self.image = None
         self.dscr_offset = None
         self.image_size = None
         self.surface = None
-        self.stars = ImagePanel(self, pygame.Color('white'))
-        self.levels_panel = ImagePanel(self, pygame.Color('white'))
+        self.stars = ImagePanel(self, FON_COLOR)
+        self.image_levels = Dispatcher.load_image('images/system/level_vert.png')
+        # уровни по порядку: количество дырок и список идентификаторов дырок (в начале список пустой)
+        # список заполним когда пользователь начнет играть в этом уровне (или сгенерим или возьмем у пользователя)
+        self.holes_in_level : list[tuple] = []
 
     def load(self) -> bool:
         map_name = os.path.basename(self.filename).split('.')[0]
@@ -34,7 +42,7 @@ class MapDscr:
             self.map_number = int(map_name)
         else:
             return False
-        location_path = CURRENT_DIRECTORY + '/maps/' + map_name + '/location.ini'
+        location_path = 'maps/' + map_name + '/location.ini'
         LOG.write(f'{self.__class__.__name__} {__name__} : разбор {location_path}')
         try:
             file = open(location_path)
@@ -74,21 +82,29 @@ class MapDscr:
                                             config['location']['levels'].split(';')]
                     # добавляем максимальное число - всегда есть уровень с максимальным числом дырок
                     count_holes_in_level.append(self.max_count_holes)
-                    count_holes_in_level = sorted(list(set(count_holes_in_level)), reverse=True)
+                    count_holes_in_level = sorted(list(set(count_holes_in_level)))
 
                     print(count_holes_in_level)
+                    for x in count_holes_in_level:
+                        self.holes_in_level.append((x, []))
 
-                    # максимальная конфигурация по умолчанию вся
-                    self.levels[count_holes_in_level[0]] = list(range(1, count_holes_in_level[0] + 1))
+                    print(self.holes_in_level)
 
-                    for i in range(1, len(count_holes_in_level)):
-                        # исключаем лишние дырки
-                        # идея такая что не добавляем рандомно, а исключаем так проще наверное
-                        count_as_key = count_holes_in_level[i]
-                        prev_combination = self.levels[count_holes_in_level[i - 1]]
-                        self.levels[count_as_key] = self.__generate_combination(count_as_key, prev_combination)
-
-                    print(self.levels)
+                    # # максимальная конфигурация по умолчанию вся
+                    # for _ in range(len(count_holes_in_level)):
+                    #     self.levels.append([])
+                    #
+                    # self.levels[len(count_holes_in_level) - 1] = list(range(1, count_holes_in_level[0] + 1))
+                    #
+                    # for i in range(1, len(count_holes_in_level)):
+                    #     # исключаем лишние дырки
+                    #     # идея такая что не добавляем рандомно, а исключаем так проще наверное
+                    #     append_index = len(count_holes_in_level) - 1 - i
+                    #     count_as_key = count_holes_in_level[i]
+                    #     prev_combination = self.levels[append_index + 1]
+                    #     self.levels[append_index] = self.__generate_combination(count_as_key, prev_combination)
+                    #
+                    # print(self.levels)
 
                 else:
                     raise ('Не хватает данных : ' + location_path)
@@ -99,12 +115,16 @@ class MapDscr:
 
         # грузим картинку - сожмем исходную
         self.image = load_image('maps/' + str(self.map_number) + '.png')
-        self.stars.load('images/system/star_panel.png', 'images/system/star_panel_disable.png', (22, 22),
+
+        # панель звездочек
+        cell_length = load_image('images/system/star_panel.png').get_height()
+        self.stars.load('images/system/star_panel.png', 'images/system/star_panel.png', (cell_length, cell_length),
                         self.complexity)
         self.stars.set_enabled_count(self.complexity)
 
-        self.levels_panel.load('images/system/star_panel.png', 'images/system/star_panel_disable.png', (22, 22), 5)
-        self.levels_panel.set_enabled_count(3)
+        # панель уровней
+        # self.levels_panel.load('images/system/star_panel.png', 'images/system/star_panel_disable.png', (22, 22), 5)
+        # self.levels_panel.set_enabled_count(3)
 
         # разбираем файл
         return True
@@ -124,32 +144,46 @@ class MapDscr:
         self.image_size = size
         self.surface = pygame.Surface(size)
 
-    def render(self, screen):
-        # self.surface.blit(self.image_small, (0, 0))
-        # scale = pygame.transform.scale(self.surface, (self.image_size[0], self.image_size[0]))
-        # screen.blit(scale, self.dscr_offset)
+    def render(self, screen, user):
         width, height = self.image_size
+        offx, offy = self.dscr_offset
+
         scaled = pygame.transform.scale(self.image, (self.image_size[0], self.image_size[0]))
+
+        # если у пользователя нет такой карты с уровнями значит он ее еще не проходил - затеняем
+        if user is not None and not user.contains(self.map_number):
+            scaled.fill((140, 140, 140), special_flags=pygame.BLEND_RGB_SUB)
+
         screen.blit(scaled, self.dscr_offset)
 
-        offx, offy = self.dscr_offset
-        pygame.draw.rect(screen, Biblio.color_ramka, (offx, offy, width, width), 2, 10)
+        pygame.draw.rect(screen, Show.color_ramka, (offx, offy, width, width), 2, 10)
         pygame.draw.rect(screen, FON_COLOR_DARK,
-                         (offx - Biblio.margin, offy - Biblio.margin, width + 2 * Biblio.margin,
-                          width + 2 * Biblio.margin), Biblio.margin, 20)
+                         (offx - Show.margin, offy - Show.margin, width + 2 * Show.margin,
+                          width + 2 * Show.margin), Show.margin, 20)
 
-        pygame.draw.rect(screen, Biblio.color_ramka, (offx, offy, width, width), 2, 10)
+        pygame.draw.rect(screen, Show.color_ramka, (offx, offy, width, width), 2, 10)
 
-        rect_complexity = pygame.Rect(offx, offy + width + Biblio.margin + 5, width, (height - width) // 2)
-        pygame.draw.rect(screen, pygame.Color('black'), rect_complexity, 1)
+        rect_complexity = pygame.Rect(offx, offy + width + Show.margin + 2, width, (height - width) // 2)
 
-        # screen.blit(self.stars.image_enabled, rect_complexity.topleft)
+        self.stars.render(screen,
+                          (rect_complexity.x + (rect_complexity.width - self.stars.width) // 2, rect_complexity.y))
 
-        self.stars.render(screen, rect_complexity.topleft)
-        self.levels_panel.render(screen, rect_complexity.bottomleft)
+        self.render_levels(screen)
+
+    def render_levels(self, screen):
+        width, height = self.image_size
+        offx, offy = self.dscr_offset
+        h_by_levels = self.image_levels.get_height() // MAX_LEVEL_COUNT * len(self.holes_in_level)
+        surf = pygame.Surface((self.image_levels.get_width(), h_by_levels))
+        surf.blit(self.image_levels, (0, 0))
+
+        dy = (width - self.image_levels.get_height()) // 2
+        screen.blit(surf, (offx + width + 3, offy + dy))
+        pygame.draw.rect(screen, Show.color_ramka,
+                         (offx + width + 2, offy + dy - 1, self.image_levels.get_width() + 2,
+                          self.image_levels.get_height() + 2), 1)
 
     def on_click(self, pos):
-        print(pos)
         offx, offy = self.dscr_offset
         width, height = self.image_size
         x, y = pos
@@ -157,18 +191,17 @@ class MapDscr:
 
 
 class Biblio:
-    # отступ и ширина фокусной рамки вокруг картинки
-    margin = 10
-    color_ramka = pygame.Color(111, 117, 88)
-
     def __init__(self, parent):
         self.parent = parent
         self.map_dscr_list = []
         # номер карты в массиве когда карту выбрали кликом
         self.active_map_index = None
+        self.user = None
 
-    # загрузить все доступные карты, каталог фиксированный
-    def load(self):
+        # загрузить все доступные карты, каталог фиксированный
+    def load(self, user):
+        self.user = user
+
         for filename in glob.glob(CURRENT_DIRECTORY + '/maps/*.png'):
             print(filename)
             # грузим информацию по отдельной карте
@@ -177,14 +210,15 @@ class Biblio:
             if dscr.load():
                 self.map_dscr_list.append(dscr)
 
-        for x in self.map_dscr_list:
-            print(x.map_number, x.complexity, x.max_count_holes, x.count_path, x.levels)
+        # for x in self.map_dscr_list:
+        #     print(x.map_number, x.complexity, x.max_count_holes, x.count_path, x.levels)
 
-            # отсортируем по сложности, кол-во окон, количесту направлений
-        self.map_dscr_list = sorted(self.map_dscr_list, key=lambda a: (a.complexity, a.max_count_holes, a.count_path))
+        # отсортируем по сложности, кол-во окон, количеству направлений
+        self.map_dscr_list = sorted(self.map_dscr_list,
+                                    key=lambda a: (a.complexity, a.max_count_holes, a.count_path))
 
-        for x in self.map_dscr_list:
-            print(x.map_number, x.complexity, x.max_count_holes, x.count_path, x.levels)
+        # for x in self.map_dscr_list:
+        #     print(x.map_number, x.complexity, x.max_count_holes, x.count_path, x.levels)
 
         # размечаем расположение, будем показывать первые 16
         margin_x = 60
@@ -211,18 +245,28 @@ class Biblio:
 
     def render(self, screen):
         for x in self.map_dscr_list:
-            x.render(screen)
+            x.render(screen, self.user)
 
         # TODO лучше бы перенести в Biblio
         if self.active_map_index is not None:
             left, top = self.map_dscr_list[self.active_map_index].dscr_offset
             w, _ = self.map_dscr_list[self.active_map_index].image_size
-            pygame.draw.rect(screen, Biblio.color_ramka,
-                             (left - Biblio.margin, top - Biblio.margin, w + 2 * Biblio.margin, w + 2 * Biblio.margin),
-                             int(Biblio.margin * 0.75), 2 * Biblio.margin)
+            d = 1
+            pygame.draw.rect(screen, Show.color_ramka,
+                             (left - Show.margin - d, top - Show.margin - d, w + 2 * Show.margin + 2 * d,
+                              w + 2 * Show.margin + 2 * d),
+                             int(Show.margin), 2 * Show.margin)
+            self.map_dscr_list[self.active_map_index].render_levels(screen)
 
     def on_click(self, pos):
-        self.active_map_index = None
         for i, map in enumerate(self.map_dscr_list):
             if map.on_click(pos) is True:
                 self.active_map_index = i
+                return
+
+    def on_double_click(self, event):
+        for i, map in enumerate(self.map_dscr_list):
+            if map.on_click(event.pos) is True:
+                # TODO фиксируем текущую карту
+                LOG.write(f'Играем с {map.filename}')
+                return

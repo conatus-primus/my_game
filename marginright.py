@@ -87,12 +87,8 @@ class BrightPanel:
         for i in range(len(BRIGHTEN)):
             imageSquare = pygame.Surface([self.w, self.h])
             imageSquare.fill(baseColor)
-            brightColor = (abs(BRIGHTEN[i]), abs(BRIGHTEN[i]), abs(BRIGHTEN[i]))
-            if BRIGHTEN[i] < 0:
-                imageSquare.fill(brightColor, special_flags=pygame.BLEND_RGB_ADD)
-            else:
-                imageSquare.fill(brightColor, special_flags=pygame.BLEND_RGB_SUB)
-
+            brightColor = (BRIGHTEN[i], BRIGHTEN[i], BRIGHTEN[i])
+            imageSquare.fill(brightColor, special_flags=pygame.BLEND_RGB_SUB)
             self.surface.blit(imageSquare, (i * self.w, 0))
 
         if dispatcher.session.brightness < len(BRIGHTEN):

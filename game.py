@@ -8,6 +8,7 @@ from field import Field
 from vars import *
 from py.shared import *
 from collection import *
+from py.user import *
 
 
 class Game:
@@ -19,8 +20,13 @@ class Game:
         self.start = False
         self.block_collect = None
         self.block_game = None
+        self.user = None
 
     def load(self):
+        # к этому моменту уже известен пользователь
+        self.user = User(dispatcher.session.user)
+        self.user.load()
+
         self.field = Field(self)
         self.collection = Collection(self)
 
@@ -126,3 +132,14 @@ class Game:
             obj, offset = item
             e.pos = x - offset[0], y - offset[1]
             obj.onClickExtend(e)
+
+    def on_double_click(self, event):
+        if self.block is None:
+            return
+        e = event
+        x, y = e.pos
+
+        for item in self.block:
+            obj, offset = item
+            e.pos = x - offset[0], y - offset[1]
+            obj.on_double_click(e)

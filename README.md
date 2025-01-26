@@ -20,9 +20,12 @@
 Максимальное количество направляющих для одного окна - 9.  
 Идентификаторы направляющих для окна с номером N - pathN1 … pathN9.  
 Обязательно должен быть хотя бы один уровень с одним вариантом размещения окно и направляющих.  
-Максимальное количество уровней - 10.   
+Максимальное количество уровней - 6.   
 Максимальное количество вариантов размещения окон и направляющих в одном уровне - 32.
-  
+
+Максимальный уровень сложности - 6.
+
+
 ## Авторские права на изображения
 
 В программе заимствованы разнообразные картинки из сети Интернет.   
@@ -40,8 +43,9 @@
 [941,](https://play.google.com/store/apps/details?id=happy.paint.coloring.color.number)
 [969](https://play.google.com/store/apps/details?id=happy.paint.coloring.color.number)  
 Ссылки на ресурсы картинок мобов:    
-[mob2, mob3](https://astro9811.itch.io/alien-annihilation)
-[mob7] (https://ru.freepik.com/premium-vector/green-ghost-pixel-art-style_50573505.htm)  
+[mob2, mob3,](https://astro9811.itch.io/alien-annihilation) 
+[mob7](https://ru.freepik.com/premium-vector/green-ghost-pixel-art-style_50573505.htm)  
 Ссылки на ресурсы картинок в технологических целях:    
 [окна на заставке,](https://www.vectorstock.com/royalty-free-vector/window-with-glass-and-wooden-frame-vector-36755161)
+[окна на заставке(2),](https://gas-kvas.com/risunki-3d/print:page,1,18743-3d-okno-risunok-46-foto.html)
 [фон сообщений](https://www.vecteezy.com/free-vector/abstract-beach-background)  

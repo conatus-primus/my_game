@@ -69,10 +69,11 @@ if __name__ == '__main__':
 
                 # эмуляция двойного клика мыши
 
-
-
                 if time.time() - click_time < double_click_time and click_pos == pygame.mouse.get_pos():
                     print("Double click detected")
+                    if runList is None and game is not None:
+                        game.on_double_click(event)
+
                 click_time = time.time()
                 click_pos = pygame.mouse.get_pos()
 
@@ -96,7 +97,7 @@ if __name__ == '__main__':
                                 messageError = Message(str(e))
                         else:
                             runList[0].load()
-                        sounds.sVgux.play()
+                        # sounds.sVgux.play()
                         # ---------------------------------------------
 
                 elif game is not None:
@@ -124,7 +125,7 @@ if __name__ == '__main__':
                 except Exception as e:
                     LOG.write(str(e))
                     messageError = Message(str(e))
-                sounds.sVgux.play()
+                # sounds.sVgux.play()
             # ---------------------------------------------
 
         else:

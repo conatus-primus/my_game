@@ -35,3 +35,6 @@ class Block:
 
     def onClickExtend(self, event):
         pass
+
+    def on_double_click(self, event):
+        pass
