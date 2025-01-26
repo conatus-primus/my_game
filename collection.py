@@ -32,4 +32,5 @@ class Collection(Block):
         if not super().isInBlock(event.pos):
             return False
         if self.biblio is not None:
-            self.biblio.on_double_click(event)
+            return self.biblio.on_double_click(event)
+        return False

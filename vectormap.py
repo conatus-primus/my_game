@@ -206,8 +206,7 @@ class VectorMap:
                 # направляющие
                 new_hole.lines = []
                 for id_line, coords_line in hole.lines:
-                    if currentLevelContent is None or id_line in currentLevelContent:
-                        new_hole.lines.append((id_line, coords_line))
+                    new_hole.lines.append((id_line, coords_line))
                 self.holes.append(new_hole)
 
     def render(self, surface):

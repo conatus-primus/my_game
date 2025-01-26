@@ -135,11 +135,20 @@ class Game:
 
     def on_double_click(self, event):
         if self.block is None:
-            return
+            return False
         e = event
         x, y = e.pos
 
         for item in self.block:
             obj, offset = item
             e.pos = x - offset[0], y - offset[1]
-            obj.on_double_click(e)
+            if obj.on_double_click(e) is True:
+                if self.block is self.block_collect:
+                    # меняем карту
+                    LOG.write(f'Сейчас будет загрузка карта {dispatcher.session.map_number} для {dispatcher.session.user}')
+                    self.block = self.block_game
+                    for item in self.block:
+                        obj, _ = item
+                        obj.load(dispatcher.session.map_number)
+                    return True
+        return False

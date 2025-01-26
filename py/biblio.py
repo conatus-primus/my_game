@@ -21,7 +21,7 @@ def load_image(fullname):
 class MapDscr:
     def __init__(self, filename):
         self.filename = filename
-        self.map_number : int = None
+        self.map_number: int = None
         self.complexity = None
         self.count_path = None
         self.max_count_holes = None
@@ -34,7 +34,7 @@ class MapDscr:
         self.image_levels = Dispatcher.load_image('images/system/level_vert.png')
         # уровни по порядку: количество дырок и список идентификаторов дырок (в начале список пустой)
         # список заполним когда пользователь начнет играть в этом уровне (или сгенерим или возьмем у пользователя)
-        self.holes_in_level : list[tuple] = []
+        self.holes_in_level: list[tuple] = []
 
     def load(self) -> bool:
         map_name = os.path.basename(self.filename).split('.')[0]
@@ -129,6 +129,14 @@ class MapDscr:
         # разбираем файл
         return True
 
+    # пользователь не работал с этой картой, генерим уровень (нумерация с 1)
+    def generate_level(self, level_number):
+        if level_number >= len(self.holes_in_level):
+            level_number = 1
+        level_number -= 1
+        count, _ = self.holes_in_level[level_number]
+        return ['path' + str(i) for i in range(1, count + 1)]
+
     @staticmethod
     def __generate_combination(count_hole, upper_level: list[int]):
         # считаем сколько чисел надо исключить
@@ -197,8 +205,11 @@ class Biblio:
         # номер карты в массиве когда карту выбрали кликом
         self.active_map_index = None
         self.user = None
+        # номер уровня
+        self.level_number = 1
 
         # загрузить все доступные карты, каталог фиксированный
+
     def load(self, user):
         self.user = user
 
@@ -264,9 +275,25 @@ class Biblio:
                 self.active_map_index = i
                 return
 
-    def on_double_click(self, event):
+    def on_double_click(self, event) -> bool:
         for i, map in enumerate(self.map_dscr_list):
             if map.on_click(event.pos) is True:
                 # TODO фиксируем текущую карту
                 LOG.write(f'Играем с {map.filename}')
-                return
+
+                # согласовать данные карты и пользователя для игры
+                Biblio.sync_map_and_user(self.user, map, self.level_number)
+
+                # TODO да я знаю, часть параметров дублируется, это эволюция кода, со временем почистим ненужное
+                dispatcher.session.map_number = map.map_number
+                dispatcher.session.selected_map = map
+                dispatcher.session.level_number = self.level_number
+
+                return True
+        return False
+
+    # согласовать данные карты и пользователя для игры (уровень с 1)
+    @staticmethod
+    def sync_map_and_user(user, map, level_number):
+        dispatcher.session.level_content = map.generate_level(level_number)
+        print(dispatcher.session.level_content)

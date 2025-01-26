@@ -42,6 +42,7 @@ SHOW_TIME_IN_HOLE_SEC = 2
 # максимальное количество уровней
 MAX_LEVEL_COUNT = 6
 
+
 # расстояние между двумя точками
 def dist2(p1, p2):
     return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
@@ -135,7 +136,14 @@ class Session:
         self.chansonActive = False
         self.volumeLevel = 0.1
         self.money = 80
+
         self.user = ''
+        # описание карты MapDecr
+        self.selected_map = None
+        # номер уровня
+        self.level_number = 1
+        # список дырок выбранного уровня
+        self.level_content = []
 
     def read(self):
         section = 'start'
@@ -226,6 +234,8 @@ class Dispatcher:
         image = pygame.image.load(fullname)
         LOG.write(f'Загружен файл с изображением {fullname}')
         return image
+
+
 
 
 dispatcher = Dispatcher()

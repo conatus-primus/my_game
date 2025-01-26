@@ -80,10 +80,6 @@ class Location:
                 break
         return activeHoleID
 
-    # установить выбранный уровень
-    def setLevelID(self, level):
-        self.currentLevelID = level
-
     # установить текущую дырку
     def setHoleID(self, hole):
         self.currentHoleID = hole

@@ -35,12 +35,8 @@ class Field(Block):
         self.staticMap = StaticMap(map_number)
         self.staticMap.load()
 
-        # установить выбранный уровень
-        self.location.setLevelID(dispatcher.session.currentLevelID)
-        # установить текущую дырку
-        self.location.setHoleID(dispatcher.session.currentHoleID)
         # устанавливаем в векторную карту описание текущего уровня
-        self.vectorMap.setCurrentLevelContent(self.location.currentLevelContent())
+        self.vectorMap.setCurrentLevelContent(dispatcher.session.level_content)
 
         # пользовательский амулет
         self.amuletUser = AmuletUser(self)
@@ -50,13 +46,13 @@ class Field(Block):
         self.amuletUser.setLocation(self.location)
         self.amulets.append(self.amuletUser)
 
-        amuletPassive = AmuletPassive(self, 'ruby.png', ['path2', 'path3'], SHOW_TIME_IN_HOLE_SEC)
+        amuletPassive = AmuletPassive(self, 'ruby.png', ['path1', 'path2'], SHOW_TIME_IN_HOLE_SEC)
         # self.amuletPassive = AmuletPassive(self, 'ruby.png', ['path5'], [2, 0.1])
         amuletPassive.load(self.vectorMap.holes)
         amuletPassive.start()
         self.amulets.append(amuletPassive)
 
-        amuletPassive = AmuletPassive(self, 'sapphire.png', ['path2', 'path3', 'path5'], SHOW_TIME_IN_HOLE_SEC)
+        amuletPassive = AmuletPassive(self, 'sapphire.png', ['path2', 'path1'], SHOW_TIME_IN_HOLE_SEC)
         amuletPassive.load(self.vectorMap.holes)
         amuletPassive.start()
         self.amulets.append(amuletPassive)

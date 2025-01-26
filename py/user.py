@@ -8,6 +8,7 @@ class User:
     def __init__(self, name):
         self.user_file = 'users/' + name + '.ini'
         self.current_map: int = 0
+        # карта -> список уровней, каждый уровень - список дырок
         self.levels: dict[int, list] = {}
 
     def load(self):
@@ -21,7 +22,7 @@ class User:
                     self.current_map = int(config['start']['current_map'])
                     LOG.write(f'Текущая карта существует {self.current_map}')
 
-            for number in range(MAX_MAP_COUNT):
+            for number in range(999):
                 # проверяем есть ли такая карта
                 map_section = 'map' + str(number + 1)
                 # лезем в конфиг, смотрим секцию
@@ -58,3 +59,4 @@ class User:
             return False
         else:
             return len(self.levels[map_number]) != 0
+
