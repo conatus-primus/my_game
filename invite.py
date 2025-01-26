@@ -3,7 +3,7 @@ import pygame
 from vars import *
 from svgparser import VectorizerPictures
 from py.edit import EditText
-
+from py.user import *
 
 class Invite(VectorizerPictures):
     def __init__(self):
@@ -170,3 +170,6 @@ class Start(VectorizerPictures):
         if new_text == '':
             new_text = 'гость'.upper()
         dispatcher.session.user = new_text
+        dispatcher.user = User(new_text)
+        dispatcher.user.load()
+

@@ -24,9 +24,6 @@ class Game:
 
     def load(self):
         # к этому моменту уже известен пользователь
-        self.user = User(dispatcher.session.user)
-        self.user.load()
-
         self.field = Field(self)
         self.collection = Collection(self)
 
@@ -39,11 +36,11 @@ class Game:
                            ]
 
         self.block_collect = [(self.collection, (WIDTH_MARGIN, HEIGHT_HEADER)),
-                            (Header(self), (0, 0)),
-                            (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
-                            (MarginLeft(self), (0, HEIGHT_HEADER)),
-                            (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
-                            ]
+                              (Header(self), (0, 0)),
+                              (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                              (MarginLeft(self), (0, HEIGHT_HEADER)),
+                              (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
+                              ]
 
         # self.block = self.block_game
         self.block = self.block_collect
@@ -145,10 +142,17 @@ class Game:
             if obj.on_double_click(e) is True:
                 if self.block is self.block_collect:
                     # меняем карту
-                    LOG.write(f'Сейчас будет загрузка карта {dispatcher.session.map_number} для {dispatcher.session.user}')
+                    LOG.write(
+                        f'Сейчас будет загрузка карта {dispatcher.session.map_number} для {dispatcher.session.user}')
                     self.block = self.block_game
                     for item in self.block:
                         obj, _ = item
                         obj.load(dispatcher.session.map_number)
                     return True
         return False
+
+    # завершаем игру
+    def on_stop(self):
+        # TODO временно будем записывать в пользователя прошедший уровень хоть он его может и не прошел
+        dispatcher.user.save_level(dispatcher.session.level_number)
+        pass

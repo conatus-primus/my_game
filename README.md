@@ -45,6 +45,7 @@
 Ссылки на ресурсы картинок мобов:    
 [mob2, mob3,](https://astro9811.itch.io/alien-annihilation) 
 [mob7](https://ru.freepik.com/premium-vector/green-ghost-pixel-art-style_50573505.htm)  
+[mob8](https://pngtree.com/freepng/ghost-with-evil-smile-face-in-pixel-art-style_15971173.html)  
 Ссылки на ресурсы картинок в технологических целях:    
 [окна на заставке,](https://www.vectorstock.com/royalty-free-vector/window-with-glass-and-wooden-frame-vector-36755161)
 [окна на заставке(2),](https://gas-kvas.com/risunki-3d/print:page,1,18743-3d-okno-risunok-46-foto.html)

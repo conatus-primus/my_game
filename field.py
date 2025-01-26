@@ -20,7 +20,7 @@ class Field(Block):
 
     def load(self, map_number):
 
-        self.mob = ChangedMob(self, 100, (0,0), (900,900), 'images/mobs/mob7_')
+        self.mob = ChangedMob(self, 100, (0,0), (900,900), 'images/mobs/mob8_')
         self.mob.set_start()
 
         # грузим варианты уровней и движения клавиш

@@ -152,14 +152,14 @@ class MapDscr:
         self.image_size = size
         self.surface = pygame.Surface(size)
 
-    def render(self, screen, user):
+    def render(self, screen):
         width, height = self.image_size
         offx, offy = self.dscr_offset
 
         scaled = pygame.transform.scale(self.image, (self.image_size[0], self.image_size[0]))
 
         # если у пользователя нет такой карты с уровнями значит он ее еще не проходил - затеняем
-        if user is not None and not user.contains(self.map_number):
+        if dispatcher.user is not None and not dispatcher.user.contains(self.map_number):
             scaled.fill((140, 140, 140), special_flags=pygame.BLEND_RGB_SUB)
 
         screen.blit(scaled, self.dscr_offset)
@@ -204,15 +204,12 @@ class Biblio:
         self.map_dscr_list = []
         # номер карты в массиве когда карту выбрали кликом
         self.active_map_index = None
-        self.user = None
         # номер уровня
         self.level_number = 1
 
         # загрузить все доступные карты, каталог фиксированный
 
-    def load(self, user):
-        self.user = user
-
+    def load(self):
         for filename in glob.glob(CURRENT_DIRECTORY + '/maps/*.png'):
             print(filename)
             # грузим информацию по отдельной карте
@@ -256,7 +253,7 @@ class Biblio:
 
     def render(self, screen):
         for x in self.map_dscr_list:
-            x.render(screen, self.user)
+            x.render(screen)
 
         # TODO лучше бы перенести в Biblio
         if self.active_map_index is not None:
@@ -281,10 +278,10 @@ class Biblio:
                 # TODO фиксируем текущую карту
                 LOG.write(f'Играем с {map.filename}')
 
-                # согласовать данные карты и пользователя для игры
-                Biblio.sync_map_and_user(self.user, map, self.level_number)
-
                 # TODO да я знаю, часть параметров дублируется, это эволюция кода, со временем почистим ненужное
+
+                dispatcher.user.current_map = map.map_number
+                dispatcher.session.level_content = map.generate_level(self.level_number)
                 dispatcher.session.map_number = map.map_number
                 dispatcher.session.selected_map = map
                 dispatcher.session.level_number = self.level_number
@@ -292,8 +289,3 @@ class Biblio:
                 return True
         return False
 
-    # согласовать данные карты и пользователя для игры (уровень с 1)
-    @staticmethod
-    def sync_map_and_user(user, map, level_number):
-        dispatcher.session.level_content = map.generate_level(level_number)
-        print(dispatcher.session.level_content)

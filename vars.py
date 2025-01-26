@@ -154,19 +154,6 @@ class Session:
         if section in config:
             if 'user' in config[section]:
                 self.user = config[section]['user'].strip().lower()
-
-        if self.user == '':
-            self.user = 'ГОСТЬ'
-
-        # пользовательские настройки
-        config.read('users/' + self.user + '.ini', 'utf-8')
-        self.user = self.user.upper()
-
-        if section in config:
-            if 'map' in config[section]:
-                self.map_number = int(config[section]['map'])
-            if 'level' in config[section]:
-                self.currentLevelID = config[section]['level']
             if 'brightness' in config[section]:
                 self.brightness = int(config[section]['brightness'])
                 if self.brightness >= len(BRIGHTEN):
@@ -177,8 +164,10 @@ class Session:
                 self.chansonActive = True if config[section]['chansonActive'] == '1' else False
             if 'volumeLevel' in config[section]:
                 self.volumeLevel = float(config[section]['volumeLevel'])
-            if 'money' in config[section]:
-                self.money = int(config[section]['money'])
+
+        if self.user == '':
+            self.user = 'ГОСТЬ'
+        self.user = self.user.upper()
 
     def write(self):
         section = 'start'
@@ -189,20 +178,10 @@ class Session:
             if section not in config:
                 config[section] = {}
             config[section]['user'] = '' if self.user.lower() in ['гость'] else self.user
-            config.write(f)
-
-        # формируем файл пользовательских настроек
-        config = configparser.ConfigParser()
-        config[section] = {}
-        config[section]['map'] = str(self.map_number)
-        config[section]['level'] = self.currentLevelID
-        config[section]['brightness'] = str(self.brightness)
-        config[section]['soundsActive'] = '1' if self.soundsActive is True else '0'
-        config[section]['chansonActive'] = '1' if self.chansonActive is True else '0'
-        config[section]['volumeLevel'] = str(self.volumeLevel)
-        config[section]['money'] = str(self.money)
-
-        with open('users/' + self.user + '.ini', 'w', encoding='utf-8') as f:
+            config[section]['brightness'] = str(self.brightness)
+            config[section]['soundsActive'] = '1' if self.soundsActive is True else '0'
+            config[section]['chansonActive'] = '1' if self.chansonActive is True else '0'
+            config[section]['volumeLevel'] = str(self.volumeLevel)
             config.write(f)
 
 
@@ -210,8 +189,18 @@ class Dispatcher:
     def __init__(self):
         self.game = None
         self.session = Session()
+        self.user = None
         # размер текущего тика
         self.tick = 0
+
+    def on_stop(self):
+        if self.game is not None:
+            self.game.on_stop()
+
+        self.session.write()
+
+        if self.user is not None:
+            self.user.save()
 
     def load(self, game):
         self.game = game
@@ -234,8 +223,6 @@ class Dispatcher:
         image = pygame.image.load(fullname)
         LOG.write(f'Загружен файл с изображением {fullname}')
         return image
-
-
 
 
 dispatcher = Dispatcher()

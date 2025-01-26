@@ -10,7 +10,6 @@ class Collection(Block):
         super().__init__(game, WIDTH_MAP, HEIGHT_MAP)
         self.font = pygame.font.Font(None, HEIGHT_HEADER - 20)
         self.biblio = None
-        self.user = game.user
 
     def render(self):
         pygame.draw.rect(self.surface, FON_COLOR_DARK, (0, 0, self.width, self.height))
@@ -19,7 +18,7 @@ class Collection(Block):
 
     def load(self, map_number):
         self.biblio = Biblio(self)
-        self.biblio.load(self.user)
+        self.biblio.load()
 
     def onClick(self, pos):
         if not super().isInBlock(pos):

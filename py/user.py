@@ -1,15 +1,14 @@
 from vars import *
 import configparser
-import pygame
-import os
 
 
 class User:
     def __init__(self, name):
+        self.name = name
         self.user_file = 'users/' + name + '.ini'
         self.current_map: int = 0
         # карта -> список уровней, каждый уровень - список дырок
-        self.levels: dict[int, list] = {}
+        self.levels: dict[int, int] = {}
 
     def load(self):
         try:
@@ -29,27 +28,12 @@ class User:
                 if map_section in config:
                     if 'number' in config[map_section]:
                         map_number = int(config[map_section]['number'])
-                        mapfile = 'maps/' + str(map_number) + '.png'
-                        if os.path.isfile(mapfile):
-                            LOG.write(f'Файл с картой существует {mapfile}')
-                        else:
-                            continue
-
-                        for num in range(1, MAX_LEVEL_COUNT + 1):
-                            level_key = str(num)
-                            if level_key not in config[map_section]:
-                                break
-                            # разберем
-                            holes = list(
-                                set([int(x.replace('path', '')) for x in config[map_section][level_key].split(',')]))
-                            if len(holes) == 0:
-                                break
-                            if map_number not in self.levels.keys():
-                                self.levels[map_number] = []
-                            self.levels[map_number].append(sorted(holes))
+                        # уровень который сейчас надо проходить
+                        if 'level' in config[map_section]:
+                            self.levels[map_number] = int(config[map_section]['level'])
                 else:
                     break
-                # print(self.levels)
+            LOG.write(f'Пользователь {self.name} : последняя карта {self.current_map} : пройденные уровни по картам : {self.levels}')
 
         except Exception as e:
             LOG.write(str(e))
@@ -58,5 +42,22 @@ class User:
         if map_number not in self.levels.keys():
             return False
         else:
-            return len(self.levels[map_number]) != 0
+            return self.levels[map_number] != 0
 
+    def save(self):
+        section = 'start'
+
+        # записываем имя текущего пользователя
+        with open(self.user_file, 'w', encoding='utf-8') as f:
+            config = configparser.ConfigParser()
+            config[section] = {}
+            config[section]['current_map'] = str(self.current_map)
+            for i, map_number in enumerate(self.levels.keys()):
+                map_section = 'map' + str(i + 1)
+                config[map_section] = {}
+                config[map_section]['number'] = str(map_number)
+                config[map_section]['level'] = str(self.levels[map_number])
+            config.write(f)
+
+    def save_level(self, level_number):
+        self.levels[self.current_map] = self.levels[self.current_map] + 1

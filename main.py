@@ -141,6 +141,6 @@ if __name__ == '__main__':
         if pressed:
             game.onPressedKey(pygame.key.get_pressed())
 
-    dispatcher.session.write()
+    dispatcher.on_stop()
 
 pygame.quit()
