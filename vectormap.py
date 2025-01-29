@@ -165,6 +165,7 @@ class VectorMap:
         self.map_number = map_number
         self.rawMap = RawMap(map_number)
         self.holes = None
+        self.disabled_holes = None
         self.strips = dict()
 
     def load(self):
@@ -191,23 +192,27 @@ class VectorMap:
                 self.strips[hole.id] = copy.deepcopy(ParserSvgString(strip_string).coords)
         print(self.strips)
 
-    def setCurrentLevelContent(self, currentLevelContent=None):
+    def set_current_level_content(self, current_level_content, max_count_holes):
 
         self.holes = []
+        self.disabled_holes = []
 
         for hole in self.rawMap.holes:
-            if currentLevelContent is None or hole.id in currentLevelContent:
-                new_hole = Hole()
-                new_hole.id = hole.id
-                # координаты дырки
-                new_hole.coords_hole = hole.coords_hole
-                # центр дырки
-                new_hole.centre_hole = hole.centre_hole
-                # направляющие
-                new_hole.lines = []
-                for id_line, coords_line in hole.lines:
-                    new_hole.lines.append((id_line, coords_line))
+            new_hole = Hole()
+            new_hole.id = hole.id
+            # координаты дырки
+            new_hole.coords_hole = hole.coords_hole
+            # центр дырки
+            new_hole.centre_hole = hole.centre_hole
+            # направляющие
+            new_hole.lines = []
+            for id_line, coords_line in hole.lines:
+                new_hole.lines.append((id_line, coords_line))
+
+            if current_level_content is None or hole.id in current_level_content:
                 self.holes.append(new_hole)
+            else:
+                self.disabled_holes.append(new_hole)
 
     def render(self, surface):
         pens = [
@@ -234,3 +239,17 @@ class VectorMap:
                     pygame.draw.circle(surface, color, coords[0], h // 2, h // 2)
                     # сама направляющая
                     pygame.draw.lines(surface, color, False, coords, h)
+
+        pens = [
+            (pygame.Color(200, 200, 200), 5),
+            #(pygame.Color(160, 160, 160), 3),
+            (pygame.Color(80, 80, 80), 3)
+        ]
+
+        for pen in pens:
+            color, h = pen
+            for n_hole, one_hole in enumerate(self.disabled_holes):
+                # круги в точках перегиба дырки, чтобы сгладить широкую линию
+                for point in one_hole.coords_hole:
+                    pygame.draw.circle(surface, color, point, h // 2, h // 2)
+                pygame.draw.lines(surface, color, True, one_hole.coords_hole, h)

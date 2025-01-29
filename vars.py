@@ -3,6 +3,7 @@ import os
 import time
 import pygame
 import configparser
+import enum
 
 from logger import logger
 
@@ -226,3 +227,49 @@ class Dispatcher:
 
 
 dispatcher = Dispatcher()
+
+
+class ButtonState(enum.Enum):
+    # начать игру
+    PLAY_ID = 3000
+    # пауза
+    PAUSE_ID = 3001
+    # начать игру заново
+    REPLAY_ID = 3002
+    # продолжить после паузы
+    CONTINUE_ID = 3003
+    # вернуться к выбору дома
+    HOUSE_ID = 3004
+
+
+class GameState(enum.Enum):
+    # начать игру
+    GAME_WAIT = 4000
+    # идет игра
+    GAME_PLAY = 4001
+    # пауза
+    GAME_PAUSE = 4002
+    # раунд игры закончился успешно
+    GAME_SUCCESS = 4002
+    # раунд игры закончился неудачно
+    GAME_FAIL = 4003
+    # игры нет
+    GAME_NO = 4004
+
+
+class Machine:
+    # 2 параметра картинка, 3 параметр смещение по горизонтали от левого края
+    buttons = {ButtonState.PLAY_ID: ('play.png', None, None),
+               ButtonState.PAUSE_ID: ('pause.png', None, None),
+               ButtonState.REPLAY_ID: ('replay.png', None, None),
+               ButtonState.CONTINUE_ID: ('continue.png', None, None),
+               ButtonState.HOUSE_ID: ('house.png', None, None)
+               }
+
+    states = {GameState.GAME_WAIT: [ButtonState.PLAY_ID, ButtonState.HOUSE_ID],
+              GameState.GAME_PLAY: [ButtonState.PAUSE_ID, ButtonState.REPLAY_ID],
+              GameState.GAME_PAUSE: [ButtonState.CONTINUE_ID, ButtonState.REPLAY_ID, ButtonState.HOUSE_ID],
+              GameState.GAME_SUCCESS: [ButtonState.PLAY_ID, ButtonState.HOUSE_ID],
+              GameState.GAME_FAIL: [ButtonState.REPLAY_ID, ButtonState.HOUSE_ID],
+              GameState.GAME_NO: []
+              }

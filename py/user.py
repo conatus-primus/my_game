@@ -9,6 +9,8 @@ class User:
         self.current_map: int = 0
         # карта -> список уровней, каждый уровень - список дырок
         self.levels: dict[int, int] = {}
+        # который раз проходится игра
+        self.game: dict[int, int] = {}
 
     def load(self):
         try:
@@ -31,9 +33,14 @@ class User:
                         # уровень который сейчас надо проходить
                         if 'level' in config[map_section]:
                             self.levels[map_number] = int(config[map_section]['level'])
+                        if 'game' in config[map_section]:
+                            self.game[map_number] = int(config[map_section]['game'])
+                        else:
+                            self.game[map_number] = 0
+
                 else:
                     break
-            LOG.write(f'Пользователь {self.name} : последняя карта {self.current_map} : пройденные уровни по картам : {self.levels}')
+            LOG.write(f'{self.name} : последняя карта {self.current_map} : пройденные уровни по картам : {self.levels}')
 
         except Exception as e:
             LOG.write(str(e))
@@ -57,6 +64,7 @@ class User:
                 config[map_section] = {}
                 config[map_section]['number'] = str(map_number)
                 config[map_section]['level'] = str(self.levels[map_number])
+                config[map_section]['game'] = str(self.game[map_number])
             config.write(f)
 
     def save_level(self, level_number):

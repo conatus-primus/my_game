@@ -20,7 +20,7 @@ class Field(Block):
 
     def load(self, map_number):
 
-        self.mob = ChangedMob(self, 100, (0,0), (900,900), 'images/mobs/mob8_')
+        self.mob = ChangedMob(self, 100, (0, 0), (900, 900), 'images/mobs/mob9_')
         self.mob.set_start()
 
         # грузим варианты уровней и движения клавиш
@@ -36,12 +36,13 @@ class Field(Block):
         self.staticMap.load()
 
         # устанавливаем в векторную карту описание текущего уровня
-        self.vectorMap.setCurrentLevelContent(dispatcher.session.level_content)
+        self.vectorMap.set_current_level_content(dispatcher.session.level_content,
+                                                 dispatcher.session.selected_map.max_count_holes)
 
         # пользовательский амулет
         self.amuletUser = AmuletUser(self)
         # задаем все дырки
-        self.amuletUser.load(self.vectorMap.holes)
+        self.amuletUser.load(self.vectorMap.holes + self.vectorMap.disabled_holes)
         # связываем амулет с локатором - изменится локатор - изменим и амулеты
         self.amuletUser.setLocation(self.location)
         self.amulets.append(self.amuletUser)
@@ -77,7 +78,6 @@ class Field(Block):
             a.render_last(self.surface)
 
         self.mob.render(self.surface)
-
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def onPressedKey(self, pressed_keys):
@@ -153,7 +153,7 @@ class Field(Block):
                     continue
 
                 pos_start, pos_stop = coords[0], coords[-1]
-                if pos_start[1] >  pos_stop[1]:
+                if pos_start[1] > pos_stop[1]:
                     pos_start, pos_stop = pos_stop, pos_start
                 dx, dy = pos_stop[0] - pos_start[0], pos_stop[1] - pos_start[1]
                 dist = (dx ** 2 + dy ** 2) ** 0.5

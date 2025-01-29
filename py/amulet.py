@@ -197,11 +197,9 @@ class AmuletUser(Amulet):
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def onPressedKey(self, pressed_keys):
-        # self.location.onPressedKey(pressed_keys)
-        # self.activeHoleID = self.location.currentHoleID
-        oldActiveHoleID = self.activeHoleID
-        self.activeHoleID = self.location.onPressedKey(pressed_keys, self.activeHoleID)
-        if self.activeHoleID != oldActiveHoleID:
+        old_active_hole_id = self.activeHoleID
+        self.activeHoleID = self.location.on_pressed_key(pressed_keys, self.activeHoleID)
+        if self.activeHoleID != old_active_hole_id:
             dispatcher.needUpdate(self)
             return True
         return False

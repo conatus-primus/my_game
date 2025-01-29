@@ -9,11 +9,11 @@ from vars import *
 from py.shared import *
 from collection import *
 from py.user import *
-
+from footer import *
 
 class Game:
     def __init__(self):
-        self.field = None
+        #self.field = None
         # игровой блок и смещение блока относительно всего игрового поля
         self.block = None
         # для выхода из логина
@@ -24,20 +24,20 @@ class Game:
 
     def load(self):
         # к этому моменту уже известен пользователь
-        self.field = Field(self)
+        #self.field = Field(self)
         self.collection = Collection(self)
 
         # игровой блок и смещение блока относительно всего игрового поля
-        self.block_game = [(self.field, (WIDTH_MARGIN, HEIGHT_HEADER)),
+        self.block_game = [(Field(self), (WIDTH_MARGIN, HEIGHT_HEADER)),
                            (Header(self), (0, 0)),
-                           (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                           (Footer(self, GameState.GAME_WAIT), (0, HEIGHT_HEADER + HEIGHT_MAP)),
                            (MarginLeft(self), (0, HEIGHT_HEADER)),
                            (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                            ]
 
         self.block_collect = [(self.collection, (WIDTH_MARGIN, HEIGHT_HEADER)),
                               (Header(self), (0, 0)),
-                              (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                              (Footer(self, GameState.GAME_NO), (0, HEIGHT_HEADER + HEIGHT_MAP)),
                               (MarginLeft(self), (0, HEIGHT_HEADER)),
                               (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                               ]
@@ -156,3 +156,20 @@ class Game:
         # TODO временно будем записывать в пользователя прошедший уровень хоть он его может и не прошел
         dispatcher.user.save_level(dispatcher.session.level_number)
         pass
+
+    # сообщение об изменении состояния игры
+    def notify_about_change_state(self, state, button_id):
+        if ButtonState.HOUSE_ID == button_id:
+            # вернуться в коллекцию
+            self.block = self.block_collect
+
+            del self.block_game
+            self.block_game = [(Field(self), (WIDTH_MARGIN, HEIGHT_HEADER)),
+                               (Header(self), (0, 0)),
+                               (Footer(self, GameState.GAME_WAIT), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                               (MarginLeft(self), (0, HEIGHT_HEADER)),
+                               (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
+                               ]
+            for item in self.block:
+                obj, _ = item
+                #obj.on_changed_state(GameState.GAME_NO, GameState.GAME_NO)

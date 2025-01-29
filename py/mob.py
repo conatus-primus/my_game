@@ -104,7 +104,7 @@ class ChangedMob(Mob):
         super().__init__(parent, velocity, pos_start, pos_stop, mob_path + '1.png')
         self.image_list = []
         self.image_list.append(self.image)
-        for i in range(2, 6):
+        for i in range(2, 5):
             self.image_list.append(self.load_image(mob_path + str(i) + '.png'))
         self.tick_change = ChangedMob.count_tick
 

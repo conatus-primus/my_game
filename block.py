@@ -38,3 +38,7 @@ class Block:
 
     def on_double_click(self, event):
         pass
+
+    # GameState
+    def on_changed_state(self, old_state, new_state):
+        pass
