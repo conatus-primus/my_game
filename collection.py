@@ -24,8 +24,15 @@ class Collection(Block):
         if not super().isInBlock(pos):
             return False
         x, y = pos
+
         if self.biblio is not None:
-            self.biblio.on_click(pos)
+            ret = self.biblio.on_click(pos)
+            if ret is True:
+                map = self.biblio.get_clicked_map()
+                LOG.write(f'Стоим на карте {map.map_number}')
+            return ret
+        else:
+            return False
 
     def on_double_click(self, event):
         if not super().isInBlock(event.pos):

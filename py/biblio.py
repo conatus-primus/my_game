@@ -235,6 +235,7 @@ class Biblio:
         count_per_line = 4
         length = (self.parent.width - (count_per_line + 1) * margin_x) // count_per_line
 
+        self.active_map_index = 0
         index = 0
         for row in range(count_per_line):
             for col in range(count_per_line):
@@ -243,13 +244,13 @@ class Biblio:
                     ((margin_x + length) * col + margin_x, (margin_y + length) * row + margin_top),
                     # ширина высота
                     (length, length + margin_y))
+                if self.map_dscr_list[index].map_number == dispatcher.user.current_map:
+                    self.active_map_index = index
                 index += 1
                 if index == len(self.map_dscr_list):
                     break
             if index == len(self.map_dscr_list):
                 break
-
-        self.active_map_index = 0
 
     def render(self, screen):
         for x in self.map_dscr_list:
@@ -266,11 +267,18 @@ class Biblio:
                              int(Show.margin), 2 * Show.margin)
             self.map_dscr_list[self.active_map_index].render_levels(screen)
 
+    def get_clicked_map(self):
+        if 0 <= self.active_map_index <= len(self.map_dscr_list):
+            return self.map_dscr_list[self.active_map_index]
+        else:
+            return None
+
     def on_click(self, pos):
         for i, map in enumerate(self.map_dscr_list):
             if map.on_click(pos) is True:
                 self.active_map_index = i
-                return
+                return True
+        return False
 
     def on_double_click(self, event) -> bool:
         for i, map in enumerate(self.map_dscr_list):
@@ -288,4 +296,3 @@ class Biblio:
 
                 return True
         return False
-

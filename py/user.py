@@ -7,10 +7,13 @@ class User:
         self.name = name
         self.user_file = 'users/' + name + '.ini'
         self.current_map: int = 0
-        # карта -> список уровней, каждый уровень - список дырок
+        # карта -> уровень, который сейчас надо проходить (то есть, еще не пройден)
         self.levels: dict[int, int] = {}
-        # который раз проходится игра
-        self.game: dict[int, int] = {}
+        # в словаре кортеж:
+        #   сколько раз сыграли уже игру -> int
+        #   сколько набрано очков за все игры -> int
+        #   сколько процентов по уровням в текущей игре ->  list[int]
+        self.game: dict[int, tuple] = {}
 
     def load(self):
         try:
@@ -30,16 +33,29 @@ class User:
                 if map_section in config:
                     if 'number' in config[map_section]:
                         map_number = int(config[map_section]['number'])
-                        # уровень который сейчас надо проходить
-                        if 'level' in config[map_section]:
-                            self.levels[map_number] = int(config[map_section]['level'])
-                        if 'game' in config[map_section]:
-                            self.game[map_number] = int(config[map_section]['game'])
-                        else:
-                            self.game[map_number] = 0
 
-                else:
-                    break
+                        # уровень который сейчас надо проходить
+                        level = 0
+                        if 'level' in config[map_section]:
+                            level = int(config[map_section]['level'])
+                        if level <= 1:
+                            continue
+                        self.levels[map_number] = level
+
+                        points = 0
+                        if 'points' in config[map_section]:
+                            points = int(config[map_section]['points'])
+                        procents = []
+                        if 'procents' in config[map_section]:
+                            procents = [int(x) for x in config[map_section]['procents'].split(';')]
+                        game_number = 0
+                        if 'game' in config[map_section]:
+                            game_number = int(config[map_section]['game'])
+                        self.game[map_number] = (game_number, points, procents)
+
+                        LOG.write(
+                            f'{self.name} : map={map_number} points={points} procents={procents} game_number={game_number} next_level={level}')
+
             LOG.write(f'{self.name} : последняя карта {self.current_map} : пройденные уровни по картам : {self.levels}')
 
         except Exception as e:
@@ -60,11 +76,18 @@ class User:
             config[section] = {}
             config[section]['current_map'] = str(self.current_map)
             for i, map_number in enumerate(self.levels.keys()):
+                if self.levels[map_number] <= 1:
+                    # не прошли ни одного уровня вообще не будем писать эту карты
+                    continue
                 map_section = 'map' + str(i + 1)
+                game_number, points, procents = self.game[map_number]
                 config[map_section] = {}
                 config[map_section]['number'] = str(map_number)
+                config[map_section]['points'] = str(points)
+                config[map_section]['game'] = str(game_number)
                 config[map_section]['level'] = str(self.levels[map_number])
-                config[map_section]['game'] = str(self.game[map_number])
+                config[map_section]['procents'] = ';'.join([str(x) for x in procents])
+
             config.write(f)
 
     def save_level(self, level_number):

@@ -193,6 +193,8 @@ class Dispatcher:
         self.user = None
         # размер текущего тика
         self.tick = 0
+        self.flag_finish = False
+        self.finish_screen = None
 
     def on_stop(self):
         if self.game is not None:
@@ -214,7 +216,11 @@ class Dispatcher:
         # print(f'{sender.__class__.__name__}.needUpdate : sender={sender}')
 
     def onTimer(self):
-        self.game.onTimer(time.time())
+        tt = time.time()
+        if self.game is not None:
+            self.game.onTimer(tt)
+        if self.finish_screen is not None:
+            self.finish_screen.onTimer(tt)
 
     @staticmethod
     def load_image(fullname):
@@ -250,11 +256,11 @@ class GameState(enum.Enum):
     # пауза
     GAME_PAUSE = 4002
     # раунд игры закончился успешно
-    GAME_SUCCESS = 4002
+    GAME_SUCCESS = 4003
     # раунд игры закончился неудачно
-    GAME_FAIL = 4003
+    GAME_FAIL = 4004
     # игры нет
-    GAME_NO = 4004
+    GAME_NO = 4005
 
 
 class Machine:

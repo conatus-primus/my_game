@@ -21,6 +21,7 @@ class Game:
         self.block_collect = None
         self.block_game = None
         self.user = None
+        self.state = None
 
     def load(self):
         # к этому моменту уже известен пользователь
@@ -30,14 +31,14 @@ class Game:
         # игровой блок и смещение блока относительно всего игрового поля
         self.block_game = [(Field(self), (WIDTH_MARGIN, HEIGHT_HEADER)),
                            (Header(self), (0, 0)),
-                           (Footer(self, GameState.GAME_WAIT), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                           (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
                            (MarginLeft(self), (0, HEIGHT_HEADER)),
                            (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                            ]
 
         self.block_collect = [(self.collection, (WIDTH_MARGIN, HEIGHT_HEADER)),
                               (Header(self), (0, 0)),
-                              (Footer(self, GameState.GAME_NO), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                              (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
                               (MarginLeft(self), (0, HEIGHT_HEADER)),
                               (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                               ]
@@ -49,7 +50,10 @@ class Game:
             obj, _ = item
             obj.load(dispatcher.session.map_number)
 
-        # self.map.setLevelData(['path1', 'path11', 'path3', 'path32'])
+        self.game = GameState.GAME_NO
+        for item in self.block:
+            obj, _ = item
+            obj.on_changed_state(None, self.game)
 
         # фоновая музыка
         pygame.mixer.music.play(-1)
@@ -92,9 +96,25 @@ class Game:
             obj.update(sender)
 
     # вход - нажатые клавиши pygame.key.get_pressed()
-    def onPressedKey(self, pressed_keys):
+    def on_pressed_key(self, pressed_keys):
         if self.block is None:
             return
+
+        if self.state == GameState.GAME_WAIT:
+            # эмулируем клик на /начать/
+            if pressed_keys[pygame.K_RETURN]:
+                dispatcher.game.notify_about_change_state(ButtonState.PLAY_ID)
+
+        elif self.state == GameState.GAME_PLAY:
+            if pressed_keys[pygame.K_SPACE]:
+                dispatcher.game.notify_about_change_state(ButtonState.PAUSE_ID)
+            # не выходим мы в состоянии игры  надо еще амулет подвигать
+
+        elif self.state == GameState.GAME_PAUSE:
+            # стоим на паузе надо продолжить эмулируем клик на продолжить
+            if pressed_keys[pygame.K_SPACE]:
+                dispatcher.game.notify_about_change_state(ButtonState.CONTINUE_ID)
+            # не выходим мы на паузе пусть приноровится двигать клавишами
 
         for item in self.block:
             obj, offset = item
@@ -130,6 +150,7 @@ class Game:
             e.pos = x - offset[0], y - offset[1]
             obj.onClickExtend(e)
 
+    # двойной клик на коллекции - выбор новой карты
     def on_double_click(self, event):
         if self.block is None:
             return False
@@ -144,10 +165,17 @@ class Game:
                     # меняем карту
                     LOG.write(
                         f'Сейчас будет загрузка карта {dispatcher.session.map_number} для {dispatcher.session.user}')
+
                     self.block = self.block_game
                     for item in self.block:
                         obj, _ = item
                         obj.load(dispatcher.session.map_number)
+
+                    old_state, self.state = self.state, GameState.GAME_WAIT
+                    for item in self.block:
+                        obj, _ = item
+                        obj.on_changed_state(old_state, self.state)
+
                     return True
         return False
 
@@ -157,19 +185,69 @@ class Game:
         dispatcher.user.save_level(dispatcher.session.level_number)
         pass
 
+    #
+    def __change_state__(self, old_state):
+        for item in self.block:
+            obj, _ = item
+            obj.on_changed_state(old_state, self.state)
+
     # сообщение об изменении состояния игры
-    def notify_about_change_state(self, state, button_id):
+    def notify_about_change_state(self, button_id):
+        # вернуться в коллекцию
         if ButtonState.HOUSE_ID == button_id:
-            # вернуться в коллекцию
             self.block = self.block_collect
 
             del self.block_game
             self.block_game = [(Field(self), (WIDTH_MARGIN, HEIGHT_HEADER)),
                                (Header(self), (0, 0)),
-                               (Footer(self, GameState.GAME_WAIT), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                               (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
                                (MarginLeft(self), (0, HEIGHT_HEADER)),
                                (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                                ]
-            for item in self.block:
-                obj, _ = item
-                #obj.on_changed_state(GameState.GAME_NO, GameState.GAME_NO)
+            old_state, self.state = self.state, GameState.GAME_NO
+            self.__change_state__(old_state)
+            return
+
+        # играем
+        elif ButtonState.PLAY_ID == button_id:
+            # начать игру
+            old_state, self.state = self.state, GameState.GAME_PLAY
+            self.__change_state__(old_state)
+            self.game_start()
+
+        # пауза
+        elif ButtonState.PAUSE_ID == button_id:
+            # пауза в игре
+            old_state, self.state = self.state, GameState.GAME_PAUSE
+            self.__change_state__(old_state)
+            self.game_pause()
+
+        # продолжить игру после паузы
+        elif ButtonState.CONTINUE_ID == button_id:
+            # пауза в игре
+            old_state, self.state = self.state, GameState.GAME_PLAY
+            self.__change_state__(old_state)
+            self.game_continue()
+
+        # начать играть заново
+        elif ButtonState.REPLAY_ID == button_id:
+            # пауза в игре
+            old_state, self.state = self.state, GameState.GAME_WAIT
+            self.__change_state__(old_state)
+            self.game_replay()
+
+    # действия связанные с началом игры
+    def game_start(self):
+        pass
+
+    # встали на паузу
+    def game_pause(self):
+        pass
+
+    # продолжить игру после паузы
+    def game_continue(self):
+        pass
+
+    # начать играть заново
+    def game_replay(self):
+        pass

@@ -2,6 +2,7 @@ import enum
 from invite import Invite, Start
 from game import Game
 from message import Message
+from finish import Finish
 from py.shared import *
 
 FPS = 60
@@ -55,10 +56,18 @@ if __name__ == '__main__':
     click_pos = pygame.mouse.get_pos()
 
     running = True
+    running2 = True
 
-    while running:
+    while running and running2:
         pressed = False
         for event in pygame.event.get():
+
+            if dispatcher.flag_finish is True:
+                dispatcher.on_stop()
+                dispatcher.finish_screen = Finish()
+                dispatcher.flag_finish = False
+                game = None
+
             if event.type == TIMER_EVENT_ONE_SEC:
                 dispatcher.onTimer()
 
@@ -68,7 +77,6 @@ if __name__ == '__main__':
             if event.type == pygame.MOUSEBUTTONUP:
 
                 # эмуляция двойного клика мыши
-
                 if time.time() - click_time < double_click_time and click_pos == pygame.mouse.get_pos():
                     print("Double click detected")
                     if runList is None and game is not None:
@@ -81,7 +89,7 @@ if __name__ == '__main__':
                     game.onClickExtend(event)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-
+                print(event.pos)
                 if runList is not None:
                     if runList[0].onClick(event.pos):
 
@@ -131,15 +139,20 @@ if __name__ == '__main__':
         else:
             # TODO вынести в константы
             screen.fill((240, 155, 89))
+
+            if dispatcher.finish_screen is not None:
+                running2 = dispatcher.finish_screen.render(screen)
+
             if messageError is not None:
                 messageError.render(screen)
             else:
-                game.render(screen)
+                if game is not None:
+                    game.render(screen)
 
         pygame.display.flip()
 
-        if pressed:
-            game.onPressedKey(pygame.key.get_pressed())
+        if pressed and game is not None:
+            game.on_pressed_key(pygame.key.get_pressed())
 
     dispatcher.on_stop()
 
