@@ -36,6 +36,10 @@ class MapDscr:
         # список заполним когда пользователь начнет играть в этом уровне (или сгенерим или возьмем у пользователя)
         self.holes_in_level: list[tuple] = []
 
+    # вернуть количество уровней
+    def get_level_count(self):
+        return len(self.holes_in_level)
+
     def load(self) -> bool:
         map_name = os.path.basename(self.filename).split('.')[0]
         if map_name.isnumeric():
@@ -84,7 +88,7 @@ class MapDscr:
                     count_holes_in_level.append(self.max_count_holes)
                     count_holes_in_level = sorted(list(set(count_holes_in_level)))
 
-                    print(count_holes_in_level)
+                    print('количество дырок в уровнях', count_holes_in_level)
                     for x in count_holes_in_level:
                         self.holes_in_level.append((x, []))
 
@@ -287,8 +291,7 @@ class Biblio:
                 LOG.write(f'Играем с {map.filename}')
 
                 # TODO да я знаю, часть параметров дублируется, это эволюция кода, со временем почистим ненужное
-
-                dispatcher.user.current_map = map.map_number
+                dispatcher.user.set_choice(map.map_number)
                 dispatcher.session.level_content = map.generate_level(self.level_number)
                 dispatcher.session.map_number = map.map_number
                 dispatcher.session.selected_map = map

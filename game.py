@@ -11,9 +11,10 @@ from collection import *
 from py.user import *
 from footer import *
 
+
 class Game:
     def __init__(self):
-        #self.field = None
+        # self.field = None
         # игровой блок и смещение блока относительно всего игрового поля
         self.block = None
         # для выхода из логина
@@ -25,7 +26,7 @@ class Game:
 
     def load(self):
         # к этому моменту уже известен пользователь
-        #self.field = Field(self)
+        # self.field = Field(self)
         self.collection = Collection(self)
 
         # игровой блок и смещение блока относительно всего игрового поля
@@ -181,8 +182,6 @@ class Game:
 
     # завершаем игру
     def on_stop(self):
-        # TODO временно будем записывать в пользователя прошедший уровень хоть он его может и не прошел
-        dispatcher.user.save_level(dispatcher.session.level_number)
         pass
 
     #
@@ -242,6 +241,8 @@ class Game:
 
     # встали на паузу
     def game_pause(self):
+        # TODO временно будем записывать в пользователя прошедший уровень хоть он его может и не прошел
+        dispatcher.user.next_level(random.randint(20, 40))
         pass
 
     # продолжить игру после паузы

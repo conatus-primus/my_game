@@ -1,6 +1,11 @@
 # правый блоки игрового поля
+import copy
+
+from vars import *
 from py.button import *
 from block import Block
+from py.panel import ImagePanel
+from py.biblio import MapDscr
 import enum
 
 
@@ -19,6 +24,9 @@ class MarginRight(Block):
 
         self.buttonSound = DrawnCheckButton(ButtonID.ID_BUTTON_SOUND, 'sound', self, (20, 70))
         self.buttonChanson = DrawnCheckButton(ButtonID.ID_BUTTON_CHANSON, 'chanson', self, (100, 70))
+
+        self.level_panel = None
+        self.current_map = MapDscr('так надо это пустая карта')
 
     def load(self, session):
         self.buttonSound.check(dispatcher.session.soundsActive)
@@ -43,7 +51,94 @@ class MarginRight(Block):
         # image_chanson = pygame.image.load(CURRENT_DIRECTORY + '/images/system/chanson3.png')
         # self.surface.blit(image_chanson, (dX + image_sound.get_width() + dX, 60))
 
-    # клик мыши
+        if dispatcher.game.state is None or dispatcher.game.state == GameState.GAME_NO:
+            # мы в коллекции
+            if dispatcher.game is not None and dispatcher.game.collection is not None:
+                map = dispatcher.game.collection.biblio.get_clicked_map()
+
+                if map is not None:
+
+                    # ищем карту в профиле пользователя, чтобы отобразить статистику
+                    round, points, p_original = dispatcher.user.get_map_data(map.map_number)
+                    percents = copy.deepcopy(p_original)
+                    level_count_in_map = map.get_level_count()
+
+                    if self.level_panel == None or map.map_number != self.current_map.map_number:
+                        self.level_panel = None
+                        self.level_panel = ImagePanel(self, FON_COLOR)
+                        self.level_panel.load('images/system/level_horz.png', 'images/system/level_horz_disable.png',
+                                              (30, 30),
+                                              level_count_in_map)
+                        self.level_panel.set_enabled_count(level_count_in_map)
+                        print(f'всего уровней {level_count_in_map} отработали {len(percents)}')
+
+                    self.current_map = map
+
+                    # TODO сделать по-человечески
+                    # да, я знаю, выглядит страшненько, подбор, увы. подбор, потом оптимизируем
+                    font = pygame.font.SysFont('Comic Sans MS', 24)
+
+                    offset_y = 200
+                    font.set_bold(False)
+                    text = font.render(f'Дом {map.map_number}', True, (0, 0, 0))
+                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+
+                    offset_y += text.get_height()
+                    font.set_bold(False)
+                    text = font.render(f'Очки опыта', True, (0, 0, 0))
+                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+
+                    offset_y += text.get_height()
+                    font.set_bold(True)
+                    text = font.render(f'{points}', True, (0, 0, 0))
+                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+
+                    offset_y += text.get_height()
+                    font.set_bold(False)
+                    text = font.render(f'Проведено игр', True, (0, 0, 0))
+                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+
+                    offset_y += text.get_height()
+                    font.set_bold(True)
+                    text = font.render(f'{round}', True, (0, 0, 0))
+                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+
+                    offset_y += 2 * text.get_height()
+                    font.set_bold(False)
+                    text = font.render(f'Игра сейчас', True, (0, 0, 0))
+                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+
+                    offset_y += text.get_height()
+                    self.level_panel.render(self.surface, ((self.width - self.level_panel.width) // 2, offset_y))
+
+                    font = pygame.font.SysFont('Comic Sans MS', 16)
+                    offset_y += text.get_height()
+                    if len(percents) < level_count_in_map:
+                        percents += [0] * (level_count_in_map - len(percents))
+                    warning = False
+
+                    # посчитаем смещение влево берем шаблонную строку
+                    text = font.render(f'Щ уровень: не пройден', True, (0, 0, 0))
+                    dx = (self.width - text.get_width()) // 2
+
+                    for i, p in enumerate(percents):
+                        if p == 0:
+                            if warning is not True:
+                                font.set_bold(True)
+                                text = font.render(f'Вы здесь', True, (0, 0, 0))
+                                self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+                                offset_y += text.get_height()
+                                warning = True
+                                font.set_bold(False)
+
+                            text = font.render(f'{i + 1} уровень не пройден', True, (0, 0, 0))
+                        else:
+                            text = font.render(f'{i + 1} уровень {p}% монстров', True, (0, 0, 0))
+                        self.surface.blit(text, (dx, offset_y))
+                        offset_y += text.get_height()
+
+                        # клик мыши
+
     def onClick(self, pos):
         if not super().isInBlock(pos):
             return False

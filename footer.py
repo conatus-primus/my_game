@@ -65,7 +65,8 @@ class Footer(Block):
             _, image, offset_x = dscr_button
             self.surface.blit(image, (offset_x, self.offset_y))
 
-        self.surface.blit(self.image_sortir, self.offset_sortir)
+        if self.state != GameState.GAME_NO:
+            self.surface.blit(self.image_sortir, self.offset_sortir)
 
     def onClick(self, pos):
         x, y = pos

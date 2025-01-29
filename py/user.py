@@ -1,4 +1,5 @@
 from vars import *
+from py.biblio import MapDscr
 import configparser
 
 
@@ -8,7 +9,7 @@ class User:
         self.user_file = 'users/' + name + '.ini'
         self.current_map: int = 0
         # карта -> уровень, который сейчас надо проходить (то есть, еще не пройден)
-        self.levels: dict[int, int] = {}
+        # self.levels: dict[int, int] = {}
         # в словаре кортеж:
         #   сколько раз сыграли уже игру -> int
         #   сколько набрано очков за все игры -> int
@@ -35,12 +36,12 @@ class User:
                         map_number = int(config[map_section]['number'])
 
                         # уровень который сейчас надо проходить
-                        level = 0
-                        if 'level' in config[map_section]:
-                            level = int(config[map_section]['level'])
-                        if level <= 1:
-                            continue
-                        self.levels[map_number] = level
+                        # level = 0
+                        # if 'level' in config[map_section]:
+                        #     level = int(config[map_section]['level'])
+                        # if level <= 1:
+                        #     continue
+                        # self.levels[map_number] = level
 
                         points = 0
                         if 'points' in config[map_section]:
@@ -54,20 +55,21 @@ class User:
                         self.game[map_number] = (game_number, points, procents)
 
                         LOG.write(
-                            f'{self.name} : map={map_number} points={points} procents={procents} game_number={game_number} next_level={level}')
+                            f'{self.name} : map={map_number} points={points} procents={procents} game_number={game_number}')
 
-            LOG.write(f'{self.name} : последняя карта {self.current_map} : пройденные уровни по картам : {self.levels}')
+            LOG.write(f'{self.name} : последняя карта {self.current_map}')
 
         except Exception as e:
             LOG.write(str(e))
 
     def contains(self, map_number):
-        if map_number not in self.levels.keys():
+        if map_number not in self.game.keys():
             return False
         else:
-            return self.levels[map_number] != 0
+            return self.game[map_number] != 0
 
     def save(self):
+        LOG.write(f'Сохраняемся {self.name}: {self.current_map}')
         section = 'start'
 
         # записываем имя текущего пользователя
@@ -75,20 +77,63 @@ class User:
             config = configparser.ConfigParser()
             config[section] = {}
             config[section]['current_map'] = str(self.current_map)
-            for i, map_number in enumerate(self.levels.keys()):
-                if self.levels[map_number] <= 1:
-                    # не прошли ни одного уровня вообще не будем писать эту карты
-                    continue
+
+            for i, key in enumerate(self.game.keys()):
+
                 map_section = 'map' + str(i + 1)
-                game_number, points, procents = self.game[map_number]
+                game_number, points, procents = self.game[key]
+                # не прошел даже 1 уровень
+                if len(procents) < 1:
+                    continue
+
                 config[map_section] = {}
-                config[map_section]['number'] = str(map_number)
+                config[map_section]['number'] = str(key)
                 config[map_section]['points'] = str(points)
                 config[map_section]['game'] = str(game_number)
-                config[map_section]['level'] = str(self.levels[map_number])
-                config[map_section]['procents'] = ';'.join([str(x) for x in procents])
+                config[map_section]['procents'] = ';'.join([str(x) for x in procents if x != 0])
 
             config.write(f)
 
-    def save_level(self, level_number):
-        self.levels[self.current_map] = self.levels[self.current_map] + 1
+    def next_level(self, value_proc):
+        LOG.write(f'Новый уровень {self.name}: {self.current_map}')
+
+        if self.current_map not in self.game.keys():
+            LOG.write(
+                f'Хотим подвинуть уровень. Нет карты {self.current_map}. Что-то пошло не так, пользователь уже должен иметь эту карту')
+            return
+
+        game_number, points, procents = self.game[self.current_map]
+        procents.append(value_proc)
+
+        print(dispatcher.session.selected_map.get_level_count())
+        if len(procents) == dispatcher.session.selected_map.get_level_count():
+            # новый игра
+            self.game[self.current_map] = game_number + 1, points, procents
+        elif len(procents) > dispatcher.session.selected_map.get_level_count():
+            self.game[self.current_map] = game_number, points, [procents[-1]]
+
+        # if self.current_map in self.levels:
+        #     self.levels[self.current_map] += 1
+        # if self.levels[self.current_map] == dispatcher.session.selected_map.get_level_count():
+        #     self.levels[self.current_map] = 1
+        #     game_number, points, procents = self.game[self.current_map]
+        #     self.game[self.current_map] =  game_number + 1, points, []
+
+    # в словаре кортеж:
+    #   сколько раз сыграли уже игру -> int
+    #   сколько набрано очков за все игры -> int
+    #   сколько процентов по уровням в текущей игре ->  list[int]
+    def get_map_data(self, map_number):
+        if map_number not in self.game.keys():
+            # создадим пустое
+            return (0, 0, [])
+        else:
+            return self.game[map_number]
+
+    def set_choice(self, map_number):
+        self.current_map = map_number
+
+        if map_number in self.game.keys():
+            return
+
+        self.game[map_number] = self.get_map_data(map_number)

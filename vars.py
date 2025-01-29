@@ -249,6 +249,8 @@ class ButtonState(enum.Enum):
 
 
 class GameState(enum.Enum):
+    # игры нет
+    GAME_NO = 4005
     # начать игру
     GAME_WAIT = 4000
     # идет игра
@@ -259,9 +261,6 @@ class GameState(enum.Enum):
     GAME_SUCCESS = 4003
     # раунд игры закончился неудачно
     GAME_FAIL = 4004
-    # игры нет
-    GAME_NO = 4005
-
 
 class Machine:
     # 2 параметра картинка, 3 параметр смещение по горизонтали от левого края
@@ -273,7 +272,7 @@ class Machine:
                }
 
     states = {GameState.GAME_WAIT: [ButtonState.PLAY_ID, ButtonState.HOUSE_ID],
-              GameState.GAME_PLAY: [ButtonState.PAUSE_ID, ButtonState.REPLAY_ID],
+              GameState.GAME_PLAY: [ButtonState.PAUSE_ID],
               GameState.GAME_PAUSE: [ButtonState.CONTINUE_ID, ButtonState.REPLAY_ID, ButtonState.HOUSE_ID],
               GameState.GAME_SUCCESS: [ButtonState.PLAY_ID, ButtonState.HOUSE_ID],
               GameState.GAME_FAIL: [ButtonState.REPLAY_ID, ButtonState.HOUSE_ID],
