@@ -66,7 +66,8 @@ class User:
         if map_number not in self.game.keys():
             return False
         else:
-            return self.game[map_number] != 0
+            game_number, points, procents = self.game[map_number]
+            return len(procents) != 0
 
     def save(self):
         LOG.write(f'Сохраняемся {self.name}: {self.current_map}')

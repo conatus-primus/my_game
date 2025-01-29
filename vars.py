@@ -29,7 +29,8 @@ BRIGHTEN = [0, 40, 55, 66, 77, 88, 99, 110, 115, 130, 150, 170]
 
 # цвет заливки всех полей игры
 FON_COLOR = pygame.Color(198, 210, 159)
-FON_COLOR_DARK = pygame.Color(159, 168, 127)
+FON_COLOR_MID = pygame.Color(159, 168, 127)
+FON_COLOR_DARK = pygame.Color(183, 194, 147)
 
 # лог на сессию
 LOG = logger()

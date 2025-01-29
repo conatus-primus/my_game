@@ -17,7 +17,8 @@ class MarginLeft(Block):
 
     def render(self):
 
-        pygame.draw.rect(self.surface, FON_COLOR, (0, 0, self.width, self.height))
+        pygame.draw.rect(self.surface, FON_COLOR_MID, (0, 0, self.width, self.height))
+        pygame.draw.rect(self.surface, FON_COLOR, (0, 0, self.width - 5, self.height))
 
         # верхняя подпись
         dY = 10

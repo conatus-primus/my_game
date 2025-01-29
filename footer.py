@@ -59,7 +59,7 @@ class Footer(Block):
             offset += image.get_width() + margin
 
     def render(self):
-        pygame.draw.rect(self.surface, FON_COLOR_DARK, (0, 0, self.width, self.height))
+        pygame.draw.rect(self.surface, FON_COLOR_MID, (0, 0, self.width, self.height))
         for button_id in Machine.states[self.state]:
             dscr_button = Machine.buttons[button_id]
             _, image, offset_x = dscr_button

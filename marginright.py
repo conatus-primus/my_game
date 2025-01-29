@@ -33,7 +33,8 @@ class MarginRight(Block):
         self.buttonChanson.check(dispatcher.session.chansonActive)
 
     def render(self):
-        pygame.draw.rect(self.surface, FON_COLOR, (0, 0, self.width, self.height))
+        pygame.draw.rect(self.surface, FON_COLOR_MID, (0, 0, self.width, self.height))
+        pygame.draw.rect(self.surface, FON_COLOR, (5, 0, self.width, self.height))
         self.brightPanel.render()
         self.surface.blit(self.brightPanel.surface, self.brightOffset)
 

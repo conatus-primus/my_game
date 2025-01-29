@@ -10,7 +10,7 @@ class Header(Block):
         self.font = pygame.font.Font(None, HEIGHT_HEADER - 20)
 
     def render(self, ):
-        pygame.draw.rect(self.surface, pygame.Color('red'), (0, 0, self.width, self.height))
+        pygame.draw.rect(self.surface, FON_COLOR_MID, (0, 0, self.width, self.height))
 
         d = 10
         surf_text = self.font.render(dispatcher.session.user, True, (0, 0, 0))
@@ -19,10 +19,7 @@ class Header(Block):
 
         if dispatcher.game.state is not None and dispatcher.game.state != GameState.GAME_NO:
             game, points, percents = dispatcher.user.get_map_data(dispatcher.session.map_number)
-
             max_count = dispatcher.session.selected_map.get_level_count()
-            print(f'Игра {game} уровень {len(percents) % max_count + 1}')
-
             surf_text = self.font.render(
                 f'Дом {dispatcher.session.map_number}          Игра {game + 1}          Уровень {len(percents) % max_count + 1}',
                 True, (0, 0, 0))
