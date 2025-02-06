@@ -37,6 +37,7 @@ LOG = logger()
 
 # событие таймера
 TIMER_EVENT_ONE_SEC = pygame.USEREVENT + 1
+TIMER_EVENT_GAME = pygame.USEREVENT + 2
 
 # время показа пассивного амулета в одной дырке
 SHOW_TIME_IN_HOLE_SEC = 2
@@ -142,10 +143,10 @@ class Session:
         self.user = ''
         # описание карты MapDecr
         self.selected_map = None
-        # номер уровня
-        self.level_number = 1
         # список дырок выбранного уровня
         self.level_content = []
+
+        self.logica = None
 
     def read(self):
         section = 'start'
@@ -216,12 +217,12 @@ class Dispatcher:
         self.game.needUpdate(sender)
         # print(f'{sender.__class__.__name__}.needUpdate : sender={sender}')
 
-    def onTimer(self):
+    def on_timer(self):
         tt = time.time()
         if self.game is not None:
-            self.game.onTimer(tt)
+            self.game.on_timer(tt)
         if self.finish_screen is not None:
-            self.finish_screen.onTimer(tt)
+            self.finish_screen.on_timer(tt)
 
     @staticmethod
     def load_image(fullname):

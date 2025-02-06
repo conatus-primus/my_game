@@ -26,7 +26,7 @@ class Finish:
             x.render(surface)
         return self.code_ret
 
-    def onTimer(self, currentTime):
+    def on_timer(self, currentTime):
         if self.tick == 0:
             self.tick = currentTime
         else:

@@ -7,7 +7,8 @@ from block import Block
 class Header(Block):
     def __init__(self, game):
         super().__init__(game, WIDTH_GAME, HEIGHT_HEADER)
-        self.font = pygame.font.Font(None, HEIGHT_HEADER - 20)
+        #self.font = pygame.font.Font(None, HEIGHT_HEADER - 20)
+        self.font = pygame.font.SysFont('Comic Sans MS', HEIGHT_HEADER - 20)
 
     def render(self, ):
         pygame.draw.rect(self.surface, FON_COLOR_MID, (0, 0, self.width, self.height))

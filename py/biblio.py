@@ -134,10 +134,12 @@ class MapDscr:
         return True
 
     # пользователь не работал с этой картой, генерим уровень (нумерация с 1)
-    def generate_level(self, level_number):
-        if level_number >= len(self.holes_in_level):
-            level_number = 1
-        level_number -= 1
+    def generate_next_level(self):
+        game, points, percents = dispatcher.user.get_map_data(dispatcher.session.map_number)
+        max_count = dispatcher.session.selected_map.get_level_count()
+        level_number = len(percents) % max_count
+        # на всякий случай путаница у нас тут
+        level_number %= len(self.holes_in_level)
         count, _ = self.holes_in_level[level_number]
         return ['path' + str(i) for i in range(1, count + 1)]
 
@@ -180,7 +182,8 @@ class MapDscr:
         self.stars.render(screen,
                           (rect_complexity.x + (rect_complexity.width - self.stars.width) // 2, rect_complexity.y))
 
-        self.render_levels(screen)
+        # не рисуем - ход признан неудачным
+        # self.render_levels(screen)
 
     def render_levels(self, screen):
         width, height = self.image_size
@@ -208,10 +211,6 @@ class Biblio:
         self.map_dscr_list = []
         # номер карты в массиве когда карту выбрали кликом
         self.active_map_index = None
-        # номер уровня
-        self.level_number = 1
-
-        # загрузить все доступные карты, каталог фиксированный
 
     def load(self):
         for filename in glob.glob(CURRENT_DIRECTORY + '/maps/*.png'):
@@ -269,7 +268,9 @@ class Biblio:
                              (left - Show.margin - d, top - Show.margin - d, w + 2 * Show.margin + 2 * d,
                               w + 2 * Show.margin + 2 * d),
                              int(Show.margin), 2 * Show.margin)
-            self.map_dscr_list[self.active_map_index].render_levels(screen)
+
+            # не рисуем - идея признана неудачной
+            # self.map_dscr_list[self.active_map_index].render_levels(screen)
 
     def get_clicked_map(self):
         if 0 <= self.active_map_index <= len(self.map_dscr_list):
@@ -292,10 +293,10 @@ class Biblio:
 
                 # TODO да я знаю, часть параметров дублируется, это эволюция кода, со временем почистим ненужное
                 dispatcher.user.set_choice(map.map_number)
-                dispatcher.session.level_content = map.generate_level(self.level_number)
                 dispatcher.session.map_number = map.map_number
                 dispatcher.session.selected_map = map
-                dispatcher.session.level_number = self.level_number
+                dispatcher.session.level_content = map.generate_next_level()
 
                 return True
+
         return False

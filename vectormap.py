@@ -173,6 +173,9 @@ class VectorMap:
             self.rawMap.load()
             self.holes = self.rawMap.holes
 
+        if self.holes is None:
+            return
+
         # нда, наблюдаем некую стихийность разработки
         # наконец, определились...
         # вводим панели для показа наличия нескольких амулетов на одной дырке
@@ -192,7 +195,7 @@ class VectorMap:
                 self.strips[hole.id] = copy.deepcopy(ParserSvgString(strip_string).coords)
         print(self.strips)
 
-    def set_current_level_content(self, current_level_content, max_count_holes):
+    def set_current_level_content(self, current_level_content):
 
         self.holes = []
         self.disabled_holes = []
@@ -242,7 +245,6 @@ class VectorMap:
 
         pens = [
             (pygame.Color(200, 200, 200), 5),
-            #(pygame.Color(160, 160, 160), 3),
             (pygame.Color(80, 80, 80), 3)
         ]
 

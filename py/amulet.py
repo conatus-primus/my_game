@@ -134,7 +134,7 @@ class Amulet:
     def onPressedKey(self, pressed_keys):
         return False
 
-    def onTimer(self, currentTime):
+    def on_timer(self, currentTime):
         return False
 
     def setMontrerState(self, montrerState):
@@ -256,7 +256,7 @@ class AmuletPassive(Amulet):
         return False
 
     # таймер на передвижение амулетов
-    def onTimer(self, currentTime):
+    def on_timer(self, currentTime):
         # print(f'{self.__class__.__name__}.{__name__} {current_time}')
 
         if self.startTime is None:

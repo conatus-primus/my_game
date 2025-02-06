@@ -1,8 +1,8 @@
 # правый блоки игрового поля
 import copy
 
-from vars import *
 from py.button import *
+from py.bright_panel import *
 from block import Block
 from py.panel import ImagePanel
 from py.biblio import MapDscr
@@ -81,36 +81,35 @@ class MarginRight(Block):
 
                     offset_y = 200
                     font.set_bold(False)
-                    text = font.render(f'Дом {map.map_number}', True, (0, 0, 0))
+                    text = font.render(f'Дом № {map.map_number}', True, (0, 0, 0))
                     self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
 
-                    offset_y += text.get_height()
-                    font.set_bold(False)
-                    text = font.render(f'Очки опыта', True, (0, 0, 0))
-                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+                    if points != 0:
+                        offset_y += text.get_height()
+                        font.set_bold(False)
+                        text = font.render(f'Очки опыта', True, (0, 0, 0))
+                        self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
 
-                    offset_y += text.get_height()
-                    font.set_bold(True)
-                    text = font.render(f'{points}', True, (0, 0, 0))
-                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+                        offset_y += text.get_height()
+                        font.set_bold(True)
+                        text = font.render(f'{points}', True, (0, 0, 0))
+                        self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
 
-                    offset_y += text.get_height()
-                    font.set_bold(False)
-                    text = font.render(f'Проведено игр', True, (0, 0, 0))
-                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+                    if round != 0:
+                        offset_y += text.get_height()
+                        font.set_bold(False)
+                        text = font.render(f'Проведено игр', True, (0, 0, 0))
+                        self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
 
-                    offset_y += text.get_height()
-                    font.set_bold(True)
-                    text = font.render(f'{round}', True, (0, 0, 0))
-                    self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+                        offset_y += text.get_height()
+                        font.set_bold(True)
+                        text = font.render(f'{round}', True, (0, 0, 0))
+                        self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
 
                     offset_y += 2 * text.get_height()
                     font.set_bold(False)
                     text = font.render(f'Игра сейчас', True, (0, 0, 0))
                     self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
-
-                    offset_y += text.get_height()
-                    self.level_panel.render(self.surface, ((self.width - self.level_panel.width) // 2, offset_y))
 
                     font = pygame.font.SysFont('Comic Sans MS', 16)
                     offset_y += text.get_height()
@@ -138,8 +137,10 @@ class MarginRight(Block):
                         self.surface.blit(text, (dx, offset_y))
                         offset_y += text.get_height()
 
-                        # клик мыши
+                    offset_y += text.get_height()
+                    self.level_panel.render(self.surface, ((self.width - self.level_panel.width) // 2, offset_y))
 
+    # клик мыши
     def onClick(self, pos):
         if not super().isInBlock(pos):
             return False
@@ -168,35 +169,3 @@ class MarginRight(Block):
         if bNeedUpdate:
             dispatcher.needUpdate(self)
 
-
-class BrightPanel:
-    def __init__(self, block, width):
-        self.block = block
-        self.w = width // (len(BRIGHTEN) + 2)
-        self.h = 26
-        self.surface = pygame.Surface((len(BRIGHTEN) * self.w, self.h))
-
-    # нарисовать панель яркости с выделенным квадратом текущей яркости
-    def render(self):
-        baseColor = pygame.Color(FON_COLOR_DARK)
-
-        for i in range(len(BRIGHTEN)):
-            imageSquare = pygame.Surface([self.w, self.h])
-            imageSquare.fill(baseColor)
-            brightColor = (BRIGHTEN[i], BRIGHTEN[i], BRIGHTEN[i])
-            imageSquare.fill(brightColor, special_flags=pygame.BLEND_RGB_SUB)
-            self.surface.blit(imageSquare, (i * self.w, 0))
-
-        if dispatcher.session.brightness < len(BRIGHTEN):
-            D = 2
-            brightRect = (dispatcher.session.brightness * self.w + D, D, self.w - 2 * D, self.h - 2 * D)
-            pygame.draw.rect(self.surface, pygame.Color('white'), brightRect, 1)
-
-    # клик мыши
-    def onClick(self, pos):
-        x, y = pos
-        if 0 <= x < len(BRIGHTEN) * self.w and 0 <= y < self.h:
-            # поменяли атрибут в сессии
-            dispatcher.session.brightness = int(x // self.w)
-            #  сообщаем всем что было изменение
-            dispatcher.needUpdate(self)

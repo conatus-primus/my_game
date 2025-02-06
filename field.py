@@ -13,7 +13,7 @@ class Field(Block):
         self.vectorMap = None
         self.location = None
         self.amulets = []
-        self.amuletUser = None
+        self.amulet_user = None
         # данные для панелей пассивных амулетов
         self.strips: dict[str, list(Amulet)] = {}
         self.mob = None
@@ -36,16 +36,15 @@ class Field(Block):
         self.staticMap.load()
 
         # устанавливаем в векторную карту описание текущего уровня
-        self.vectorMap.set_current_level_content(dispatcher.session.level_content,
-                                                 dispatcher.session.selected_map.max_count_holes)
+        self.vectorMap.set_current_level_content(dispatcher.session.level_content)
 
         # пользовательский амулет
-        self.amuletUser = AmuletUser(self)
+        self.amulet_user = AmuletUser(self)
         # задаем все дырки
-        self.amuletUser.load(self.vectorMap.holes + self.vectorMap.disabled_holes)
+        self.amulet_user.load(self.vectorMap.holes + self.vectorMap.disabled_holes)
         # связываем амулет с локатором - изменится локатор - изменим и амулеты
-        self.amuletUser.setLocation(self.location)
-        self.amulets.append(self.amuletUser)
+        self.amulet_user.setLocation(self.location)
+        self.amulets.append(self.amulet_user)
 
         amuletPassive = AmuletPassive(self, 'ruby.png', ['path1', 'path2'], SHOW_TIME_IN_HOLE_SEC)
         # self.amuletPassive = AmuletPassive(self, 'ruby.png', ['path5'], [2, 0.1])
@@ -90,6 +89,7 @@ class Field(Block):
 
     def update(self, sender):
         self.staticMap.set_brightness(dispatcher.session.brightness)
+        self.vectorMap.set_current_level_content(dispatcher.session.level_content)
         for a in self.amulets:
             a.update()
 
@@ -101,9 +101,9 @@ class Field(Block):
             return True
         return False
 
-    def onTimer(self, current_time):
+    def on_timer(self, current_time):
         # пересчитать положение амулетов
-        if any([a.onTimer(current_time) for a in self.amulets]):
+        if any([a.on_timer(current_time) for a in self.amulets]):
             self.recalcAmuletRelativePosition()
             dispatcher.needUpdate(self)
             return True

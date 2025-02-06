@@ -69,7 +69,11 @@ if __name__ == '__main__':
                 game = None
 
             if event.type == TIMER_EVENT_ONE_SEC:
-                dispatcher.onTimer()
+                dispatcher.on_timer()
+
+            if event.type == TIMER_EVENT_GAME:
+                if dispatcher.session.logica is not None:
+                    dispatcher.session.logica.on_timer()
 
             if event.type == pygame.QUIT:
                 running = False

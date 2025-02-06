@@ -3,7 +3,7 @@ from vars import *
 
 
 class CheckButton:
-    def __init__(self, buttonID, parent):
+    def __init__(self, buttonID, parent, color_fon):
         self.image_pressed = None
         self.image_pressed_out = None
         self.buttonID = buttonID
@@ -11,9 +11,10 @@ class CheckButton:
         self.image = None
         self.surface = None
         self.checked = False
+        self.fon = color_fon
 
     def render(self):
-        self.surface.fill(FON_COLOR)
+        self.surface.fill(self.fon)
         if self.checked:
             self.surface.blit(self.image_pressed, (0, 0))
         else:
@@ -37,8 +38,8 @@ class CheckButton:
 
 # полностью нарисованная кнопка
 class DrawnCheckButton(CheckButton):
-    def __init__(self, buttonID, name, parent, offset):
-        super().__init__(buttonID, parent)
+    def __init__(self, buttonID, name, parent, offset, color_fon = FON_COLOR):
+        super().__init__(buttonID, parent, color_fon)
         self.offset = offset
         self.image_pressed = pygame.image.load('images/system/' + name + '_on.png')
         self.image_pressed_out = pygame.image.load('images/system/' + name + '_off.png')
@@ -46,13 +47,19 @@ class DrawnCheckButton(CheckButton):
             (max(self.image_pressed.get_width(), self.image_pressed_out.get_width()),
              max(self.image_pressed.get_height(), self.image_pressed_out.get_height())))
 
+    def get_width(self):
+        return self.image_pressed.get_width()
+
+    def get_height(self):
+        return self.image_pressed.get_height()
+
 
 # нарисованная кнопка с наложением картинки
 # button : (path, name без _on.png/_off.png)
 # image : (pathActive pathDisable)
 class ImageDrawnCheckButton(CheckButton):
-    def __init__(self, buttonID, buttonPath, image_path, parent, offset):
-        super().__init__(buttonID, parent)
+    def __init__(self, buttonID, buttonPath, image_path, parent, offset, color_fon = FON_COLOR):
+        super().__init__(buttonID, parent, color_fon)
         self.offset = offset
 
         self.image_pressed = pygame.image.load(buttonPath + '_on.png')

@@ -27,7 +27,7 @@ class Block:
     def needUpdate(self, sender):
         self.game.needUpdate(sender)
 
-    def onTimer(self, currentTime):
+    def on_timer(self, currentTime):
         return False
 
     def onPressedKey(self, pressed_keys):
@@ -41,4 +41,24 @@ class Block:
 
     # GameState
     def on_changed_state(self, old_state, new_state):
+        pass
+
+    # действия связанные с началом игры
+    def game_start(self):
+        pass
+
+    # встали на паузу
+    def game_pause(self):
+        pass
+
+    # продолжить игру после паузы
+    def game_continue(self):
+        pass
+
+    # начать играть заново
+    def game_replay(self):
+        pass
+
+    # закончилась игра
+    def game_over(self):
         pass

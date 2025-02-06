@@ -10,6 +10,7 @@ from py.shared import *
 from collection import *
 from py.user import *
 from footer import *
+from py.logica import *
 
 
 class Game:
@@ -131,13 +132,13 @@ class Game:
             blockPos = x - offset[0], y - offset[1]
             obj.onClick(blockPos)
 
-    def onTimer(self, currentTime):
+    def on_timer(self, currentTime):
         if self.block is None:
             return
 
         for item in self.block:
             obj, offset = item
-            obj.onTimer(currentTime)
+            obj.on_timer(currentTime)
 
     def onClickExtend(self, event):
         if self.block is None:
@@ -237,18 +238,39 @@ class Game:
 
     # действия связанные с началом игры
     def game_start(self):
-        pass
+        dispatcher.session.logica = Logica(self)
+        for item in self.block:
+            obj, _ = item
+            obj.game_start()
 
     # встали на паузу
     def game_pause(self):
-        # TODO временно будем записывать в пользователя прошедший уровень хоть он его может и не прошел
-        dispatcher.user.next_level(random.randint(20, 40))
-        pass
+        for item in self.block:
+            obj, _ = item
+            obj.game_pause()
 
     # продолжить игру после паузы
     def game_continue(self):
-        pass
+        for item in self.block:
+            obj, _ = item
+            obj.game_continue()
 
     # начать играть заново
     def game_replay(self):
-        pass
+        for item in self.block:
+            obj, _ = item
+            obj.game_replay()
+
+    # закончилась игра
+    def game_over(self):
+        old_state, self.state = self.state, GameState.GAME_WAIT
+        self.__change_state__(old_state)
+
+        for item in self.block:
+            obj, _ = item
+            obj.game_over()
+
+        # TODO временно будем записывать в пользователя прошедший уровень хоть он его может и не прошел
+        dispatcher.user.next_level(random.randint(20, 40))
+        dispatcher.session.level_content = dispatcher.session.selected_map.generate_next_level()
+
