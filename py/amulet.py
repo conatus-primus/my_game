@@ -152,7 +152,7 @@ class Amulet:
     def render_strip(self, point, screen):
         r, g, b = self.color.r, self.color.g, self.color.b
         pens = [
-            (pygame.Color(128, 128, 128,), 14),
+            (pygame.Color(128, 128, 128, ), 14),
             (pygame.Color(r * 5 // 15, g * 5 // 15, b * 5 // 15), 13),
             (pygame.Color(r * 7 // 15, g * 7 // 15, b * 7 // 15), 11),
             (pygame.Color(r * 9 // 15, g * 9 // 15, b * 9 // 15), 9),
@@ -164,6 +164,20 @@ class Amulet:
         for i, pen in enumerate(pens):
             color, h = pen
             pygame.draw.circle(screen, color, point, (h + 2) // 2, (h + 2) // 2)
+
+    def minus_balls(self):
+        pass
+
+    def balls(self):
+        return True
+
+    def get_active_rect(self, delta):
+        for a in self.amuletSprites:
+            if a.active:
+                return pygame.Rect(a.rect.left - delta, a.rect.top - delta, a.rect.width + 2 * delta,
+                                   a.rect.height + 2 * delta)
+        else:
+            return None
 
 
 # пользовательский амулет - управление с клавиатуры
@@ -234,6 +248,7 @@ class AmuletPassive(Amulet):
         # координаты центров для плавного перемещения
         self.centre_hole = dict()
         self.velocity = 100
+        self.balls = 30
 
     def start(self):
         self.startTime = time.time()
@@ -338,3 +353,9 @@ class AmuletPassive(Amulet):
     def render_last(self, surface):
         if self.mob is not None:
             self.mob.render(surface)
+
+    def minus_balls(self):
+        self.balls -= 1
+
+    def balls(self):
+        return True if self.balls > 0 else False

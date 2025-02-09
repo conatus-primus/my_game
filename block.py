@@ -60,5 +60,5 @@ class Block:
         pass
 
     # закончилась игра
-    def game_over(self):
+    def game_over(self, flag_success):
         pass

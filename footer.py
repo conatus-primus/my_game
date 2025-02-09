@@ -87,8 +87,7 @@ class Footer(Block):
             _, image, offset_x = dscr_button
             self.surface.blit(image, (offset_x, self.offset_y))
 
-        if self.state != GameState.GAME_NO:
-            self.surface.blit(self.image_sortir, self.offset_sortir)
+        self.surface.blit(self.image_sortir, self.offset_sortir)
 
         self.buttonSound.render()
         self.surface.blit(self.buttonSound.surface, self.buttonSound.offset)

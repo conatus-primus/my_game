@@ -1,3 +1,5 @@
+import copy
+
 from vars import *
 from py.biblio import MapDscr
 import configparser
@@ -95,7 +97,7 @@ class User:
 
             config.write(f)
 
-    def next_level(self, value_proc):
+    def write_level_data_for_current_map(self, new_points, new_percent):
         LOG.write(f'Новый уровень {self.name}: {self.current_map}')
 
         if self.current_map not in self.game.keys():
@@ -104,7 +106,8 @@ class User:
             return
 
         game_number, points, procents = self.game[self.current_map]
-        procents.append(value_proc)
+        procents.append(new_percent)
+        points += new_points
 
         print(dispatcher.session.selected_map.get_level_count())
         if len(procents) == dispatcher.session.selected_map.get_level_count():

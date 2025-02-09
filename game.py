@@ -11,6 +11,7 @@ from collection import *
 from py.user import *
 from footer import *
 from py.logica import *
+from collection import *
 
 
 class Game:
@@ -118,6 +119,11 @@ class Game:
                 dispatcher.game.notify_about_change_state(ButtonState.CONTINUE_ID)
             # не выходим мы на паузе пусть приноровится двигать клавишами
 
+        elif self.state == GameState.GAME_OVER:
+            if pressed_keys[pygame.K_ESCAPE]:
+                dispatcher.game.notify_about_change_state(ButtonState.RETURN_ID)
+            # не выходим мы на паузе пусть приноровится двигать клавишами
+
         for item in self.block:
             obj, offset = item
             obj.onPressedKey(pressed_keys)
@@ -162,23 +168,21 @@ class Game:
         for item in self.block:
             obj, offset = item
             e.pos = x - offset[0], y - offset[1]
-            if obj.on_double_click(e) is True:
-                if self.block is self.block_collect:
-                    # меняем карту
-                    LOG.write(
-                        f'Сейчас будет загрузка карта {dispatcher.session.map_number} для {dispatcher.session.user}')
 
-                    self.block = self.block_game
-                    for item in self.block:
-                        obj, _ = item
-                        obj.load(dispatcher.session.map_number)
+            if obj.on_double_click(e) is True and obj.__class__.__name__ == 'Collection':
+                # выходим из коллекции и устанавливаем выбранную карту
+                LOG.write(
+                    f'Сейчас будет загрузка карта {dispatcher.session.map_number} для {dispatcher.session.user}')
 
-                    old_state, self.state = self.state, GameState.GAME_WAIT
-                    for item in self.block:
-                        obj, _ = item
-                        obj.on_changed_state(old_state, self.state)
+                self.block = self.block_game
+                for item in self.block:
+                    obj, _ = item
+                    obj.load(dispatcher.session.map_number)
 
-                    return True
+                # эмулируем нажатие клавиши играть заново
+                self.notify_about_change_state(ButtonState.REPLAY_ID)
+                return True
+
         return False
 
     # завершаем игру
@@ -195,6 +199,11 @@ class Game:
     def notify_about_change_state(self, button_id):
         # вернуться в коллекцию
         if ButtonState.HOUSE_ID == button_id:
+
+            if dispatcher.session.logica:
+                del dispatcher.session.logica
+                dispatcher.session.logica = None
+
             self.block = self.block_collect
 
             del self.block_game
@@ -210,67 +219,84 @@ class Game:
 
         # играем
         elif ButtonState.PLAY_ID == button_id:
-            # начать игру
             old_state, self.state = self.state, GameState.GAME_PLAY
             self.__change_state__(old_state)
             self.game_start()
 
         # пауза
         elif ButtonState.PAUSE_ID == button_id:
-            # пауза в игре
             old_state, self.state = self.state, GameState.GAME_PAUSE
             self.__change_state__(old_state)
             self.game_pause()
 
         # продолжить игру после паузы
         elif ButtonState.CONTINUE_ID == button_id:
-            # пауза в игре
             old_state, self.state = self.state, GameState.GAME_PLAY
             self.__change_state__(old_state)
             self.game_continue()
 
         # начать играть заново
         elif ButtonState.REPLAY_ID == button_id:
-            # пауза в игре
+            old_state, self.state = self.state, GameState.GAME_WAIT
+            self.__change_state__(old_state)
+            self.game_replay()
+
+        # была заставка после окончания раунда надо войти в состояние ожидания начала игры
+        elif ButtonState.RETURN_ID == button_id:
+
+            # вот здесь будем обновлять уровень
+            dispatcher.session.level_content = dispatcher.session.selected_map.generate_next_level()
+            dispatcher.needUpdate(self)
+
             old_state, self.state = self.state, GameState.GAME_WAIT
             self.__change_state__(old_state)
             self.game_replay()
 
     # действия связанные с началом игры
     def game_start(self):
+        if dispatcher.session.logica:
+            del dispatcher.session.logica
+            dispatcher.session.logica = None
+
         dispatcher.session.logica = Logica(self)
+        dispatcher.logicaaa().game_start()
         for item in self.block:
             obj, _ = item
             obj.game_start()
 
     # встали на паузу
     def game_pause(self):
+        if dispatcher.logicaaa() is not None:
+            dispatcher.logicaaa().game_pause()
+
         for item in self.block:
             obj, _ = item
             obj.game_pause()
 
     # продолжить игру после паузы
     def game_continue(self):
+        if dispatcher.logicaaa() is not None:
+            dispatcher.logicaaa().game_continue()
+
         for item in self.block:
             obj, _ = item
             obj.game_continue()
 
     # начать играть заново
     def game_replay(self):
+        if dispatcher.logicaaa():
+            del dispatcher.session.logica
+            dispatcher.session.logica = None
+
         for item in self.block:
             obj, _ = item
             obj.game_replay()
 
     # закончилась игра
-    def game_over(self):
-        old_state, self.state = self.state, GameState.GAME_WAIT
+    def game_over(self, flag_success):
+        old_state, self.state = self.state, GameState.GAME_OVER
         self.__change_state__(old_state)
 
         for item in self.block:
             obj, _ = item
-            obj.game_over()
-
-        # TODO временно будем записывать в пользователя прошедший уровень хоть он его может и не прошел
-        dispatcher.user.next_level(random.randint(20, 40))
-        dispatcher.session.level_content = dispatcher.session.selected_map.generate_next_level()
-
+            obj.game_over(flag_success)

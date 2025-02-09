@@ -6,8 +6,8 @@ from vars import *
 
 
 class Mob(pygame.sprite.Sprite):
-    def __init__(self, parent, velocity, pos_start, pos_stop, mob_path):
-        pygame.sprite.Sprite.__init__(self)
+    def __init__(self, parent, velocity, pos_start, pos_stop, mob_path, mob_group, callback_update):
+        super().__init__(mob_group)
         self.parent = parent
         self.pos_start = pos_start
         self.pos_stop = pos_stop
@@ -23,6 +23,8 @@ class Mob(pygame.sprite.Sprite):
         self.rect.left = x - self.rect.width // 2
         self.rect.top = y - self.rect.height // 2
         self.dx = self.dy = 0
+
+        self.callback_update = callback_update
 
     @staticmethod
     def __get_components(velocity, pos_start, pos_stop):
@@ -92,6 +94,9 @@ class Mob(pygame.sprite.Sprite):
             self.rect = self.rect.move((dx, dy))
             self.vx, self.vy = Mob.__get_components(self.velocity, self.rect.center, self.pos_stop)
 
+        if self.callback_update is not None:
+            self.callback_update(self)
+
     def render(self, screen):
         self.update()
         screen.blit(self.image, (self.rect.left, self.rect.top))
@@ -100,18 +105,38 @@ class Mob(pygame.sprite.Sprite):
 class ChangedMob(Mob):
     count_tick = 20
 
-    def __init__(self, parent, velocity, pos_start, pos_stop, mob_path):
-        super().__init__(parent, velocity, pos_start, pos_stop, mob_path + '1.png')
+    def __init__(self, parent, velocity, pos_start, pos_stop, mob_path,
+                 mob_group, callback_update):
+        super().__init__(parent, velocity, pos_start, pos_stop, mob_path + '1.png',
+                         mob_group, callback_update)
         self.image_list = []
         self.image_list.append(self.image)
-        for i in range(2, 5):
-            self.image_list.append(self.load_image(mob_path + str(i) + '.png'))
+        for i in range(2, 15):
+            image = Dispatcher.load_image(mob_path + str(i) + '.png')
+            if image:
+                self.image_list.append(image)
         self.tick_change = ChangedMob.count_tick
+
+        self.last_image_ok = self.load_image(mob_path + 'ok.png')
+        self.last_image_no = self.load_image(mob_path + 'no.png')
+
+    def last_show(self, success):
+        self.velocity = 0
+        last_centre = self.rect.center
+        self.image = self.last_image_ok if success else self.last_image_no
+        self.rect = self.image.get_rect()
+        self.rect.center = last_centre
+        self.tick_change = 11
 
     def set_start(self):
         super().set_start()
 
     def render(self, screen):
+        if self.velocity == 0:
+            screen.blit(self.image, (self.rect.left, self.rect.top))
+            self.tick_change -= 1
+            return
+
         self.tick_change -= 1
 
         if self.tick_change == 0:

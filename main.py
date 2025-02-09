@@ -68,8 +68,10 @@ if __name__ == '__main__':
                 dispatcher.flag_finish = False
                 game = None
 
-            if event.type == TIMER_EVENT_ONE_SEC:
+            if event.type == TIMER_EVENT_DISPATCHER:
                 dispatcher.on_timer()
+                if dispatcher.session.logica is not None:
+                    dispatcher.session.logica.on_timer_dispatcher()
 
             if event.type == TIMER_EVENT_GAME:
                 if dispatcher.session.logica is not None:

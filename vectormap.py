@@ -17,6 +17,8 @@ class Hole:
         self.centre_hole = None
         # направляющие
         self.lines = None
+        # огибающий прямоугольник
+        self.rect = None
 
 
 # перевод строковой дырки с направляющими в цифровой вид
@@ -163,15 +165,16 @@ class RawMap(ParserMapFile):
 class VectorMap:
     def __init__(self, map_number):
         self.map_number = map_number
-        self.rawMap = RawMap(map_number)
+        self.raw_map = RawMap(map_number)
         self.holes = None
         self.disabled_holes = None
         self.strips = dict()
+        self.current_level_content = None
 
     def load(self):
-        if self.rawMap is not None:
-            self.rawMap.load()
-            self.holes = self.rawMap.holes
+        if self.raw_map is not None:
+            self.raw_map.load()
+            self.holes = self.raw_map.holes
 
         if self.holes is None:
             return
@@ -184,7 +187,7 @@ class VectorMap:
         # панели векторизуются одной линией с идентификатором stripN, где N - номер дырки
 
         # откроем отдельно еще раз svg и скачаем оттуда наши панели
-        vect_map = VectorizerPictures(self.rawMap.current_svg_file)
+        vect_map = VectorizerPictures(self.raw_map.current_svg_file)
         vect_map.load()
 
         for hole in self.holes:
@@ -196,15 +199,20 @@ class VectorMap:
         print(self.strips)
 
     def set_current_level_content(self, current_level_content):
+        if self.current_level_content == current_level_content:
+            return
+
+        self.current_level_content = current_level_content
 
         self.holes = []
         self.disabled_holes = []
 
-        for hole in self.rawMap.holes:
+        for hole in self.raw_map.holes:
             new_hole = Hole()
             new_hole.id = hole.id
             # координаты дырки
             new_hole.coords_hole = hole.coords_hole
+            new_hole.rect = OVERALL_RECT(new_hole.coords_hole)
             # центр дырки
             new_hole.centre_hole = hole.centre_hole
             # направляющие
@@ -216,6 +224,34 @@ class VectorMap:
                 self.holes.append(new_hole)
             else:
                 self.disabled_holes.append(new_hole)
+
+    # получить список активных дырок и количество путей к ним
+    def all_active_pathes(self):
+        res = []
+        for hole in self.holes:
+            res.append((hole.id, len(hole.lines)))
+        return res
+
+    # получить список огибающих прямоугольников для активных дырок
+    def get_active_rects(self, delta):
+        res = []
+        for hole in self.holes:
+            rect = pygame.Rect(hole.rect.left - delta, hole.rect.top - delta, hole.rect.width + 2 * delta,
+                               hole.rect.height + 2 * delta)
+            res.append(rect)
+        return res
+
+    # получить начало и конец одного из путей по идентификатору дырки и номеру линии
+    def line_coords(self, hole_id, line_number):
+        for hole in self.holes:
+            if hole.id != hole_id:
+                continue
+            if 0 <= line_number < len(hole.lines):
+                _, coords = hole.lines[line_number]
+                return coords[0], coords[-1]
+            else:
+                return None
+        return None
 
     def render(self, surface):
         pens = [

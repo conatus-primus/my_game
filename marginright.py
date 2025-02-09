@@ -1,19 +1,10 @@
 # правый блоки игрового поля
 import copy
 
-from py.button import *
 from py.bright_panel import *
 from block import Block
 from py.panel import ImagePanel
 from py.biblio import MapDscr
-import enum
-
-
-class ButtonID(enum.Enum):
-    # переключение звуков
-    ID_BUTTON_SOUND = 1000
-    # переключение фоновой музыки
-    ID_BUTTON_CHANSON = 1001
 
 
 class MarginRight(Block):
@@ -22,35 +13,15 @@ class MarginRight(Block):
         self.brightPanel = BrightPanel(self, WIDTH_MARGIN)
         self.brightOffset = ((self.width - self.brightPanel.surface.get_width()) / 2, self.brightPanel.w)
 
-        self.buttonSound = DrawnCheckButton(ButtonID.ID_BUTTON_SOUND, 'sound', self, (20, 70))
-        self.buttonChanson = DrawnCheckButton(ButtonID.ID_BUTTON_CHANSON, 'chanson', self, (100, 70))
-
         self.level_panel = None
         self.current_map = MapDscr('так надо это пустая карта')
 
     def load(self, session):
-        self.buttonSound.check(dispatcher.session.soundsActive)
-        self.buttonChanson.check(dispatcher.session.chansonActive)
+        pass
 
     def render(self):
         pygame.draw.rect(self.surface, FON_COLOR_MID, (0, 0, self.width, self.height))
         pygame.draw.rect(self.surface, FON_COLOR, (5, 0, self.width, self.height))
-        self.brightPanel.render()
-        self.surface.blit(self.brightPanel.surface, self.brightOffset)
-
-        dX = 20
-        dY = 70
-
-        self.buttonSound.render()
-        self.surface.blit(self.buttonSound.surface, self.buttonSound.offset)
-
-        self.buttonChanson.render()
-        self.surface.blit(self.buttonChanson.surface, self.buttonChanson.offset)
-
-        # image_sound = pygame.image.load(CURRENT_DIRECTORY + '/images/system/sound2.png')
-        # self.surface.blit(image_sound, (dX, 60))
-        # image_chanson = pygame.image.load(CURRENT_DIRECTORY + '/images/system/chanson3.png')
-        # self.surface.blit(image_chanson, (dX + image_sound.get_width() + dX, 60))
 
         if dispatcher.game.state is None or dispatcher.game.state == GameState.GAME_NO:
             # мы в коллекции
@@ -60,7 +31,7 @@ class MarginRight(Block):
                 if map is not None:
 
                     # ищем карту в профиле пользователя, чтобы отобразить статистику
-                    round, points, p_original = dispatcher.user.get_map_data(map.map_number)
+                    game_number, points, p_original = dispatcher.user.get_map_data(map.map_number)
                     percents = copy.deepcopy(p_original)
                     level_count_in_map = map.get_level_count()
 
@@ -87,7 +58,7 @@ class MarginRight(Block):
                     if points != 0:
                         offset_y += text.get_height()
                         font.set_bold(False)
-                        text = font.render(f'Очки опыта', True, (0, 0, 0))
+                        text = font.render(f'Опыт', True, (0, 0, 0))
                         self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
 
                         offset_y += text.get_height()
@@ -95,7 +66,7 @@ class MarginRight(Block):
                         text = font.render(f'{points}', True, (0, 0, 0))
                         self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
 
-                    if round != 0:
+                    if game_number != 0:
                         offset_y += text.get_height()
                         font.set_bold(False)
                         text = font.render(f'Проведено игр', True, (0, 0, 0))
@@ -103,7 +74,7 @@ class MarginRight(Block):
 
                         offset_y += text.get_height()
                         font.set_bold(True)
-                        text = font.render(f'{round}', True, (0, 0, 0))
+                        text = font.render(f'{game_number}', True, (0, 0, 0))
                         self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
 
                     offset_y += 2 * text.get_height()
@@ -139,6 +110,12 @@ class MarginRight(Block):
 
                     offset_y += text.get_height()
                     self.level_panel.render(self.surface, ((self.width - self.level_panel.width) // 2, offset_y))
+        else:
+            self.brightPanel.render()
+            self.surface.blit(self.brightPanel.surface, self.brightOffset)
+
+        if dispatcher.logicaaa() is not None:
+            dispatcher.logicaaa().render_marginright(self.surface)
 
     # клик мыши
     def onClick(self, pos):
@@ -146,26 +123,7 @@ class MarginRight(Block):
             return False
         x, y = pos
         self.brightPanel.onClick((x - self.brightOffset[0], y - self.brightOffset[1]))
-        self.buttonSound.onClick((x - self.buttonSound.offset[0], y - self.buttonSound.offset[1]))
-        self.buttonChanson.onClick((x - self.buttonChanson.offset[0], y - self.buttonChanson.offset[1]))
         return True
 
     def onPressedButton(self, buttonID, bChecked):
-        bNeedUpdate = False
-        if buttonID == ButtonID.ID_BUTTON_SOUND:
-            bNeedUpdate = True
-            dispatcher.session.soundsActive = bChecked
-            v = dispatcher.session.volumeLevel - 0.1
-            if v <= 0:
-                v = 1
-            pygame.mixer.music.set_volume(v)
-            dispatcher.session.volumeLevel = v
-
-        if buttonID == ButtonID.ID_BUTTON_CHANSON:
-            bNeedUpdate = True
-            dispatcher.session.chansonActive = bChecked
-
-        print(f'button {buttonID} : check={bChecked}')
-        if bNeedUpdate:
-            dispatcher.needUpdate(self)
-
+        pass

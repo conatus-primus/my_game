@@ -9,19 +9,22 @@ from py.mob import *
 class Field(Block):
     def __init__(self, game):
         super().__init__(game, WIDTH_MAP, HEIGHT_MAP)
-        self.staticMap = None
+        self.static_map = None
         self.vectorMap = None
         self.location = None
         self.amulets = []
         self.amulet_user = None
         # данные для панелей пассивных амулетов
         self.strips: dict[str, list(Amulet)] = {}
-        self.mob = None
+        self.mobs = []
+        self.mob_groups = []
+        self.all_mob_groups = pygame.sprite.Group()
+        self.last_show_mobs = []
 
     def load(self, map_number):
 
-        self.mob = ChangedMob(self, 100, (0, 0), (900, 900), 'images/mobs/mob9_')
-        self.mob.set_start()
+        # self.mob = ChangedMob(self, 100, (0, 0), (900, 900), 'images/mobs/mob9_')
+        # self.mob.set_start()
 
         # грузим варианты уровней и движения клавиш
         self.location = Location(map_number)
@@ -32,8 +35,8 @@ class Field(Block):
         self.vectorMap.load()
 
         # обработка статики в карте (фон + дырки + направляющие)
-        self.staticMap = StaticMap(map_number)
-        self.staticMap.load()
+        self.static_map = StaticMap(map_number)
+        self.static_map.load()
 
         # устанавливаем в векторную карту описание текущего уровня
         self.vectorMap.set_current_level_content(dispatcher.session.level_content)
@@ -50,19 +53,19 @@ class Field(Block):
         # self.amuletPassive = AmuletPassive(self, 'ruby.png', ['path5'], [2, 0.1])
         amuletPassive.load(self.vectorMap.holes)
         amuletPassive.start()
-        self.amulets.append(amuletPassive)
+        # self.amulets.append(amuletPassive)
 
         amuletPassive = AmuletPassive(self, 'sapphire.png', ['path2', 'path1'], SHOW_TIME_IN_HOLE_SEC)
         amuletPassive.load(self.vectorMap.holes)
         amuletPassive.start()
-        self.amulets.append(amuletPassive)
+        # self.amulets.append(amuletPassive)
 
         #
         dispatcher.needUpdate(self)
 
     def render(self):
         pygame.draw.rect(self.surface, pygame.Color('blue'), (0, 0, self.width, self.height))
-        self.staticMap.render(self.surface)
+        self.static_map.render(self.surface)
         self.vectorMap.render(self.surface)
 
         # рисуем все амулеты
@@ -76,19 +79,37 @@ class Field(Block):
         for a in self.amulets:
             a.render_last(self.surface)
 
-        self.mob.render(self.surface)
+        for x in self.mobs:
+            x.render(self.surface)
+        # self.all_mob_groups.draw(self.surface)
+        # self.mob.render(self.surface)
+
+        if dispatcher.logicaaa() is not None:
+            dispatcher.logicaaa().render_field(self.surface)
+
+        # TODO надо понять как это делать по-нормальному
+        temp = []
+        for x in self.last_show_mobs:
+            if x is None:
+                continue
+            x.render(self.surface)
+            if x.tick_change <= 0:
+                del x
+            else:
+                temp.append(x)
+        self.last_show_mobs = temp
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def onPressedKey(self, pressed_keys):
         # пересчитать положение амулетов
         if any([a.onPressedKey(pressed_keys) for a in self.amulets]):
-            self.recalcAmuletRelativePosition()
+            self.recalc_amulet_relative_position()
             dispatcher.needUpdate(self)
             return True
         return False
 
     def update(self, sender):
-        self.staticMap.set_brightness(dispatcher.session.brightness)
+        self.static_map.set_brightness(dispatcher.session.brightness)
         self.vectorMap.set_current_level_content(dispatcher.session.level_content)
         for a in self.amulets:
             a.update()
@@ -96,7 +117,7 @@ class Field(Block):
     def onClick(self, pos):
         # пересчитать положение амулетов
         if any([a.onClick(pos) for a in self.amulets]):
-            self.recalcAmuletRelativePosition()
+            self.recalc_amulet_relative_position()
             dispatcher.needUpdate(self)
             return True
         return False
@@ -104,13 +125,13 @@ class Field(Block):
     def on_timer(self, current_time):
         # пересчитать положение амулетов
         if any([a.on_timer(current_time) for a in self.amulets]):
-            self.recalcAmuletRelativePosition()
+            self.recalc_amulet_relative_position()
             dispatcher.needUpdate(self)
             return True
         return False
 
     # пересчитать положение амулетов
-    def recalcAmuletRelativePosition(self):
+    def recalc_amulet_relative_position(self):
         # есть хотя бы один амулет гарантировано
         hole_position: list[tuple[str, int, Amulet]] = []
         for a in self.amulets:
@@ -140,7 +161,7 @@ class Field(Block):
                 self.strips[activeHoleID] = []
             self.strips[activeHoleID].append(amulet)
 
-    # рисуем планки если они есть
+    # рисуем планки с количеством амулетов если они есть
     def render_strips(self):
         for hole_id, list_amulet in self.strips.items():
             if hole_id in self.vectorMap.strips:
@@ -167,6 +188,86 @@ class Field(Block):
                     point = pos_start[0] + num * dx, pos_start[1] + num * dy
                     a.render_strip(point, self.surface)
                     num += 1
+
+    # начать играть заново
+    def game_replay(self):
+        print(f'{self.__class__.__name__}:{self.game_replay.__name__} Ждем начала игры....')
+        self.game_over(True)
+
+    # создать нового моба
+    def create_new_mob(self, hole_id, line_number):
+        print(f'Создаем моба {hole_id}: {line_number}')
+
+        coords = self.vectorMap.line_coords(hole_id, line_number)
+        print(f'mob coords={coords}')
+        new_mob = ChangedMob(self, 100, coords[0], coords[1], 'images/mobs/mob6_',
+                             self.all_mob_groups, self.callback_update
+                             )
+        self.mobs.append(new_mob)
+        new_mob.set_start()
+        # self.mob = ChangedMob(self, 100, (0, 0), (900, 900), 'images/mobs/mob9_')
+        # self.mob.set_start()
+
+    # действия связанные с началом игры
+    def game_start(self):
+        self.game_over(True)
+        # накидываем в логику идентификаторы дыр и пути и себя
+        if dispatcher.logicaaa():
+            dispatcher.logicaaa().set_create_function(self.create_new_mob, self.vectorMap.all_active_pathes())
+
+    def game_pause(self):
+        self.game_over(True)
+
+    def game_over(self, flag_success):
+        for mob in self.mobs:
+            del mob
+        del self.mobs
+        self.mobs = []
+        del self.all_mob_groups
+        self.all_mob_groups = pygame.sprite.Group()
+
+    def callback_update(self, mob):
+        mob_del_list = []
+        amulet_del_list = []
+        delta_rect = 5
+
+        for a in self.amulets:
+            amulet_rect = a.get_active_rect(delta_rect)
+            for mob in self.mobs:
+                if amulet_rect.collidepoint(mob.rect.center) is True:
+                    # if amulet_rect.colliderect(mob.rect) is True:
+                    # было столкновение
+                    # вычесть из амулета очки
+                    a.minus_balls()
+                    dispatcher.logicaaa().caught_mob(True)
+                    # зафиксировать моба для удаления
+                    mob_del_list.append(mob)
+                    if a.balls() is False:
+                        amulet_del_list.append(a)
+
+        for mob in mob_del_list:
+            self.mobs.remove(mob)
+            mob.last_show(True)
+            self.last_show_mobs.append(mob)
+
+        for a in amulet_del_list:
+            self.amulets.remove(a)
+            del a
+
+        # пробежать по дыркам без амулетов может с кем-то пересеклись
+        hole_rects = self.vectorMap.get_active_rects(delta_rect)
+
+        for rect in hole_rects:
+            mob_del_list = []
+            for mob in self.mobs:
+                if rect.collidepoint(mob.rect.center) is True:
+                    dispatcher.logicaaa().caught_mob(False)
+                    mob_del_list.append(mob)
+
+            for mob in mob_del_list:
+                self.mobs.remove(mob)
+                mob.last_show(False)
+                self.last_show_mobs.append(mob)
 
 
 class StaticMap:

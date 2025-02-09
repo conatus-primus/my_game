@@ -36,7 +36,7 @@ FON_COLOR_DARK = pygame.Color(183, 194, 147)
 LOG = logger()
 
 # событие таймера
-TIMER_EVENT_ONE_SEC = pygame.USEREVENT + 1
+TIMER_EVENT_DISPATCHER = pygame.USEREVENT + 1
 TIMER_EVENT_GAME = pygame.USEREVENT + 2
 
 # время показа пассивного амулета в одной дырке
@@ -210,8 +210,10 @@ class Dispatcher:
     def load(self, game):
         self.game = game
         self.session.read()
-        # запускаем общий таймер для на 1 сек постоянно
-        pygame.time.set_timer(TIMER_EVENT_ONE_SEC, 500)
+        # запускаем общий таймер
+        pygame.time.set_timer(TIMER_EVENT_DISPATCHER, 500)
+        # таймер на одну секунды для раундов игры
+        pygame.time.set_timer(TIMER_EVENT_GAME, 1 * 1000)
 
     def needUpdate(self, sender):
         self.game.needUpdate(sender)
@@ -233,6 +235,10 @@ class Dispatcher:
         LOG.write(f'Загружен файл с изображением {fullname}')
         return image
 
+    #
+    def logicaaa(self):
+        return dispatcher.session.logica
+
 
 dispatcher = Dispatcher()
 
@@ -248,6 +254,8 @@ class ButtonState(enum.Enum):
     CONTINUE_ID = 3003
     # вернуться к выбору дома
     HOUSE_ID = 3004
+    # вернуться к игре (после заставки с окончанием раунда)
+    RETURN_ID = 3005
 
 
 class GameState(enum.Enum):
@@ -259,10 +267,9 @@ class GameState(enum.Enum):
     GAME_PLAY = 4001
     # пауза
     GAME_PAUSE = 4002
-    # раунд игры закончился успешно
-    GAME_SUCCESS = 4003
-    # раунд игры закончился неудачно
-    GAME_FAIL = 4004
+    # раунд игры закончился
+    GAME_OVER = 4003
+
 
 class Machine:
     # 2 параметра картинка, 3 параметр смещение по горизонтали от левого края
@@ -270,13 +277,13 @@ class Machine:
                ButtonState.PAUSE_ID: ('pause.png', None, None),
                ButtonState.REPLAY_ID: ('replay.png', None, None),
                ButtonState.CONTINUE_ID: ('continue.png', None, None),
-               ButtonState.HOUSE_ID: ('house.png', None, None)
+               ButtonState.HOUSE_ID: ('house.png', None, None),
+               ButtonState.RETURN_ID: ('return.png', None, None)
                }
 
     states = {GameState.GAME_WAIT: [ButtonState.PLAY_ID, ButtonState.HOUSE_ID],
               GameState.GAME_PLAY: [ButtonState.PAUSE_ID],
               GameState.GAME_PAUSE: [ButtonState.CONTINUE_ID, ButtonState.REPLAY_ID, ButtonState.HOUSE_ID],
-              GameState.GAME_SUCCESS: [ButtonState.PLAY_ID, ButtonState.HOUSE_ID],
-              GameState.GAME_FAIL: [ButtonState.REPLAY_ID, ButtonState.HOUSE_ID],
+              GameState.GAME_OVER: [ButtonState.RETURN_ID, ButtonState.HOUSE_ID],
               GameState.GAME_NO: []
               }

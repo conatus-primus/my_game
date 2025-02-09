@@ -19,10 +19,15 @@ class Header(Block):
         self.surface.blit(surf_text, offset)
 
         if dispatcher.game.state is not None and dispatcher.game.state != GameState.GAME_NO:
-            game, points, percents = dispatcher.user.get_map_data(dispatcher.session.map_number)
-            max_count = dispatcher.session.selected_map.get_level_count()
-            surf_text = self.font.render(
-                f'Дом {dispatcher.session.map_number}          Игра {game + 1}          Уровень {len(percents) % max_count + 1}',
-                True, (0, 0, 0))
-            offset = (self.width - surf_text.get_width()) // 2, (HEIGHT_HEADER - surf_text.get_height()) // 2
-            self.surface.blit(surf_text, offset)
+            # некрасиво жуть
+                game, points, percents = dispatcher.user.get_map_data(dispatcher.session.map_number)
+                max_count = dispatcher.session.selected_map.get_level_count()
+                surf_text = self.font.render(
+                    f'Дом № {dispatcher.session.map_number}          Игра {game + 1}          Уровень {len(percents) % max_count + 1}',
+                    True, (0, 0, 0))
+                offset = (self.width - surf_text.get_width()) // 2, (HEIGHT_HEADER - surf_text.get_height()) // 2
+                self.surface.blit(surf_text, offset)
+
+        if dispatcher.logicaaa() is not None:
+            dispatcher.logicaaa().render_header(self.surface, self.font)
+
