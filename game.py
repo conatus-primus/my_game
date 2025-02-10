@@ -83,7 +83,7 @@ class Game:
         return True
 
     # sender - кто инициировал обновление
-    def needUpdate(self, sender):
+    def need_update(self, sender):
         if self.block is None:
             return
 
@@ -146,7 +146,7 @@ class Game:
             obj, offset = item
             obj.on_timer(currentTime)
 
-    def onClickExtend(self, event):
+    def on_click_extend(self, event):
         if self.block is None:
             return
 
@@ -156,7 +156,7 @@ class Game:
         for item in self.block:
             obj, offset = item
             e.pos = x - offset[0], y - offset[1]
-            obj.onClickExtend(e)
+            obj.on_click_extend(e)
 
     # двойной клик на коллекции - выбор новой карты
     def on_double_click(self, event):
@@ -246,7 +246,7 @@ class Game:
 
             # вот здесь будем обновлять уровень
             dispatcher.session.level_content = dispatcher.session.selected_map.generate_next_level()
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)
 
             old_state, self.state = self.state, GameState.GAME_WAIT
             self.__change_state__(old_state)

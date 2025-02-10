@@ -139,7 +139,7 @@ class ImagePushButton:
         self.enabled = bEnable
 
     # клик мыши
-    def onClickExtend(self, event):
+    def on_click_extend(self, event):
         if not self.enabled:
             return
 
@@ -150,13 +150,13 @@ class ImagePushButton:
                 self.pushed = True
             else:
                 self.pushed = False
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)
 
         if event.type == pygame.MOUSEBUTTONUP:
             if self.surface.get_rect().collidepoint(relative_pos[0], relative_pos[1]):
                 if self.pushed:
                     self.pushed = False
-                    dispatcher.needUpdate(self)
+                    dispatcher.need_update(self)
                     self.parent.onPushedButton(self.button_id)
 
             self.pushed = False

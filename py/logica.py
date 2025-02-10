@@ -8,18 +8,18 @@ from vars import *
 class Rule:
     rules = {
         0: (50, 1),
-        1: (51, 1.02),
-        2: (55, 1.05),
-        3: (60, 1.10),
-        4: (65, 1.15),
-        5: (68, 1.20),
-        6: (71, 1.25),
-        7: (75, 1.30),
-        8: (77, 1.32),
-        9: (79, 1.35),
-        10: (80, 1.38),
-        11: (81, 1.40),
-        12: (82, 1.42),
+        1: (51, 1.05),
+        2: (55, 1.10),
+        3: (60, 1.15),
+        4: (65, 1.20),
+        5: (68, 1.25),
+        6: (71, 1.30),
+        7: (75, 1.35),
+        8: (77, 1.40),
+        9: (79, 1.43),
+        10: (80, 1.45),
+        11: (81, 1.47),
+        12: (82, 1.49),
     }
 
     first = {
@@ -70,6 +70,10 @@ class Rule:
 
 
 class Round:
+    # длительность одного уровня
+    interval_sec = 1 * 30
+    velocity = 100
+
     def __init__(self):
         self.clear()
 
@@ -85,15 +89,16 @@ class Round:
 
 
 class Logica(Round):
-    # длительность одного уровня
-    interval_sec = 1 * 30
-
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
         self.pause = False
         self.text = None
+
         self.game_number = 0
+        self.threadhold_percent = 100
+        self.mob_number = random.choice([6, 7, 8, 9])
+        self.velocity = Round.velocity
 
         # данные для генерации мобов
         self.create_new_mob_function = None
@@ -124,11 +129,12 @@ class Logica(Round):
             break
 
         print(f'********* random {new_line_index}')
+        velocity = 100
         for id, count in self.holes_info:
             for i in range(count):
                 new_line_index -= 1
                 if new_line_index == 0:
-                    self.create_new_mob_function(id, i)
+                    self.create_new_mob_function(id, i, self.velocity, self.mob_number)
                     break
             if new_line_index == 0:
                 break
@@ -137,7 +143,7 @@ class Logica(Round):
         if self.game_end is True:
             return
 
-        dispatcher.needUpdate(self)
+        dispatcher.need_update(self)
         if self.pause is True:
             return
         self.duration_sec += 1
@@ -159,30 +165,13 @@ class Logica(Round):
                 # обновляем данные игры
                 dispatcher.user.write_level_data_for_current_map(points, self.curreent_caught_percent())
                 dispatcher.user.save()
-                dispatcher.needUpdate(self)
+                dispatcher.need_update(self)
             else:
                 pass
 
             # сообщаем в игру об окончании
             dispatcher.game.game_over(flag_success)
             return
-
-    def game_start(self):
-        # начинаем подсчет секунд
-        self.clear()
-        print(dispatcher.session.level_content)
-        self.game_number, _, _ = dispatcher.user.get_map_data(dispatcher.session.map_number)
-
-    def game_pause(self):
-        self.pause = True
-
-    def game_replay(self):
-        # начинаем подсчет секунд
-        self.clear()
-        self.pause = False
-
-    def game_continue(self):
-        self.pause = False
 
     # как закончилась игра
     def isSuccess(self):
@@ -227,19 +216,26 @@ class Logica(Round):
             return
 
         statistic = []
-        statistic.append(('Монстры в игре', 24, False))
-        statistic.append((f'Всего', 24, False))
-        statistic.append((f'{self.all_mob_count}', 24, True))
-        statistic.append((f'Поймано', 24, False))
-        statistic.append((f'{self.caught_mob_count}', 24, True))
-        statistic.append((f'или', 24, False))
-        statistic.append((f'{self.curreent_caught_percent()}%', 24, True))
+        color = (0, 0, 0)
+        statistic.append(('Монстры в игре', 24, False, color))
+        statistic.append((f'Всего', 24, False, color))
+        statistic.append((f'{self.all_mob_count}', 24, True, color))
+        statistic.append((f'Поймано', 24, False, color))
+        statistic.append((f'{self.caught_mob_count}', 24, True, color))
+        statistic.append((f'или', 24, False, color))
+        percent = self.curreent_caught_percent()
+        if percent < self.threadhold_percent:
+            color = (237, 28, 36)
+        statistic.append((f'{percent}%', 24, True, color))
+        color = (0, 0, 0)
+        statistic.append(('', 24, False, color))
+        statistic.append((f'порог прохождения {self.threadhold_percent}%', 16, True, color))
 
         offset_y = 300
-        for text, h, bold in statistic:
+        for text, h, bold, color in statistic:
             font = pygame.font.SysFont('Comic Sans MS', h)
             font.set_bold(bold)
-            surf_text = font.render(text, True, (0, 0, 0))
+            surf_text = font.render(text, True, color)
             offset = (WIDTH_MARGIN - surf_text.get_width()) // 2, offset_y
             surface.blit(surf_text, offset)
             offset_y += surf_text.get_height()
@@ -294,3 +290,25 @@ class Logica(Round):
 
     def curreent_caught_percent(self):
         return int(self.caught_mob_count / self.all_mob_count * 100) if self.all_mob_count != 0 else 0
+
+    def game_start(self):
+        # начинаем подсчет секунд
+        self.clear()
+        print(dispatcher.session.level_content)
+        self.game_number, _, _ = dispatcher.user.get_map_data(dispatcher.session.map_number)
+        index = self.game_number % len(Rule.rules)
+
+        # ускорение скорости
+        self.threadhold_percent, koef = Rule.rules[index]
+        self.velocity = Round.velocity * koef
+
+    def game_pause(self):
+        self.pause = True
+
+    def game_replay(self):
+        # начинаем подсчет секунд
+        self.clear()
+        self.pause = False
+
+    def game_continue(self):
+        self.pause = False

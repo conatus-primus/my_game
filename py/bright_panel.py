@@ -31,4 +31,4 @@ class BrightPanel:
             # поменяли атрибут в сессии
             dispatcher.session.brightness = int(x // self.w)
             #  сообщаем всем что было изменение
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)

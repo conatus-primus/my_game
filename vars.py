@@ -215,9 +215,9 @@ class Dispatcher:
         # таймер на одну секунды для раундов игры
         pygame.time.set_timer(TIMER_EVENT_GAME, 1 * 1000)
 
-    def needUpdate(self, sender):
-        self.game.needUpdate(sender)
-        # print(f'{sender.__class__.__name__}.needUpdate : sender={sender}')
+    def need_update(self, sender):
+        self.game.need_update(sender)
+        # print(f'{sender.__class__.__name__}.need_update : sender={sender}')
 
     def on_timer(self):
         tt = time.time()

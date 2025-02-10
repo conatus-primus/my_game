@@ -7,7 +7,10 @@ from vars import *
 
 class Mob(pygame.sprite.Sprite):
     def __init__(self, parent, velocity, pos_start, pos_stop, mob_path, mob_group, callback_update):
-        super().__init__(mob_group)
+        if mob_group:
+            super().__init__(mob_group)
+        else:
+            super().__init__()
         self.parent = parent
         self.pos_start = pos_start
         self.pos_stop = pos_stop
@@ -105,13 +108,14 @@ class Mob(pygame.sprite.Sprite):
 class ChangedMob(Mob):
     count_tick = 20
 
-    def __init__(self, parent, velocity, pos_start, pos_stop, mob_path,
-                 mob_group, callback_update):
-        super().__init__(parent, velocity, pos_start, pos_stop, mob_path + '1.png',
+    def __init__(self, parent, velocity, pos_start, pos_stop, mob_dir,
+                 mob_group, callback_update, start_number_image=1):
+        mob_path = 'images/mobs/' + mob_dir + '/'
+        super().__init__(parent, velocity, pos_start, pos_stop, mob_path + str(start_number_image) + '.png',
                          mob_group, callback_update)
         self.image_list = []
         self.image_list.append(self.image)
-        for i in range(2, 15):
+        for i in list(range(start_number_image + 1, 15)) + list(range(start_number_image)):
             image = Dispatcher.load_image(mob_path + str(i) + '.png')
             if image:
                 self.image_list.append(image)

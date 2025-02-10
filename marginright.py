@@ -79,7 +79,7 @@ class MarginRight(Block):
 
                     offset_y += 2 * text.get_height()
                     font.set_bold(False)
-                    text = font.render(f'Игра сейчас', True, (0, 0, 0))
+                    text = font.render(f'Крайняя игра', True, (0, 0, 0))
                     self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
 
                     font = pygame.font.SysFont('Comic Sans MS', 16)
@@ -87,6 +87,13 @@ class MarginRight(Block):
                     if len(percents) < level_count_in_map:
                         percents += [0] * (level_count_in_map - len(percents))
                     warning = False
+
+                    if len(percents) and percents[0]:
+                        font.set_bold(True)
+                        text = font.render(f'Поймано', True, (0, 0, 0))
+                        self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))
+                        offset_y += text.get_height()
+                        font.set_bold(False)
 
                     # посчитаем смещение влево берем шаблонную строку
                     text = font.render(f'Щ уровень: не пройден', True, (0, 0, 0))

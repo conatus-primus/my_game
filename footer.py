@@ -136,4 +136,4 @@ class Footer(Block):
 
         print(f'button {buttonID} : check={bChecked}')
         if bNeedUpdate:
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)

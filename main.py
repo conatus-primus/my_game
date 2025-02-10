@@ -92,7 +92,7 @@ if __name__ == '__main__':
                 click_pos = pygame.mouse.get_pos()
 
                 if runList is None and game is not None:
-                    game.onClickExtend(event)
+                    game.on_click_extend(event)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print(event.pos)

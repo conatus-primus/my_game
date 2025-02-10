@@ -204,7 +204,7 @@ class AmuletUser(Amulet):
         if clickedAmulet is not None:
             self.location.currentHoleID = clickedAmulet.id
             self.activeHoleID = clickedAmulet.id
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)
             return True
 
         return False
@@ -214,7 +214,7 @@ class AmuletUser(Amulet):
         old_active_hole_id = self.activeHoleID
         self.activeHoleID = self.location.on_pressed_key(pressed_keys, self.activeHoleID)
         if self.activeHoleID != old_active_hole_id:
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)
             return True
         return False
 
@@ -328,7 +328,7 @@ class AmuletPassive(Amulet):
                 newActiveHoleID, newSampleInterval, _ = self.rules[0]
                 self.rules[0] = newActiveHoleID, newSampleInterval, currentTime
 
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)
 
             return True
 

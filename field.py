@@ -61,7 +61,7 @@ class Field(Block):
         # self.amulets.append(amuletPassive)
 
         #
-        dispatcher.needUpdate(self)
+        dispatcher.need_update(self)
 
     def render(self):
         pygame.draw.rect(self.surface, pygame.Color('blue'), (0, 0, self.width, self.height))
@@ -104,7 +104,7 @@ class Field(Block):
         # пересчитать положение амулетов
         if any([a.onPressedKey(pressed_keys) for a in self.amulets]):
             self.recalc_amulet_relative_position()
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)
             return True
         return False
 
@@ -118,7 +118,7 @@ class Field(Block):
         # пересчитать положение амулетов
         if any([a.onClick(pos) for a in self.amulets]):
             self.recalc_amulet_relative_position()
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)
             return True
         return False
 
@@ -126,7 +126,7 @@ class Field(Block):
         # пересчитать положение амулетов
         if any([a.on_timer(current_time) for a in self.amulets]):
             self.recalc_amulet_relative_position()
-            dispatcher.needUpdate(self)
+            dispatcher.need_update(self)
             return True
         return False
 
@@ -195,13 +195,13 @@ class Field(Block):
         self.game_over(True)
 
     # создать нового моба
-    def create_new_mob(self, hole_id, line_number):
+    def create_new_mob(self, hole_id, line_number, velocity, mob_number):
         print(f'Создаем моба {hole_id}: {line_number}')
 
         coords = self.vectorMap.line_coords(hole_id, line_number)
         print(f'mob coords={coords}')
-        new_mob = ChangedMob(self, 100, coords[0], coords[1], 'images/mobs/mob6_',
-                             self.all_mob_groups, self.callback_update
+        new_mob = ChangedMob(self, velocity, coords[0], coords[1], 'mob' + str(mob_number),
+                             self.all_mob_groups, self.callback_update, len(self.mobs) % 3 + 1
                              )
         self.mobs.append(new_mob)
         new_mob.set_start()

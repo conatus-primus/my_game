@@ -121,18 +121,18 @@ class MarginLeft(Block):
             e = pygame.event
             e.type = pygame.MOUSEBUTTONDOWN
             e.pos = pos
-            self.button_acheter.onClickExtend(e)
+            self.button_acheter.on_click_extend(e)
         return True
 
     def onPressedButton(self, button_id, checked):
         need_update = False
         print(f'{self.__class__.__name__} pressed buttonID={button_id} bChecked={checked}')
 
-    def onClickExtend(self, event):
+    def on_click_extend(self, event):
         if not super().isInBlock(event.pos):
             return False
         if self.button_acheter is not None:
-            self.button_acheter.onClickExtend(event)
+            self.button_acheter.on_click_extend(event)
 
     def onPushedButton(self, button_id):
         need_update = False

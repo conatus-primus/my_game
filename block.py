@@ -24,8 +24,8 @@ class Block:
         return False
 
     # запрос на обновление
-    def needUpdate(self, sender):
-        self.game.needUpdate(sender)
+    def need_update(self, sender):
+        self.game.need_update(sender)
 
     def on_timer(self, currentTime):
         return False
@@ -33,7 +33,7 @@ class Block:
     def onPressedKey(self, pressed_keys):
         return False
 
-    def onClickExtend(self, event):
+    def on_click_extend(self, event):
         pass
 
     def on_double_click(self, event):
