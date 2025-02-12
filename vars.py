@@ -134,8 +134,7 @@ class Session:
         # TODO задать кривой номер и нормально показать ошибку
         self.map_number = 101
         self.currentHoleID = 'path1'
-        self.currentLevelID = 'level1_var1'
-        self.soundsActive = False
+        self.sounds_active = False
         self.chansonActive = False
         self.volumeLevel = 0.1
         self.money = 80
@@ -162,7 +161,7 @@ class Session:
                 if self.brightness >= len(BRIGHTEN):
                     self.brightness = len(BRIGHTEN) - 1
             if 'soundsActive' in config[section]:
-                self.soundsActive = True if config[section]['soundsActive'] == '1' else False
+                self.sounds_active = True if config[section]['soundsActive'] == '1' else False
             if 'chansonActive' in config[section]:
                 self.chansonActive = True if config[section]['chansonActive'] == '1' else False
             if 'volumeLevel' in config[section]:
@@ -182,7 +181,7 @@ class Session:
                 config[section] = {}
             config[section]['user'] = '' if self.user.lower() in ['гость'] else self.user
             config[section]['brightness'] = str(self.brightness)
-            config[section]['soundsActive'] = '1' if self.soundsActive is True else '0'
+            config[section]['soundsActive'] = '1' if self.sounds_active is True else '0'
             config[section]['chansonActive'] = '1' if self.chansonActive is True else '0'
             config[section]['volumeLevel'] = str(self.volumeLevel)
             config.write(f)
@@ -229,10 +228,10 @@ class Dispatcher:
     @staticmethod
     def load_image(fullname):
         if not os.path.isfile(fullname):
-            LOG.write(f'Файл с изображением {fullname} не найден')
+            # LOG.write(f'Файл с изображением {fullname} не найден')
             return None
         image = pygame.image.load(fullname)
-        LOG.write(f'Загружен файл с изображением {fullname}')
+        # LOG.write(f'Загружен файл с изображением {fullname}')
         return image
 
     #

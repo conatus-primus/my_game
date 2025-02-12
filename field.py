@@ -93,7 +93,7 @@ class Field(Block):
             if x is None:
                 continue
             x.render(self.surface)
-            if x.tick_change <= 0:
+            if x.tick_change <= 0 or x.start is False:
                 del x
             else:
                 temp.append(x)
@@ -235,7 +235,6 @@ class Field(Block):
             amulet_rect = a.get_active_rect(delta_rect)
             for mob in self.mobs:
                 if amulet_rect.collidepoint(mob.rect.center) is True:
-                    # if amulet_rect.colliderect(mob.rect) is True:
                     # было столкновение
                     # вычесть из амулета очки
                     a.minus_balls()
@@ -263,11 +262,26 @@ class Field(Block):
                 if rect.collidepoint(mob.rect.center) is True:
                     dispatcher.logicaaa().caught_mob(False)
                     mob_del_list.append(mob)
+                    # создадим на основе этого моба красного моба, летящего в центр окна
+                    self.create_mob_to_centre_from(mob, rect)
 
             for mob in mob_del_list:
                 self.mobs.remove(mob)
-                mob.last_show(False)
-                self.last_show_mobs.append(mob)
+                del mob
+
+    # создать свободного моба, которого не поймали
+    # он будет долетать до середины окна и уничтожаться
+    # моб создается как продолжение моба, который столкнулся с окном
+    def create_mob_to_centre_from(self, mob_as_sample, rect):
+        pos_start = mob_as_sample.rect.center
+        pos_stop = rect.center
+        velocity = mob_as_sample.velocity
+        mob_path = mob_as_sample.mob_path
+        mob = Mob(self, velocity, pos_start, pos_stop, mob_path, self.all_mob_groups, None)
+        mob_as_sample.last_show(False)
+        mob.image = mob_as_sample.image
+        mob.set_start()
+        self.last_show_mobs.append(mob)
 
 
 class StaticMap:

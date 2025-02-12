@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # TODO посмотреть что делать, если совсем нет картинок
 
     # стартовая заставка
-    runList = [Invite(), Start()]
+    run_list = [Invite(), Start()]
 
     sounds = Sounds()
     pygame.display.set_caption('Защита окон от монстров')
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # делаем после ini pygame
     # здесь загружаем текущую сессию
     dispatcher.load(game)
-    messageError = None
+    message_error = None
 
     screen = pygame.display.set_mode(SIZE_GAME)
 
@@ -85,32 +85,32 @@ if __name__ == '__main__':
                 # эмуляция двойного клика мыши
                 if time.time() - click_time < double_click_time and click_pos == pygame.mouse.get_pos():
                     print("Double click detected")
-                    if runList is None and game is not None:
+                    if run_list is None and game is not None:
                         game.on_double_click(event)
 
                 click_time = time.time()
                 click_pos = pygame.mouse.get_pos()
 
-                if runList is None and game is not None:
+                if run_list is None and game is not None:
                     game.on_click_extend(event)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print(event.pos)
-                if runList is not None:
-                    if runList[0].onClick(event.pos):
+                if run_list is not None:
+                    if run_list[0].onClick(event.pos):
 
                         # ---------------------------------------------
-                        runList.pop(0)
-                        if len(runList) == 0:
-                            runList = None
+                        run_list.pop(0)
+                        if len(run_list) == 0:
+                            run_list = None
                             # TODO посмотреть внимательное - определиться, где перехватывать исключения при загрузке
                             try:
                                 game.load()
                             except Exception as e:
                                 LOG.write(str(e))
-                                messageError = Message(str(e))
+                                message_error = Message(str(e))
                         else:
-                            runList[0].load()
+                            run_list[0].load()
                         # sounds.sVgux.play()
                         # ---------------------------------------------
 
@@ -122,8 +122,8 @@ if __name__ == '__main__':
 
         dispatcher.tick = tick = clock.tick(FPS)
 
-        if runList is not None:
-            runList[0].render(screen, tick)
+        if run_list is not None:
+            run_list[0].render(screen, tick)
 
             # ---------------------------------------------
             # отрабатываем случай когда курсор стоит на логине и нажали на кнопку продолжения
@@ -132,13 +132,13 @@ if __name__ == '__main__':
             # некрасиво конечно, но как смогли... надо еще получше осознать все это...
             if game is not None and game.start is True:
                 game.start = False
-                runList = None
+                run_list = None
                 # TODO посмотреть внимательное еще раз - определиться, где перехватывать исключения при загрузке
                 try:
                     game.load()
                 except Exception as e:
                     LOG.write(str(e))
-                    messageError = Message(str(e))
+                    message_error = Message(str(e))
                 # sounds.sVgux.play()
             # ---------------------------------------------
 
@@ -149,8 +149,8 @@ if __name__ == '__main__':
             if dispatcher.finish_screen is not None:
                 running2 = dispatcher.finish_screen.render(screen)
 
-            if messageError is not None:
-                messageError.render(screen)
+            if message_error is not None:
+                message_error.render(screen)
             else:
                 if game is not None:
                     game.render(screen)

@@ -32,12 +32,12 @@ class ParserHole(Hole):
         self.string_hole = string_hole
 
     def load(self):
-        self.__parseHole()
-        self.__parseLines()
+        self.__parse_hole()
+        self.__parse_lines()
         if self.id is None or self.coords_hole is None or self.centre_hole is None or self.lines is None:
             raise ValueError(f'{self.__class__.__name__}:{__name__} : что-то пошло не так загрузкой дырки')
 
-    def __parseHole(self):
+    def __parse_hole(self):
         self.id, string_coords, _ = self.string_hole
         # разбираем координаты дырки
         self.coords_hole = ParserSvgString(string_coords).coords
@@ -60,7 +60,7 @@ class ParserHole(Hole):
                 bottom = max(bottom, y)
         self.centre_hole = (left + right) / 2, (top + bottom) / 2
 
-    def __parseLines(self):
+    def __parse_lines(self):
         self.lines = []
         _, _, string_lines = self.string_hole
         for string_line in string_lines:
@@ -133,12 +133,12 @@ class ParserMapFile:
 
             # print(f'--------------{hole_id}------------------')
             # переводим в цирфовой вид дырку с направляющими
-            holeObject = ParserHole(str_holes[i])
-            holeObject.load()
+            hole_object = ParserHole(str_holes[i])
+            hole_object.load()
             # print(holeObject)
             if self.holes is None:
                 self.holes = []
-            self.holes.append(holeObject)
+            self.holes.append(hole_object)
             # print('--------------------------------')
 
 
@@ -193,7 +193,7 @@ class VectorMap:
         for hole in self.holes:
             strip_id = hole.id.replace('path', 'strip')
             # находим в файле такой идентификатор
-            strip_string = vect_map.lineByID(strip_id)
+            strip_string = vect_map.line_by_id(strip_id)
             if strip_string is not None:
                 self.strips[hole.id] = copy.deepcopy(ParserSvgString(strip_string).coords)
         print(self.strips)

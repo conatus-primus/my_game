@@ -7,7 +7,7 @@ from vars import *
 
 class Rule:
     rules = {
-        0: (50, 1),
+        0: (50, 1.00),
         1: (51, 1.05),
         2: (55, 1.10),
         3: (60, 1.15),
@@ -107,8 +107,28 @@ class Logica(Round):
 
         self.order = 2
         self.prev_line_index = None
+        self.current_level = 1
 
     def on_timer_dispatcher(self):
+        if self.game_end is True:
+            return
+
+        if self.create_new_mob_function is None or self.all_lines == 0 or self.pause is True:
+            return
+
+        self.order += 1
+        if self.order % 3 != 0:
+            return
+
+        # получаем путь для нового моба
+        for _ in range(self.current_level):
+            new_hole_index = random.randint(0, len(self.holes_info) - 1)
+            print(f'********* random {new_hole_index} : {len(self.holes_info) - 1}')
+            id, count = self.holes_info[new_hole_index]
+            for i in range(count):
+                self.create_new_mob_function(id, i, self.velocity, self.mob_number)
+
+    def on_timer_dispatcher2(self):
         if self.game_end is True:
             return
 
@@ -128,16 +148,27 @@ class Logica(Round):
             self.prev_line_index = new_line_index
             break
 
-        print(f'********* random {new_line_index}')
-        velocity = 100
-        for id, count in self.holes_info:
-            for i in range(count):
-                new_line_index -= 1
+        # генерируем new_line_index мобов
+        new_line_index = 1 * new_line_index // 2
+        if new_line_index == 0:
+            new_line_index = 1
+        all = list(range(self.all_lines))
+
+        while len(all) != new_line_index:
+            index = random.choice(all)
+            all.remove(index)
+
+        for i in all:
+            new_line_index = i
+            print(f'********* random {new_line_index}')
+            for id, count in self.holes_info:
+                for i in range(count):
+                    new_line_index -= 1
+                    if new_line_index == 0:
+                        self.create_new_mob_function(id, i, self.velocity, self.mob_number)
+                        break
                 if new_line_index == 0:
-                    self.create_new_mob_function(id, i, self.velocity, self.mob_number)
                     break
-            if new_line_index == 0:
-                break
 
     def on_timer(self):
         if self.game_end is True:
@@ -301,6 +332,10 @@ class Logica(Round):
         # ускорение скорости
         self.threadhold_percent, koef = Rule.rules[index]
         self.velocity = Round.velocity * koef
+
+        _, _, percents = dispatcher.user.get_map_data(dispatcher.session.map_number)
+        level_count_in_map = dispatcher.session.selected_map.get_level_count()
+        self.current_level = len(percents) % level_count_in_map + 1
 
     def game_pause(self):
         self.pause = True

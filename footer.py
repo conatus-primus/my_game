@@ -32,7 +32,7 @@ class Footer(Block):
         del temp
 
     def load(self, map_number):
-        self.buttonSound.check(dispatcher.session.soundsActive)
+        self.buttonSound.check(dispatcher.session.sounds_active)
         self.buttonChanson.check(dispatcher.session.chansonActive)
 
         for id, dscr in Machine.buttons.items():
@@ -123,7 +123,7 @@ class Footer(Block):
         bNeedUpdate = False
         if buttonID == ButtonID.ID_BUTTON_SOUND:
             bNeedUpdate = True
-            dispatcher.session.soundsActive = bChecked
+            dispatcher.session.sounds_active = bChecked
             v = dispatcher.session.volumeLevel - 0.1
             if v <= 0:
                 v = 1

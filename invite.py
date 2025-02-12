@@ -22,7 +22,7 @@ class Invite(VectorizerPictures):
             self.imageTitle = pygame.image.load('vect_images/invite1.png')
             self.imageClick = pygame.image.load('vect_images/invite2.png')
             super().load()
-            self.rectText = self.overallRectangle('rect1')
+            self.rectText = self.overall_rectangle('rect1')
             if self.rectText is None:
                 raise (f'{self.__class__.__name__}:{__name__}: ошибка загрузки {self.svg_file}')
 
@@ -126,8 +126,8 @@ class Start(VectorizerPictures):
         # считаем положение окошка логина и клика для начала
         super().load()
 
-        rect_login_control = self.overallRectangle('rect1')
-        self.rect_start = self.overallRectangle('rect2')
+        rect_login_control = self.overall_rectangle('rect1')
+        self.rect_start = self.overall_rectangle('rect2')
 
         if rect_login_control is None or self.rect_start is None:
             raise (f'{self.__class__.__name__}:{__name__}: ошибка загрузки {self.svg_file}')

@@ -46,6 +46,7 @@
 [969](https://play.google.com/store/apps/details?id=happy.paint.coloring.color.number)  
 Ссылки на ресурсы картинок мобов:    
 [mob2, mob3,](https://astro9811.itch.io/alien-annihilation) 
+[mob5](https://pngtree.com/freepng/hello-skeleton-monster_6001945.html)  
 [mob6](https://pngtree.com/freepng/ncov-virus-bacteria-monster-villain-cartoon_5333588.html)  
 [mob7](https://ru.freepik.com/premium-vector/green-ghost-pixel-art-style_50573505.htm)  
 [mob8](https://pngtree.com/freepng/ghost-with-evil-smile-face-in-pixel-art-style_15971173.html)  

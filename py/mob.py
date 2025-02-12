@@ -11,6 +11,7 @@ class Mob(pygame.sprite.Sprite):
             super().__init__(mob_group)
         else:
             super().__init__()
+        self.mob_path = mob_path
         self.parent = parent
         self.pos_start = pos_start
         self.pos_stop = pos_stop
@@ -28,6 +29,7 @@ class Mob(pygame.sprite.Sprite):
         self.dx = self.dy = 0
 
         self.callback_update = callback_update
+        self.tick_change = 99999999999999
 
     @staticmethod
     def __get_components(velocity, pos_start, pos_stop):
@@ -41,7 +43,7 @@ class Mob(pygame.sprite.Sprite):
     @staticmethod
     def load_image(fullname):
         if not os.path.isfile(fullname):
-            print(f'Файл с изображением {fullname} не найден')
+            # print(f'Файл с изображением {fullname} не найден')
             sys.exit()
         image = pygame.image.load(fullname)
         return image

@@ -54,7 +54,7 @@ class ParserSvgFileDict:
             for elem2 in elem.iter():
                 # линия
                 if elem2.tag == self.__svg_prefix('path'):
-                    # в словаре должен быть иденитификатор id и координаты d
+                    # в словаре должен быть идентификатор id и координаты d
                     if 'id' in elem2.attrib and 'd' in elem2.attrib:
                         self.elem_g_d[elem2.attrib['id']] = elem2.attrib['d']
 
@@ -69,11 +69,11 @@ class ParserSvgFileDict:
         return '{http://www.w3.org/2000/svg}' + tag
 
     # найти линию по идентификатору
-    def lineByID(self, id):
+    def line_by_id(self, id):
         return self.elem_g_d[id] if id in self.elem_g_d else None
 
     # найти прямоугольник по идентификатору
-    def rectByID(self, id):
+    def rect_by_id(self, id):
         return self.elem_g_rect[id] if id in self.elem_g_rect else None
 
 
@@ -100,7 +100,7 @@ class ParserSvgString():
         self.__parse(path)
 
     # разбор строки 353.79592,273.20516
-    def __parseTwoCoords(self, sCoord):
+    def __parse_two_coords(self, sCoord):
         strXY = sCoord.split(',')
         if len(strXY) == 2:
             return (float(strXY[0]), float(strXY[1]))
@@ -108,7 +108,7 @@ class ParserSvgString():
             return None
 
     # разбор строки  h -68.64407
-    def __parseOneCoord(self, sCoord):
+    def __parse_one_coord(self, sCoord):
         return float(sCoord)
 
     #
@@ -139,9 +139,9 @@ class ParserSvgString():
             else:
                 # по идее это координаты
                 if cmd in ['v', 'h']:
-                    xy = self.__parseOneCoord(value)
+                    xy = self.__parse_one_coord(value)
                 else:
-                    xy = self.__parseTwoCoords(value)
+                    xy = self.__parse_two_coords(value)
 
                 if xy is None:
                     raise ValueError(f'{self.__class__.__name__}:{__name__} : ошибочные данные в svg-path')
@@ -189,9 +189,9 @@ class VectorizerPictures(ParserSvgFileDict):
 
     # получить габаритный прямоугольник по идентификатору
     # возвращается лево верх ширина высота
-    def overallRectangle(self, id):
-        rect = self.rectByID(id)
+    def overall_rectangle(self, id):
+        rect = self.rect_by_id(id)
         if rect is not None:
             return rect
         else:
-            return OVERALL_RECT(self.lineByID(id))
+            return OVERALL_RECT(self.line_by_id(id))
