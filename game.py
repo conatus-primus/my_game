@@ -66,6 +66,15 @@ class Game:
         # громкость
         pygame.mixer.music.set_volume(dispatcher.session.volumeLevel)
 
+    # получить блок нужного типа
+    def get_block(self, BlockType):
+        if self.block is None:
+            return None
+        for x in self.block:
+            if isinstance(x, BlockType) is True:
+                return x
+        return None
+
     def render(self, screen):
         if self.block is None:
             return
@@ -300,3 +309,10 @@ class Game:
         for item in self.block:
             obj, _ = item
             obj.game_over(flag_success)
+
+    def message(self, message_id, *params):
+        print(f'{message_id} : {params}')
+
+        for item in self.block:
+            obj, _ = item
+            obj.on_message(message_id, *params)

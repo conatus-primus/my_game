@@ -21,6 +21,8 @@ WIDTH_GAME = WIDTH_MAP + 2 * WIDTH_MARGIN
 HEIGHT_GAME = HEIGHT_MAP + HEIGHT_HEADER + HEIGHT_FOOTER
 SIZE_GAME = WIDTH_GAME, HEIGHT_GAME
 
+OFFSET_HEIGHT_MARGIN = HEIGHT_HEADER * 3 // 2
+
 # каталог программы
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
@@ -115,8 +117,8 @@ class AmuletHandler:
         self.id = None
         self.fileName = None
         self.name = None
-        self.prix = None
-        self.life = None
+        self.price_max = None
+        self.price_now = None
 
 
 class Sounds:
@@ -137,7 +139,6 @@ class Session:
         self.sounds_active = False
         self.chansonActive = False
         self.volumeLevel = 0.1
-        self.money = 80
 
         self.user = ''
         # описание карты MapDecr
@@ -286,3 +287,10 @@ class Machine:
               GameState.GAME_OVER: [ButtonState.RETURN_ID, ButtonState.HOUSE_ID],
               GameState.GAME_NO: []
               }
+
+
+class MessadgID(enum.Enum):
+    # очистить амулеты левой панели
+    DEF_AMULETS_CLEAR = 1000
+    # изменить кол-во баллов в амулете
+    DEF_AMULET_BALL = 1001

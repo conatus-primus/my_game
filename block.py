@@ -62,3 +62,7 @@ class Block:
     # закончилась игра
     def game_over(self, flag_success):
         pass
+
+    def on_message(self, message_id, *params):
+        pass
+

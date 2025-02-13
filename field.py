@@ -49,16 +49,16 @@ class Field(Block):
         self.amulet_user.setLocation(self.location)
         self.amulets.append(self.amulet_user)
 
-        amuletPassive = AmuletPassive(self, 'ruby.png', ['path1', 'path2'], SHOW_TIME_IN_HOLE_SEC)
-        # self.amuletPassive = AmuletPassive(self, 'ruby.png', ['path5'], [2, 0.1])
-        amuletPassive.load(self.vectorMap.holes)
-        amuletPassive.start()
-        # self.amulets.append(amuletPassive)
-
-        amuletPassive = AmuletPassive(self, 'sapphire.png', ['path2', 'path1'], SHOW_TIME_IN_HOLE_SEC)
-        amuletPassive.load(self.vectorMap.holes)
-        amuletPassive.start()
-        # self.amulets.append(amuletPassive)
+        # amuletPassive = AmuletPassive(self, 'ruby.png', ['path1', 'path2'], SHOW_TIME_IN_HOLE_SEC)
+        # # self.amuletPassive = AmuletPassive(self, 'ruby.png', ['path5'], [2, 0.1])
+        # amuletPassive.load(self.vectorMap.holes)
+        # amuletPassive.start()
+        # # self.amulets.append(amuletPassive)
+        #
+        # amuletPassive = AmuletPassive(self, 'sapphire.png', ['path2', 'path1'], SHOW_TIME_IN_HOLE_SEC)
+        # amuletPassive.load(self.vectorMap.holes)
+        # amuletPassive.start()
+        # # self.amulets.append(amuletPassive)
 
         #
         dispatcher.need_update(self)
@@ -196,10 +196,10 @@ class Field(Block):
 
     # создать нового моба
     def create_new_mob(self, hole_id, line_number, velocity, mob_number):
-        print(f'Создаем моба {hole_id}: {line_number}')
+        # print(f'Создаем моба {hole_id}: {line_number}')
 
         coords = self.vectorMap.line_coords(hole_id, line_number)
-        print(f'mob coords={coords}')
+        # print(f'mob coords={coords}')
         new_mob = ChangedMob(self, velocity, coords[0], coords[1], 'mob' + str(mob_number),
                              self.all_mob_groups, self.callback_update, len(self.mobs) % 3 + 1
                              )
@@ -208,23 +208,44 @@ class Field(Block):
         # self.mob = ChangedMob(self, 100, (0, 0), (900, 900), 'images/mobs/mob9_')
         # self.mob.set_start()
 
+    def create_passive_amulet(self, hole_id1, hole_id2, amulet_handle):
+        print(f'Создаем пассивный амулет {id}: {hole_id1} --> {hole_id2}')
+        amuletPassive = AmuletPassive(self, amulet_handle.id, [hole_id1, hole_id2], SHOW_TIME_IN_HOLE_SEC,
+                                      amulet_handle.price_max)
+        amuletPassive.load(self.vectorMap.holes)
+        amuletPassive.start()
+        self.amulets.append(amuletPassive)
+        dispatcher.game.message(MessadgID.DEF_AMULET_BALL, amulet_handle.id, amulet_handle.price_max)
+
     # действия связанные с началом игры
     def game_start(self):
         self.game_over(True)
         # накидываем в логику идентификаторы дыр и пути и себя
         if dispatcher.logicaaa():
-            dispatcher.logicaaa().set_create_function(self.create_new_mob, self.vectorMap.all_active_pathes())
+            dispatcher.logicaaa().set_create_mob_amulet_function(
+                self.create_new_mob, self.create_passive_amulet,
+                self.vectorMap.all_active_pathes())
 
     def game_pause(self):
-        self.game_over(True)
+        self.game_over(True, False)
 
-    def game_over(self, flag_success):
+    def game_over(self, flag_success, delete_amulets=True):
         for mob in self.mobs:
             del mob
         del self.mobs
         self.mobs = []
         del self.all_mob_groups
         self.all_mob_groups = pygame.sprite.Group()
+        if delete_amulets is False:
+            return
+        while len(self.amulets) > 1:
+            x = self.amulets[0]
+            self.amulets.remove(x)
+            if isinstance(x, AmuletPassive):
+                del x
+            else:
+                self.amulets.append(x)
+        # обновить левую панель
 
     def callback_update(self, mob):
         mob_del_list = []
@@ -233,25 +254,33 @@ class Field(Block):
 
         for a in self.amulets:
             amulet_rect = a.get_active_rect(delta_rect)
+            if amulet_rect is None:
+                continue
             for mob in self.mobs:
                 if amulet_rect.collidepoint(mob.rect.center) is True:
                     # было столкновение
                     # вычесть из амулета очки
                     a.minus_balls()
+                    if isinstance(a, AmuletPassive):
+                        dispatcher.game.message(MessadgID.DEF_AMULET_BALL, a.amulet_name, a.balls)
                     dispatcher.logicaaa().caught_mob(True)
                     # зафиксировать моба для удаления
                     mob_del_list.append(mob)
-                    if a.balls() is False:
+                    if a.count_balls() is False:
                         amulet_del_list.append(a)
 
         for mob in mob_del_list:
-            self.mobs.remove(mob)
-            mob.last_show(True)
-            self.last_show_mobs.append(mob)
+            if mob in self.mobs:
+                self.mobs.remove(mob)
+                mob.last_show(True)
+                self.last_show_mobs.append(mob)
 
         for a in amulet_del_list:
+            LOG.write(f'*** Закончился лимит: удалился {a}')
             self.amulets.remove(a)
             del a
+        if len(amulet_del_list):
+            self.recalc_amulet_relative_position()
 
         # пробежать по дыркам без амулетов может с кем-то пересеклись
         hole_rects = self.vectorMap.get_active_rects(delta_rect)

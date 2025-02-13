@@ -50,7 +50,7 @@ class MarginRight(Block):
                     # да, я знаю, выглядит страшненько, подбор, увы. подбор, потом оптимизируем
                     font = pygame.font.SysFont('Comic Sans MS', 24)
 
-                    offset_y = 200
+                    offset_y = OFFSET_HEIGHT_MARGIN
                     font.set_bold(False)
                     text = font.render(f'Дом № {map.map_number}', True, (0, 0, 0))
                     self.surface.blit(text, ((self.width - text.get_width()) / 2, offset_y))

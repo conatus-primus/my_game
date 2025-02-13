@@ -168,7 +168,7 @@ class Amulet:
     def minus_balls(self):
         pass
 
-    def balls(self):
+    def count_balls(self):
         return True
 
     def get_active_rect(self, delta):
@@ -176,8 +176,7 @@ class Amulet:
             if a.active:
                 return pygame.Rect(a.rect.left - delta, a.rect.top - delta, a.rect.width + 2 * delta,
                                    a.rect.height + 2 * delta)
-        else:
-            return None
+        return None
 
 
 # пользовательский амулет - управление с клавиатуры
@@ -228,44 +227,44 @@ class AmuletUser(Amulet):
 # потом исчезает на заданное время Т2
 # далее переходит на следующую дырку
 class AmuletPassive(Amulet):
-    def __init__(self, parent, amulet_name, listHolesID, interval):
+    def __init__(self, parent, amulet_name, list_holes_id, interval, price_max):
         super().__init__(amulet_name, parent)
         # список дырок назначенных для амулета
-        self.listHolesID = listHolesID
+        self.list_holes_id = list_holes_id
         self.amulet_name = amulet_name
 
         # разметим показ амулета по дыркам
         self.rules = []
         # задаем правила по которым показываем и прячем амулеты по дыркам
-        self.listHolesID.append(self.listHolesID[0])
-        for i in range(len(listHolesID) - 1):
-            self.rules.append((listHolesID[i], interval, interval))
-            self.rules.append((listHolesID[i], 0, 0))
+        self.list_holes_id.append(self.list_holes_id[0])
+        for i in range(len(list_holes_id) - 1):
+            self.rules.append((list_holes_id[i], interval, interval))
+            self.rules.append((list_holes_id[i], 0, 0))
 
-        self.startTime = None
+        self.start_time = None
         self.mob = None
         self.mob2 = None
         # координаты центров для плавного перемещения
         self.centre_hole = dict()
-        self.velocity = 100
-        self.balls = 30
+        self.velocity = 140
+        self.balls = price_max
 
     def start(self):
-        self.startTime = time.time()
-        newActiveHoleID, newSampleInterval, _ = self.rules[0]
-        self.rules[0] = newActiveHoleID, newSampleInterval, self.startTime
+        self.start_time = time.time()
+        new_active_hole_id, new_sample_interval, _ = self.rules[0]
+        self.rules[0] = new_active_hole_id, new_sample_interval, self.start_time
 
     def stop(self):
         pass
 
     # обновляем настройку отображения спрайтов в зависимости от текущей дырки
     def update(self):
-        if self.startTime is None:
+        if self.start_time is None:
             return
 
-        activeHoleID, _, _ = self.rules[0]
+        active_hole_id, _, _ = self.rules[0]
         for a in self.amuletSprites:
-            a.update(activeHoleID)
+            a.update(active_hole_id)
 
     def onClick(self, pos):
         return False
@@ -274,7 +273,7 @@ class AmuletPassive(Amulet):
     def on_timer(self, currentTime):
         # print(f'{self.__class__.__name__}.{__name__} {current_time}')
 
-        if self.startTime is None:
+        if self.start_time is None:
             return False
 
         activeHoleID, sampleInterval, startSecs = self.rules[0]
@@ -304,8 +303,9 @@ class AmuletPassive(Amulet):
                         self.set_extended_state_show(activeHoleID, True)
                         self.mob = None
 
-                    self.mob = Mob(self, self.velocity, self.centre_hole[activeHoleID], self.centre_hole[next_hole_id],
-                                   'images/amulets/' + self.amulet_name)
+                    self.mob = Mob(self, self.velocity, self.centre_hole[activeHoleID],
+                                   self.centre_hole[next_hole_id],
+                                   'images/amulets/' + self.amulet_name, pygame.sprite.Group(), None)
                     self.mob.set_start()
                     self.set_extended_state_show(activeHoleID, False)
 
@@ -334,16 +334,16 @@ class AmuletPassive(Amulet):
 
     # дырка, чтобы разобраться в порядке отображения когда несколько амулетов стоят на одной дырке
     def currentHole(self):
-        if self.startTime is None:
+        if self.start_time is None:
             return None
-        activeHoleID, _, startSecs = self.rules[0]
-        return activeHoleID, startSecs, self
+        active_hole_id, _, start_secs = self.rules[0]
+        return active_hole_id, start_secs, self
 
-    def load(self, vMapHoles):
-        super().load(vMapHoles)
+    def load(self, v_map_holes):
+        super().load(v_map_holes)
         # координаты центров для плавного перемещения
-        for hole in vMapHoles:
-            if hole.id in self.listHolesID:
+        for hole in v_map_holes:
+            if hole.id in self.list_holes_id:
                 self.centre_hole[hole.id] = hole.centre_hole
         print(self.centre_hole)
 
@@ -357,5 +357,22 @@ class AmuletPassive(Amulet):
     def minus_balls(self):
         self.balls -= 1
 
-    def balls(self):
+    def count_balls(self):
         return True if self.balls > 0 else False
+
+    @staticmethod
+    def load_amulets(amulet_handles):
+        amulet_names = ['diamond.png', 'amethyst.png', 'emerald.png', 'ruby.png', 'topaz.png', 'sapphire.png']
+        amulet_handles.clear()
+        config = configparser.ConfigParser()
+        config.read('data/amulets.ini', 'utf-8')
+        for name in amulet_names:
+            if name in config:
+                amulet = AmuletHandler()
+                amulet.id, amulet.name, amulet.price_max = name, config[name]['name'], int(
+                    config[name]['price_max'])
+                amulet.fileName = 'images/amulets/' + name
+                amulet.price_now = 0
+                amulet_handles.append(amulet)
+        # отсортируем по цене
+        amulet_handles.sort(key=lambda x: x.price_max)

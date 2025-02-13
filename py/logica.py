@@ -3,6 +3,7 @@ import pygame
 import copy
 import random
 from vars import *
+from py.amulet import AmuletPassive
 
 
 class Rule:
@@ -109,6 +110,8 @@ class Logica(Round):
         self.prev_line_index = None
         self.current_level = 1
 
+        self.create_passive_amulet_function = None
+
     def on_timer_dispatcher(self):
         if self.game_end is True:
             return
@@ -123,7 +126,7 @@ class Logica(Round):
         # получаем путь для нового моба
         for _ in range(self.current_level):
             new_hole_index = random.randint(0, len(self.holes_info) - 1)
-            print(f'********* random {new_hole_index} : {len(self.holes_info) - 1}')
+            # print(f'********* random {new_hole_index} : {len(self.holes_info) - 1}')
             id, count = self.holes_info[new_hole_index]
             for i in range(count):
                 self.create_new_mob_function(id, i, self.velocity, self.mob_number)
@@ -262,7 +265,7 @@ class Logica(Round):
         statistic.append(('', 24, False, color))
         statistic.append((f'порог прохождения {self.threadhold_percent}%', 16, True, color))
 
-        offset_y = 300
+        offset_y = OFFSET_HEIGHT_MARGIN
         for text, h, bold, color in statistic:
             font = pygame.font.SysFont('Comic Sans MS', h)
             font.set_bold(bold)
@@ -303,14 +306,34 @@ class Logica(Round):
             offset = (WIDTH_MAP - surf_text.get_width()) // 2, offset_y
             surface.blit(surf_text, offset)
 
-    def set_create_function(self, create_new_mob_function, holes_info):
+    def set_create_mob_amulet_function(self, create_new_mob_function, create_passive_amulet_function, holes_info):
         self.create_new_mob_function = create_new_mob_function
+        self.create_passive_amulet_function = create_passive_amulet_function
         self.holes_info = []
         self.all_lines = 0
         for id, count in holes_info:
             self.holes_info.append((id, count))
             self.all_lines += count
         print(self.holes_info)
+
+        # создаем пассивные амулеты: начиная с 4-ого окна на каждую пару по одному амулету
+        # с какого количества начинааем добавлять
+        amulet_handles = []
+        AmuletPassive.load_amulets(amulet_handles)
+
+        dispatcher.game.message(MessadgID.DEF_AMULETS_CLEAR)
+        if self.create_passive_amulet_function is not None and len(amulet_handles) >= 1:
+            m = 4
+            if len(self.holes_info) >= m:
+                passive_amulet_count = (len(self.holes_info) - (m - 2)) // 2
+                res = random.sample(self.holes_info, passive_amulet_count * 2)
+                for i in range(0, len(res), 2):
+                    id1, _ = res[i]
+                    id2, _ = res[i + 1]
+                    amulet_index = random.randint(0, len(amulet_handles) - 1)
+                    self.create_passive_amulet_function(id1, id2, amulet_handles[amulet_index])
+                    dispatcher.game.message(MessadgID.DEF_AMULET_BALL, amulet_handles[amulet_index].id,
+                                            amulet_handles[amulet_index].price_max)
 
     def caught_mob(self, success):
         if self.game_end is True:
