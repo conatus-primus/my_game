@@ -1,3 +1,5 @@
+import pygame
+
 from vars import *
 import configparser
 import enum
@@ -376,3 +378,29 @@ class AmuletPassive(Amulet):
                 amulet_handles.append(amulet)
         # отсортируем по цене
         amulet_handles.sort(key=lambda x: x.price_max)
+
+
+# остаточный след пассивного амулета после удаления
+class AmuletTrack:
+    def __init__(self, center_pos, color):
+        self.center_pos = center_pos
+        self.color = color
+        self.radius = [5]
+        sounds.fall()
+
+    def render(self, screen):
+        delta = 5
+        x, y = self.center_pos
+        for i, r in enumerate(self.radius):
+            rect = pygame.Rect(x - r, y - r, 2 * r, 2 * r)
+            pygame.draw.ellipse(screen, self.color, rect, 6)
+            pygame.draw.ellipse(screen, (200, 200, 200), rect, 4)
+            pygame.draw.ellipse(screen, self.color, rect, 2)
+            self.radius[i] += delta
+
+        if len(self.radius) != 3:
+            if self.radius[-1] == 200:
+                self.radius.append(5)
+
+    def is_stop(self):
+        return self.radius[-1] > WIDTH_MAP

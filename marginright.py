@@ -116,7 +116,9 @@ class MarginRight(Block):
                         offset_y += text.get_height()
 
                     offset_y += text.get_height()
-                    self.level_panel.render(self.surface, ((self.width - self.level_panel.width) // 2, offset_y))
+
+                    # # не светим неудачное решение
+                    # self.level_panel.render(self.surface, ((self.width - self.level_panel.width) // 2, offset_y))
         else:
             self.brightPanel.render()
             self.surface.blit(self.brightPanel.surface, self.brightOffset)

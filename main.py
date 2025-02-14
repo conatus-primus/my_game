@@ -35,7 +35,7 @@ if __name__ == '__main__':
     # стартовая заставка
     run_list = [Invite(), Start()]
 
-    sounds = Sounds()
+    sounds.load()
     pygame.display.set_caption('Защита окон от монстров')
 
     # создаем игру

@@ -147,6 +147,7 @@ class MarginLeft(Block):
         for i, a in enumerate(self.amulet_handles):
             a.price_now = 0
             self.amulet_button[i].setEnable(False)
+            self.amulet_button[i].check(False)
         self.render()
 
     def on_message(self, message_id, *params):

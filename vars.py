@@ -123,9 +123,40 @@ class AmuletHandler:
 
 class Sounds:
     def __init__(self):
-        self.sGlass = pygame.mixer.Sound('sounds/glass1.ogg')
-        self.sVgux = pygame.mixer.Sound('sounds/bruit_silence.ogg')
+        pass
+
+    def load(self):
+        self.__sGlass = pygame.mixer.Sound('sounds/glass1.ogg')
+        self.__sVgux = pygame.mixer.Sound('sounds/bruit_silence.ogg')
+        self.__sFail = pygame.mixer.Sound('sounds/fail.ogg')
+        self.__sFall = pygame.mixer.Sound('sounds/fall.ogg')
+        self.__sSuccess = pygame.mixer.Sound('sounds/success.ogg')
+        self.__sFinish = pygame.mixer.Sound('sounds/finish.ogg')
         pygame.mixer.music.load("sounds/fon.mp3")
+
+    def vgux(self):
+        if dispatcher.session.sounds_active is True:
+            self.__sVgux.play()
+
+    def succeess(self):
+        if dispatcher.session.sounds_active is True:
+            self.__sSuccess.play()
+
+    def fail(self):
+        if dispatcher.session.sounds_active is True:
+            self.__sFail.play()
+
+    def fall(self):
+        if dispatcher.session.sounds_active is True:
+            self.__sFall.play()
+
+    def glass(self):
+        if dispatcher.session.sounds_active is True:
+            self.__sGlass.play()
+
+    def finish(self):
+        if dispatcher.session.sounds_active is True:
+            self.__sFinish.play()
 
 
 class Session:
@@ -241,6 +272,7 @@ class Dispatcher:
 
 
 dispatcher = Dispatcher()
+sounds = Sounds()
 
 
 class ButtonState(enum.Enum):

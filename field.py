@@ -20,6 +20,7 @@ class Field(Block):
         self.mob_groups = []
         self.all_mob_groups = pygame.sprite.Group()
         self.last_show_mobs = []
+        self.last_track = []
 
     def load(self, map_number):
 
@@ -98,6 +99,10 @@ class Field(Block):
             else:
                 temp.append(x)
         self.last_show_mobs = temp
+
+        for x in self.last_track:
+            if x is not None and x.is_stop() is False:
+                x.render(self.surface)
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def onPressedKey(self, pressed_keys):
@@ -245,6 +250,8 @@ class Field(Block):
                 del x
             else:
                 self.amulets.append(x)
+        self.last_track = []
+        self.last_show_mobs = []
         # обновить левую панель
 
     def callback_update(self, mob):
@@ -278,6 +285,10 @@ class Field(Block):
         for a in amulet_del_list:
             LOG.write(f'*** Закончился лимит: удалился {a}')
             self.amulets.remove(a)
+            amulet_rect = a.get_active_rect(delta_rect)
+            if amulet_rect is not None:
+                track = AmuletTrack(amulet_rect.center, a.color)
+                self.last_track.append(track)
             del a
         if len(amulet_del_list):
             self.recalc_amulet_relative_position()

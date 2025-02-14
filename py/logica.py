@@ -189,6 +189,10 @@ class Logica(Round):
             self.game_end = True
             # выигрыш проигрыш
             flag_success = self.isSuccess()
+            if flag_success is True:
+                sounds.succeess()
+            else:
+                sounds.fail()
 
             # генерируем текст
             self.__generate_text__(flag_success)

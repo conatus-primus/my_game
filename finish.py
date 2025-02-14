@@ -54,6 +54,7 @@ class Finish:
 
         if self.tick == 0:
             self.tick = currentTime
+            sounds.finish()
         else:
             if currentTime - self.tick > 3:
                 self.code_ret = False

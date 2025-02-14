@@ -3,7 +3,7 @@ import glob
 import random
 import copy
 from py.panel import *
-
+import vars
 
 class Show:
     # отступ и ширина фокусной рамки вокруг картинки
@@ -170,6 +170,18 @@ class MapDscr:
 
         screen.blit(scaled, self.dscr_offset)
 
+        opacity = 190
+        h_title = 30
+        alpha_img = pygame.Surface((width, h_title), pygame.SRCALPHA)
+        alpha_img.fill((183, 194, 147, opacity))
+        screen.blit(alpha_img, (offx, offy))
+        font = pygame.font.SysFont('Comic Sans MS', h_title // 2)
+        font.set_bold(True)
+        surf_text = font.render(f'Дом № {self.map_number}', True, (0, 0, 0))
+        offset_text = offx + (width - surf_text.get_width()) // 2, offy + (h_title - surf_text.get_height()) // 2
+        screen.blit(surf_text, offset_text)
+
+
         pygame.draw.rect(screen, Show.color_ramka, (offx, offy, width, width), 2, 10)
         pygame.draw.rect(screen, FON_COLOR_DARK,
                          (offx - Show.margin, offy - Show.margin, width + 2 * Show.margin,
@@ -296,7 +308,7 @@ class Biblio:
                 dispatcher.session.map_number = map.map_number
                 dispatcher.session.selected_map = map
                 dispatcher.session.level_content = map.generate_next_level()
-
+                sounds.vgux()
                 return True
 
         return False
