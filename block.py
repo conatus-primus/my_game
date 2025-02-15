@@ -30,7 +30,7 @@ class Block:
     def on_timer(self, currentTime):
         return False
 
-    def onPressedKey(self, pressed_keys):
+    def on_pressed_key(self, pressed_keys):
         return False
 
     def on_click_extend(self, event):

@@ -39,4 +39,8 @@ class Collection(Block):
             return False
         if self.biblio is not None:
             return self.biblio.on_double_click(event)
-        return False
+        else:
+            return False
+
+    def on_pressed_key(self, pressed_keys):
+        return self.biblio.on_pressed_key(pressed_keys)

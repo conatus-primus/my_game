@@ -288,6 +288,8 @@ class ButtonState(enum.Enum):
     HOUSE_ID = 3004
     # вернуться к игре (после заставки с окончанием раунда)
     RETURN_ID = 3005
+    # выбрать игру
+    SELECT_ID = 3006
 
 
 class GameState(enum.Enum):
@@ -301,6 +303,8 @@ class GameState(enum.Enum):
     GAME_PAUSE = 4002
     # раунд игры закончился
     GAME_OVER = 4003
+    # выбрать дом для игры
+    GAME_SELECT = 4004
 
 
 class Machine:
@@ -320,9 +324,30 @@ class Machine:
               GameState.GAME_NO: []
               }
 
+class MachineCollection:
+    # 2 параметра картинка, 3 параметр смещение по горизонтали от левого края
+    buttons = {ButtonState.PLAY_ID: ('play.png', None, None),
+               ButtonState.PAUSE_ID: ('pause.png', None, None),
+               ButtonState.REPLAY_ID: ('replay.png', None, None),
+               ButtonState.CONTINUE_ID: ('continue.png', None, None),
+               ButtonState.HOUSE_ID: ('house.png', None, None),
+               ButtonState.RETURN_ID: ('return.png', None, None),
+               ButtonState.SELECT_ID: ('select.png', None, None)
+               }
+
+    states = {GameState.GAME_WAIT: [ButtonState.PLAY_ID, ButtonState.HOUSE_ID],
+              GameState.GAME_PLAY: [ButtonState.PAUSE_ID],
+              GameState.GAME_PAUSE: [ButtonState.CONTINUE_ID, ButtonState.REPLAY_ID, ButtonState.HOUSE_ID],
+              GameState.GAME_OVER: [ButtonState.RETURN_ID, ButtonState.HOUSE_ID],
+              GameState.GAME_NO: [],
+              GameState.GAME_SELECT: [ButtonState.SELECT_ID],
+              }
 
 class MessadgID(enum.Enum):
     # очистить амулеты левой панели
     DEF_AMULETS_CLEAR = 1000
     # изменить кол-во баллов в амулете
     DEF_AMULET_BALL = 1001
+    # сообщение о выборе игры в панель коллекции
+    DEF_SELECT_GAME = 1002
+

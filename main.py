@@ -157,6 +157,12 @@ if __name__ == '__main__':
 
         pygame.display.flip()
 
+        if game is not None and game.emulate_enter:
+            game.emulate_enter = False
+            dict_key = {}
+            dict_key[pygame.K_RETURN] = True
+            game.on_pressed_key(dict_key)
+
         if pressed and game is not None:
             game.on_pressed_key(pygame.key.get_pressed())
 

@@ -133,7 +133,7 @@ class Amulet:
         return False
 
     # вход - нажатые клавиши pygame.key.get_pressed()
-    def onPressedKey(self, pressed_keys):
+    def on_pressed_key(self, pressed_keys):
         return False
 
     def on_timer(self, currentTime):
@@ -211,7 +211,7 @@ class AmuletUser(Amulet):
         return False
 
     # вход - нажатые клавиши pygame.key.get_pressed()
-    def onPressedKey(self, pressed_keys):
+    def on_pressed_key(self, pressed_keys):
         old_active_hole_id = self.activeHoleID
         self.activeHoleID = self.location.on_pressed_key(pressed_keys, self.activeHoleID)
         if self.activeHoleID != old_active_hole_id:

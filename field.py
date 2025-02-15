@@ -105,9 +105,9 @@ class Field(Block):
                 x.render(self.surface)
 
     # вход - нажатые клавиши pygame.key.get_pressed()
-    def onPressedKey(self, pressed_keys):
+    def on_pressed_key(self, pressed_keys):
         # пересчитать положение амулетов
-        if any([a.onPressedKey(pressed_keys) for a in self.amulets]):
+        if any([a.on_pressed_key(pressed_keys) for a in self.amulets]):
             self.recalc_amulet_relative_position()
             dispatcher.need_update(self)
             return True

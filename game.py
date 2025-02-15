@@ -25,6 +25,7 @@ class Game:
         self.block_game = None
         self.user = None
         self.state = None
+        self.emulate_enter = False
 
     def load(self):
         # к этому моменту уже известен пользователь
@@ -34,14 +35,14 @@ class Game:
         # игровой блок и смещение блока относительно всего игрового поля
         self.block_game = [(Field(self), (WIDTH_MARGIN, HEIGHT_HEADER)),
                            (Header(self), (0, 0)),
-                           (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                           (Footer(self, Machine), (0, HEIGHT_HEADER + HEIGHT_MAP)),
                            (MarginLeft(self), (0, HEIGHT_HEADER)),
                            (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                            ]
 
         self.block_collect = [(self.collection, (WIDTH_MARGIN, HEIGHT_HEADER)),
                               (Header(self), (0, 0)),
-                              (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                              (Footer(self, MachineCollection), (0, HEIGHT_HEADER + HEIGHT_MAP)),
                               (MarginLeft(self), (0, HEIGHT_HEADER)),
                               (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                               ]
@@ -110,32 +111,53 @@ class Game:
     # вход - нажатые клавиши pygame.key.get_pressed()
     def on_pressed_key(self, pressed_keys):
         if self.block is None:
-            return
+            return False
 
         if self.state == GameState.GAME_WAIT:
             # эмулируем клик на /начать/
             if pressed_keys[pygame.K_RETURN]:
                 dispatcher.game.notify_about_change_state(ButtonState.PLAY_ID)
+                return True
 
         elif self.state == GameState.GAME_PLAY:
             if pressed_keys[pygame.K_SPACE]:
                 dispatcher.game.notify_about_change_state(ButtonState.PAUSE_ID)
+                return True
             # не выходим мы в состоянии игры  надо еще амулет подвигать
 
         elif self.state == GameState.GAME_PAUSE:
             # стоим на паузе надо продолжить эмулируем клик на продолжить
             if pressed_keys[pygame.K_SPACE]:
                 dispatcher.game.notify_about_change_state(ButtonState.CONTINUE_ID)
+                return True
             # не выходим мы на паузе пусть приноровится двигать клавишами
 
         elif self.state == GameState.GAME_OVER:
             if pressed_keys[pygame.K_ESCAPE]:
                 dispatcher.game.notify_about_change_state(ButtonState.RETURN_ID)
+                return True
             # не выходим мы на паузе пусть приноровится двигать клавишами
 
         for item in self.block:
             obj, offset = item
-            obj.onPressedKey(pressed_keys)
+
+            # --------------------------------------------------------------
+            if obj.on_pressed_key(pressed_keys) is True and obj.__class__.__name__ == 'Collection':
+                # выходим из коллекции и устанавливаем выбранную карту
+                LOG.write(
+                    f'Сейчас будет загрузка карта {dispatcher.session.map_number} для {dispatcher.session.user}')
+
+                self.block = self.block_game
+                for item in self.block:
+                    obj, _ = item
+                    obj.load(dispatcher.session.map_number)
+
+                # эмулируем нажатие клавиши играть заново
+                self.notify_about_change_state(ButtonState.REPLAY_ID)
+                return True
+            # --------------------------------------------------------------
+
+        return False
 
     def onClick(self, pos):
         if self.block is None:
@@ -184,8 +206,8 @@ class Game:
                     f'Сейчас будет загрузка карта {dispatcher.session.map_number} для {dispatcher.session.user}')
 
                 self.block = self.block_game
-                for item in self.block:
-                    obj, _ = item
+                for item2 in self.block:
+                    obj, _ = item2
                     obj.load(dispatcher.session.map_number)
 
                 # эмулируем нажатие клавиши играть заново
@@ -218,7 +240,7 @@ class Game:
             del self.block_game
             self.block_game = [(Field(self), (WIDTH_MARGIN, HEIGHT_HEADER)),
                                (Header(self), (0, 0)),
-                               (Footer(self), (0, HEIGHT_HEADER + HEIGHT_MAP)),
+                               (Footer(self, Machine), (0, HEIGHT_HEADER + HEIGHT_MAP)),
                                (MarginLeft(self), (0, HEIGHT_HEADER)),
                                (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                                ]
@@ -316,3 +338,6 @@ class Game:
         for item in self.block:
             obj, _ = item
             obj.on_message(message_id, *params)
+
+        if message_id == MessadgID.DEF_SELECT_GAME:
+            self.emulate_enter = True

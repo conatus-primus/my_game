@@ -5,6 +5,7 @@ import copy
 from py.panel import *
 import vars
 
+
 class Show:
     # отступ и ширина фокусной рамки вокруг картинки
     margin = 8
@@ -181,7 +182,6 @@ class MapDscr:
         offset_text = offx + (width - surf_text.get_width()) // 2, offy + (h_title - surf_text.get_height()) // 2
         screen.blit(surf_text, offset_text)
 
-
         pygame.draw.rect(screen, Show.color_ramka, (offx, offy, width, width), 2, 10)
         pygame.draw.rect(screen, FON_COLOR_DARK,
                          (offx - Show.margin, offy - Show.margin, width + 2 * Show.margin,
@@ -218,6 +218,8 @@ class MapDscr:
 
 
 class Biblio:
+    count_per_line = 4
+
     def __init__(self, parent):
         self.parent = parent
         self.map_dscr_list = []
@@ -247,13 +249,12 @@ class Biblio:
         margin_x = 60
         margin_y = HEIGHT_HEADER * 3 // 2
         margin_top = HEIGHT_HEADER // 2
-        count_per_line = 4
-        length = (self.parent.width - (count_per_line + 1) * margin_x) // count_per_line
+        length = (self.parent.width - (Biblio.count_per_line + 1) * margin_x) // Biblio.count_per_line
 
         self.active_map_index = 0
         index = 0
-        for row in range(count_per_line):
-            for col in range(count_per_line):
+        for row in range(Biblio.count_per_line):
+            for col in range(Biblio.count_per_line):
                 self.map_dscr_list[index].set_position(
                     # лево верх
                     ((margin_x + length) * col + margin_x, (margin_y + length) * row + margin_top),
@@ -297,18 +298,51 @@ class Biblio:
                 return True
         return False
 
+    def __load_map(self, map):
+        # TODO фиксируем текущую карту
+        LOG.write(f'Играем с {map.filename}')
+
+        # TODO да я знаю, часть параметров дублируется, это эволюция кода, со временем почистим ненужное
+        dispatcher.user.set_choice(map.map_number)
+        dispatcher.session.map_number = map.map_number
+        dispatcher.session.selected_map = map
+        dispatcher.session.level_content = map.generate_next_level()
+        sounds.vgux()
+
     def on_double_click(self, event) -> bool:
         for i, map in enumerate(self.map_dscr_list):
             if map.on_click(event.pos) is True:
-                # TODO фиксируем текущую карту
-                LOG.write(f'Играем с {map.filename}')
-
-                # TODO да я знаю, часть параметров дублируется, это эволюция кода, со временем почистим ненужное
-                dispatcher.user.set_choice(map.map_number)
-                dispatcher.session.map_number = map.map_number
-                dispatcher.session.selected_map = map
-                dispatcher.session.level_content = map.generate_next_level()
-                sounds.vgux()
+                self.__load_map(map)
                 return True
 
+        return False
+
+    def on_pressed_key(self, pressed_keys):
+        row, column = self.active_map_index // Biblio.count_per_line, self.active_map_index % Biblio.count_per_line
+
+        key_dict = {pygame.K_LEFT: ('L', -1), pygame.K_a: ('L', -1),
+                    pygame.K_RIGHT: ('R', 1), pygame.K_d: ('R', 1),
+                    pygame.K_UP: ('U', -Biblio.count_per_line), pygame.K_w: ('U', -Biblio.count_per_line),
+                    pygame.K_DOWN: ('D', Biblio.count_per_line), pygame.K_s: ('D', Biblio.count_per_line)
+                    }
+        if pressed_keys[pygame.K_RETURN]:
+            if 0 <= self.active_map_index < len(self.map_dscr_list):
+                self.__load_map(self.map_dscr_list[self.active_map_index])
+                return True
+
+        for fixed_key, params in key_dict.items():
+            direct, koef = params
+            prev = self.active_map_index
+            if pressed_keys[fixed_key]:
+                self.active_map_index += koef
+                if self.active_map_index < 0:
+                    if direct == 'L':
+                        self.active_map_index = 0
+                    elif direct == 'U':
+                        self.active_map_index = prev
+                elif self.active_map_index >= len(self.map_dscr_list):
+                    if direct == 'R':
+                        self.active_map_index = len(self.map_dscr_list) - 1
+                    elif direct == 'D':
+                        self.active_map_index = prev
         return False
