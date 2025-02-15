@@ -213,9 +213,9 @@ class Field(Block):
         # self.mob = ChangedMob(self, 100, (0, 0), (900, 900), 'images/mobs/mob9_')
         # self.mob.set_start()
 
-    def create_passive_amulet(self, hole_id1, hole_id2, amulet_handle):
-        print(f'Создаем пассивный амулет {id}: {hole_id1} --> {hole_id2}')
-        amuletPassive = AmuletPassive(self, amulet_handle.id, [hole_id1, hole_id2], SHOW_TIME_IN_HOLE_SEC,
+    def create_passive_amulet(self, hole_ids, amulet_handle):
+        print(f'Создаем пассивный амулет {id}: {hole_ids}')
+        amuletPassive = AmuletPassive(self, amulet_handle.id, hole_ids, SHOW_TIME_IN_HOLE_SEC,
                                       amulet_handle.price_max)
         amuletPassive.load(self.vectorMap.holes)
         amuletPassive.start()

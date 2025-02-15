@@ -109,12 +109,17 @@ class User:
         procents.append(new_percent)
         points += new_points
 
-        print(dispatcher.session.selected_map.get_level_count())
-        if len(procents) == dispatcher.session.selected_map.get_level_count():
+        # количество уровне
+        level_count = dispatcher.session.selected_map.get_level_count()
+        print(f'Сохраняемся, кол-во уровней - {level_count}')
+
+        if len(procents) == level_count:
             # новый игра
             self.game[self.current_map] = game_number + 1, points, procents
-        elif len(procents) > dispatcher.session.selected_map.get_level_count():
+        elif len(procents) > level_count and len(level_count):
             self.game[self.current_map] = game_number, points, [procents[-1]]
+        elif len(procents) > 0:
+            self.game[self.current_map] = game_number, points, procents
 
         # if self.current_map in self.levels:
         #     self.levels[self.current_map] += 1

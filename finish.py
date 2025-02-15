@@ -32,6 +32,7 @@ class Finish:
 
         if self.mob[0].velocity == 0:
             if self.tick2 == 15:
+                # мобов удаляем, создаем одного, пусть болтается
                 self.mob.pop(0)
                 self.mob.pop(0)
                 x = ChangedMob(self, 100, (WIDTH_GAME // 2, 184), (WIDTH_GAME // 2, 184), 'mob7', None, None)
@@ -41,6 +42,7 @@ class Finish:
                 self.tick2 += 1
         else:
             if pygame.Rect.colliderect(self.mob[0].rect, self.mob[1].rect):
+                # мобы слетелись меняем их окраску
                 self.mob[0].last_show(True)
                 self.mob[1].last_show(False)
                 self.tick = 0

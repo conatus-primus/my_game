@@ -4,6 +4,7 @@ from game import Game
 from message import Message
 from finish import Finish
 from py.shared import *
+import sys
 
 FPS = 60
 
@@ -23,6 +24,13 @@ class MouseButton(enum.Enum):
 
 if __name__ == '__main__':
 
+    for i, a in enumerate(sys.argv):
+        if i == 0:
+            continue
+        if a == '--passive':
+            dispatcher.param_passive = True
+    dispatcher.param_passive = True
+    
     # важно прописать до pygame.init()
     pygame.mixer.pre_init(44100, -16, 1, 512)
 

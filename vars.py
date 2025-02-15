@@ -132,6 +132,7 @@ class Sounds:
         self.__sFall = pygame.mixer.Sound('sounds/fall.ogg')
         self.__sSuccess = pygame.mixer.Sound('sounds/success.ogg')
         self.__sFinish = pygame.mixer.Sound('sounds/finish.ogg')
+        self.__sStart = pygame.mixer.Sound('sounds/korotkiy-zvuk.ogg')
         pygame.mixer.music.load("sounds/fon.mp3")
 
     def vgux(self):
@@ -157,6 +158,10 @@ class Sounds:
     def finish(self):
         if dispatcher.session.sounds_active is True:
             self.__sFinish.play()
+
+    def start(self):
+        if dispatcher.session.sounds_active is True:
+            self.__sStart.play()
 
 
 class Session:
@@ -228,6 +233,9 @@ class Dispatcher:
         self.tick = 0
         self.flag_finish = False
         self.finish_screen = None
+        # задается ключом --passive
+        # генерирует пассивный амулет, проходящий через все окна
+        self.param_passive = False
 
     def on_stop(self):
         if self.game is not None:
@@ -324,6 +332,7 @@ class Machine:
               GameState.GAME_NO: []
               }
 
+
 class MachineCollection:
     # 2 параметра картинка, 3 параметр смещение по горизонтали от левого края
     buttons = {ButtonState.PLAY_ID: ('play.png', None, None),
@@ -343,6 +352,7 @@ class MachineCollection:
               GameState.GAME_SELECT: [ButtonState.SELECT_ID],
               }
 
+
 class MessadgID(enum.Enum):
     # очистить амулеты левой панели
     DEF_AMULETS_CLEAR = 1000
@@ -350,4 +360,3 @@ class MessadgID(enum.Enum):
     DEF_AMULET_BALL = 1001
     # сообщение о выборе игры в панель коллекции
     DEF_SELECT_GAME = 1002
-

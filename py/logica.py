@@ -33,7 +33,8 @@ class Rule:
                'Ты сегодня в ударе!',
                'Какая игра, просто блеск!',
                'Неплохо, неплохо!',
-               'Какая сноровка!'
+               'Ты - молодец!',
+               'Какой ты быстрый!'
                ],
         False: [
             'В этот раз не повезло.',
@@ -330,14 +331,31 @@ class Logica(Round):
             m = 4
             if len(self.holes_info) >= m:
                 passive_amulet_count = (len(self.holes_info) - (m - 2)) // 2
-                res = random.sample(self.holes_info, passive_amulet_count * 2)
-                for i in range(0, len(res), 2):
-                    id1, _ = res[i]
-                    id2, _ = res[i + 1]
+
+                if dispatcher.param_passive is True:
+                    ids = []
+                    for i in range(len(self.holes_info)):
+                        ids.append('path' + str(i + 1))
+                    if ids[0] == 'path1':
+                        ids.append(ids[0])
+                        ids.pop(0)
                     amulet_index = random.randint(0, len(amulet_handles) - 1)
-                    self.create_passive_amulet_function(id1, id2, amulet_handles[amulet_index])
+                    self.create_passive_amulet_function(ids, amulet_handles[amulet_index])
                     dispatcher.game.message(MessadgID.DEF_AMULET_BALL, amulet_handles[amulet_index].id,
                                             amulet_handles[amulet_index].price_max)
+
+                else:
+
+                    res = random.sample(self.holes_info, passive_amulet_count * 2)
+                    for i in range(0, len(res), 2):
+                        id1, _ = res[i]
+                        id2, _ = res[i + 1]
+                        if id1 == 'path1':
+                            id1, id2 = id2, id1
+                        amulet_index = random.randint(0, len(amulet_handles) - 1)
+                        self.create_passive_amulet_function([id1, id2], amulet_handles[amulet_index])
+                        dispatcher.game.message(MessadgID.DEF_AMULET_BALL, amulet_handles[amulet_index].id,
+                                                amulet_handles[amulet_index].price_max)
 
     def caught_mob(self, success):
         if self.game_end is True:
@@ -363,6 +381,7 @@ class Logica(Round):
         _, _, percents = dispatcher.user.get_map_data(dispatcher.session.map_number)
         level_count_in_map = dispatcher.session.selected_map.get_level_count()
         self.current_level = len(percents) % level_count_in_map + 1
+        sounds.start()
 
     def game_pause(self):
         self.pause = True
@@ -371,6 +390,8 @@ class Logica(Round):
         # начинаем подсчет секунд
         self.clear()
         self.pause = False
+        sounds.start()
 
     def game_continue(self):
         self.pause = False
+        sounds.start()
