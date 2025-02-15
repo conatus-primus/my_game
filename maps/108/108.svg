@@ -27,7 +27,7 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="1.7"
      inkscape:cx="394.70588"
-     inkscape:cy="707.35294"
+     inkscape:cy="330.88235"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="-8"
@@ -134,9 +134,10 @@
          x="549.41174"
          y="512.94116">4</tspan></text>
     <path
-       style="fill:none;stroke:#00f300;stroke-width:1.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
-       d="m 551.12734,409.29004 86.10065,-1.24783"
-       id="strip3" />
+       style="fill:none;stroke:#00f300;stroke-width:1.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 558.18616,411.05475 72.57124,0.51688"
+       id="strip3"
+       sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#00f300;stroke-width:1.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
        d="m 598.54509,569.84488 67.79907,-0.83189"
@@ -146,8 +147,9 @@
        d="m 153.89971,614.76695 106.06602,1.24784"
        id="strip1" />
     <path
-       style="fill:none;stroke:#00f300;stroke-width:1.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
-       d="m 396.81169,410.12193 75.70202,-0.41594"
-       id="strip2" />
+       style="fill:none;stroke:#00f300;stroke-width:1.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 428.5764,411.88664 32.17261,-0.41594"
+       id="strip2"
+       sodipodi:nodetypes="cc" />
   </g>
 </svg>

@@ -38,9 +38,8 @@
 [108,](https://ru.pinterest.com/pin/1146869861358423975/)
 [109,](https://depositphotos.com/ru/vector/scandinavian-houses-pattern-baby-seamless-print-cartoon-town-nursery-textile-544077014.html)
 [110,](https://pixel.one/homework-improvement/255/zelenyy-stilizovannyy-domik-sashi-nikulinoy)
-[853,](https://play.google.com/store/apps/details?id=happy.paint.coloring.color.number)
-[941,](https://play.google.com/store/apps/details?id=happy.paint.coloring.color.number)
-[969](https://play.google.com/store/apps/details?id=happy.paint.coloring.color.number)  
+[111,](https://ru.pngtree.com/freepng/thatched-stylized-cartoon-house_14880688.html)  
+[853, 857, 941, 969](https://play.google.com/store/apps/details?id=happy.paint.coloring.color.number)
 Ссылки на ресурсы картинок мобов:    
 [mob2, mob3,](https://astro9811.itch.io/alien-annihilation) 
 [mob5](https://pngtree.com/freepng/hello-skeleton-monster_6001945.html)  

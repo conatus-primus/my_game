@@ -154,14 +154,14 @@ class Amulet:
     def render_strip(self, point, screen):
         r, g, b = self.color.r, self.color.g, self.color.b
         pens = [
-            (pygame.Color(128, 128, 128, ), 14),
+            (pygame.Color(200, 200, 200, ), 14),
             (pygame.Color(r * 5 // 15, g * 5 // 15, b * 5 // 15), 13),
             (pygame.Color(r * 7 // 15, g * 7 // 15, b * 7 // 15), 11),
             (pygame.Color(r * 9 // 15, g * 9 // 15, b * 9 // 15), 9),
             (pygame.Color(r * 11 // 15, g * 11 // 15, b * 11 // 15), 7),
             (pygame.Color(r * 13 // 15, g * 13 // 15, b * 13 // 15), 5),
             (pygame.Color(r * 15 // 15, g * 15 // 15, b * 15 // 15), 3),
-            (pygame.Color(128, 128, 128, ), 1),
+            (pygame.Color(200, 200, 200, ), 1),
         ]
         for i, pen in enumerate(pens):
             color, h = pen

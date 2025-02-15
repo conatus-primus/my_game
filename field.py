@@ -179,8 +179,6 @@ class Field(Block):
                     continue
 
                 pos_start, pos_stop = coords[0], coords[-1]
-                if pos_start[1] > pos_stop[1]:
-                    pos_start, pos_stop = pos_stop, pos_start
                 dx, dy = pos_stop[0] - pos_start[0], pos_stop[1] - pos_start[1]
                 dist = (dx ** 2 + dy ** 2) ** 0.5
                 if dist == 0:
@@ -252,7 +250,7 @@ class Field(Block):
                 self.amulets.append(x)
         self.last_track = []
         self.last_show_mobs = []
-        # обновить левую панель
+        self.recalc_amulet_relative_position()
 
     def callback_update(self, mob):
         mob_del_list = []
