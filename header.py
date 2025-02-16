@@ -1,5 +1,4 @@
 # чердак игрового поля
-import pygame
 from vars import *
 from block import Block
 
@@ -7,7 +6,6 @@ from block import Block
 class Header(Block):
     def __init__(self, game):
         super().__init__(game, WIDTH_GAME, HEIGHT_HEADER)
-        # self.font = pygame.font.Font(None, HEIGHT_HEADER - 20)
         self.font = pygame.font.SysFont('Comic Sans MS', HEIGHT_HEADER - 20)
 
     def render(self, ):

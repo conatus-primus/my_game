@@ -3,7 +3,7 @@
 import datetime
 
 
-class logger:
+class MyLog:
     def __init__(self):
         # открываем файл лога
         pass

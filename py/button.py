@@ -27,13 +27,13 @@ class CheckButton:
         return self.checked
 
     # клик мыши
-    def onClick(self, pos):
+    def on_click(self, pos):
         x, y = pos
         if 0 <= x < self.image_pressed.get_width() and 0 <= y < self.image_pressed.get_height():
             # меняем состояние
             self.check(not self.isChecked())
             #  сообщаем всем что было нажатие
-            self.parent.onPressedButton(self.buttonID, self.isChecked())
+            self.parent.on_pressed_button(self.buttonID, self.isChecked())
 
 
 # полностью нарисованная кнопка
@@ -89,10 +89,10 @@ class ImageDrawnCheckButton(CheckButton):
         self.enabled = enabled
 
     # клик мыши
-    def onClick(self, pos):
+    def on_click(self, pos):
         if not self.enabled:
             return
-        super().onClick(pos)
+        super().on_click(pos)
 
 
 # нарисованная кнопка с наложением картинки
@@ -157,9 +157,9 @@ class ImagePushButton:
                 if self.pushed:
                     self.pushed = False
                     dispatcher.need_update(self)
-                    self.parent.onPushedButton(self.button_id)
+                    self.parent.on_pushed_button(self.button_id)
 
             self.pushed = False
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         print(f'{pos}')

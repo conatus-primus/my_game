@@ -25,7 +25,7 @@ class BrightPanel:
             pygame.draw.rect(self.surface, pygame.Color('white'), brightRect, 1)
 
     # клик мыши
-    def onClick(self, pos):
+    def on_click(self, pos):
         x, y = pos
         if 0 <= x < len(BRIGHTEN) * self.w and 0 <= y < self.h:
             # поменяли атрибут в сессии

@@ -1,6 +1,4 @@
 # коллекция всех карт
-import pygame
-from vars import *
 from block import Block
 from py.biblio import *
 
@@ -20,8 +18,8 @@ class Collection(Block):
         self.biblio = Biblio(self)
         self.biblio.load()
 
-    def onClick(self, pos):
-        if not super().isInBlock(pos):
+    def on_click(self, pos):
+        if not super().is_in_block(pos):
             return False
         x, y = pos
 
@@ -35,7 +33,7 @@ class Collection(Block):
             return False
 
     def on_double_click(self, event):
-        if not super().isInBlock(event.pos):
+        if not super().is_in_block(event.pos):
             return False
         if self.biblio is not None:
             return self.biblio.on_double_click(event)

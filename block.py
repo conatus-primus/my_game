@@ -16,11 +16,11 @@ class Block:
         pass
 
     # проверить принадлежит ли клик нашему окну
-    def isInBlock(self, pos):
+    def is_in_block(self, pos):
         x, y = pos
         return 0 <= x < self.width and 0 <= y < self.height
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         return False
 
     # запрос на обновление

@@ -1,14 +1,8 @@
 # игровое поле
-import pygame
 from header import Header
-from footer import Footer
 from marginleft import MarginLeft
 from marginright import MarginRight
 from field import Field
-from vars import *
-from py.shared import *
-from collection import *
-from py.user import *
 from footer import *
 from py.logica import *
 from collection import *
@@ -16,7 +10,6 @@ from collection import *
 
 class Game:
     def __init__(self):
-        # self.field = None
         # игровой блок и смещение блока относительно всего игрового поля
         self.block = None
         # для выхода из логина
@@ -61,11 +54,11 @@ class Game:
 
         # фоновая музыка
         pygame.mixer.music.play(-1)
-        if not dispatcher.session.chansonActive:
+        if not dispatcher.session.chanson_active:
             pygame.mixer.music.pause()
 
         # громкость
-        pygame.mixer.music.set_volume(dispatcher.session.volumeLevel)
+        pygame.mixer.music.set_volume(dispatcher.session.volume_level)
 
     # получить блок нужного типа
     def get_block(self, BlockType):
@@ -98,7 +91,7 @@ class Game:
             return
 
         # переключаем звук и музыку
-        if dispatcher.session.chansonActive:
+        if dispatcher.session.chanson_active:
             pygame.mixer.music.unpause()
         else:
             pygame.mixer.music.pause()
@@ -159,7 +152,7 @@ class Game:
 
         return False
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         if self.block is None:
             return
 
@@ -167,15 +160,15 @@ class Game:
         for item in self.block:
             obj, offset = item
             blockPos = x - offset[0], y - offset[1]
-            obj.onClick(blockPos)
+            obj.on_click(blockPos)
 
-    def on_timer(self, currentTime):
+    def on_timer(self, current_time):
         if self.block is None:
             return
 
         for item in self.block:
             obj, offset = item
-            obj.on_timer(currentTime)
+            obj.on_timer(current_time)
 
     def on_click_extend(self, event):
         if self.block is None:
@@ -221,7 +214,7 @@ class Game:
         pass
 
     #
-    def __change_state__(self, old_state):
+    def __change_state(self, old_state):
         for item in self.block:
             obj, _ = item
             obj.on_changed_state(old_state, self.state)
@@ -245,31 +238,31 @@ class Game:
                                (MarginRight(self), (WIDTH_MARGIN + WIDTH_MAP, HEIGHT_HEADER)),
                                ]
             old_state, self.state = self.state, GameState.GAME_NO
-            self.__change_state__(old_state)
+            self.__change_state(old_state)
             return
 
         # играем
         elif ButtonState.PLAY_ID == button_id:
             old_state, self.state = self.state, GameState.GAME_PLAY
-            self.__change_state__(old_state)
+            self.__change_state(old_state)
             self.game_start()
 
         # пауза
         elif ButtonState.PAUSE_ID == button_id:
             old_state, self.state = self.state, GameState.GAME_PAUSE
-            self.__change_state__(old_state)
+            self.__change_state(old_state)
             self.game_pause()
 
         # продолжить игру после паузы
         elif ButtonState.CONTINUE_ID == button_id:
             old_state, self.state = self.state, GameState.GAME_PLAY
-            self.__change_state__(old_state)
+            self.__change_state(old_state)
             self.game_continue()
 
         # начать играть заново
         elif ButtonState.REPLAY_ID == button_id:
             old_state, self.state = self.state, GameState.GAME_WAIT
-            self.__change_state__(old_state)
+            self.__change_state(old_state)
             self.game_replay()
 
         # была заставка после окончания раунда надо войти в состояние ожидания начала игры
@@ -280,7 +273,7 @@ class Game:
             dispatcher.need_update(self)
 
             old_state, self.state = self.state, GameState.GAME_WAIT
-            self.__change_state__(old_state)
+            self.__change_state(old_state)
             self.game_replay()
 
     # действия связанные с началом игры
@@ -326,7 +319,7 @@ class Game:
     # закончилась игра
     def game_over(self, flag_success):
         old_state, self.state = self.state, GameState.GAME_OVER
-        self.__change_state__(old_state)
+        self.__change_state(old_state)
 
         for item in self.block:
             obj, _ = item

@@ -1,6 +1,5 @@
 # правый блоки игрового поля
 import copy
-
 from py.bright_panel import *
 from block import Block
 from py.panel import ImagePanel
@@ -10,8 +9,8 @@ from py.biblio import MapDscr
 class MarginRight(Block):
     def __init__(self, game):
         super().__init__(game, WIDTH_MARGIN, HEIGHT_MAP)
-        self.brightPanel = BrightPanel(self, WIDTH_MARGIN)
-        self.brightOffset = ((self.width - self.brightPanel.surface.get_width()) / 2, self.brightPanel.w)
+        self.bright_panel = BrightPanel(self, WIDTH_MARGIN)
+        self.bright_offset = ((self.width - self.bright_panel.surface.get_width()) / 2, self.bright_panel.w)
 
         self.level_panel = None
         self.current_map = MapDscr('так надо это пустая карта')
@@ -120,19 +119,19 @@ class MarginRight(Block):
                     # # не светим неудачное решение
                     # self.level_panel.render(self.surface, ((self.width - self.level_panel.width) // 2, offset_y))
         else:
-            self.brightPanel.render()
-            self.surface.blit(self.brightPanel.surface, self.brightOffset)
+            self.bright_panel.render()
+            self.surface.blit(self.bright_panel.surface, self.bright_offset)
 
         if dispatcher.logicaaa() is not None:
             dispatcher.logicaaa().render_marginright(self.surface)
 
     # клик мыши
-    def onClick(self, pos):
-        if not super().isInBlock(pos):
+    def on_click(self, pos):
+        if not super().is_in_block(pos):
             return False
         x, y = pos
-        self.brightPanel.onClick((x - self.brightOffset[0], y - self.brightOffset[1]))
+        self.bright_panel.on_click((x - self.bright_offset[0], y - self.bright_offset[1]))
         return True
 
-    def onPressedButton(self, buttonID, bChecked):
+    def on_pressed_button(self, button_id, b_checked):
         pass

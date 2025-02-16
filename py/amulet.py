@@ -1,5 +1,3 @@
-import pygame
-
 from vars import *
 import configparser
 import enum
@@ -129,7 +127,7 @@ class Amulet:
         for a in self.amuletSprites:
             a.render(surface, self.montrerState)
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         return False
 
     # вход - нажатые клавиши pygame.key.get_pressed()
@@ -191,7 +189,7 @@ class AmuletUser(Amulet):
         for a in self.amuletSprites:
             a.update(self.activeHoleID)
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         # меняем положение пользовательского амулета
         # пока так, потом возможно нужен режим,
         # или клик для амулета пользователя или клик для пассивного/активного амулета
@@ -203,7 +201,7 @@ class AmuletUser(Amulet):
                 break
 
         if clickedAmulet is not None:
-            self.location.currentHoleID = clickedAmulet.id
+            self.location.current_hole_id = clickedAmulet.id
             self.activeHoleID = clickedAmulet.id
             dispatcher.need_update(self)
             return True
@@ -268,7 +266,7 @@ class AmuletPassive(Amulet):
         for a in self.amuletSprites:
             a.update(active_hole_id)
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         return False
 
     # таймер на передвижение амулетов

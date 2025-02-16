@@ -1,6 +1,4 @@
 # подвал игрового поля
-import pygame
-from vars import *
 from block import Block
 from py.button import *
 
@@ -24,10 +22,10 @@ class Footer(Block):
         # ужас просто ужас напроектировала...
         temp = DrawnCheckButton(ButtonID.ID_BUTTON_SOUND, 'sound', self, (0, 0))
 
-        self.buttonSound = DrawnCheckButton(ButtonID.ID_BUTTON_SOUND, 'sound', self,
-                                            (HEIGHT_FOOTER // 4, (HEIGHT_FOOTER - temp.get_height()) // 2), FON_COLOR_MID)
-        self.buttonChanson = DrawnCheckButton(ButtonID.ID_BUTTON_CHANSON, 'chanson', self,
-                                              (HEIGHT_FOOTER // 2 + temp.get_width(),
+        self.button_sound = DrawnCheckButton(ButtonID.ID_BUTTON_SOUND, 'sound', self,
+                                             (HEIGHT_FOOTER // 4, (HEIGHT_FOOTER - temp.get_height()) // 2), FON_COLOR_MID)
+        self.button_chanson = DrawnCheckButton(ButtonID.ID_BUTTON_CHANSON, 'chanson', self,
+                                               (HEIGHT_FOOTER // 2 + temp.get_width(),
                                                (HEIGHT_FOOTER - temp.get_height()) // 2), FON_COLOR_MID)
         del temp
         self.machine = machine
@@ -35,8 +33,8 @@ class Footer(Block):
             self.state = GameState.GAME_SELECT
 
     def load(self, map_number):
-        self.buttonSound.check(dispatcher.session.sounds_active)
-        self.buttonChanson.check(dispatcher.session.chansonActive)
+        self.button_sound.check(dispatcher.session.sounds_active)
+        self.button_chanson.check(dispatcher.session.chanson_active)
 
         for id, dscr in self.machine.buttons.items():
             path, _, _ = dscr
@@ -96,16 +94,16 @@ class Footer(Block):
 
         self.surface.blit(self.image_sortir, self.offset_sortir)
 
-        self.buttonSound.render()
-        self.surface.blit(self.buttonSound.surface, self.buttonSound.offset)
-        self.buttonChanson.render()
-        self.surface.blit(self.buttonChanson.surface, self.buttonChanson.offset)
+        self.button_sound.render()
+        self.surface.blit(self.button_sound.surface, self.button_sound.offset)
+        self.button_chanson.render()
+        self.surface.blit(self.button_chanson.surface, self.button_chanson.offset)
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         x, y = pos
 
-        self.buttonSound.onClick((x - self.buttonSound.offset[0], y - self.buttonSound.offset[1]))
-        self.buttonChanson.onClick((x - self.buttonChanson.offset[0], y - self.buttonChanson.offset[1]))
+        self.button_sound.on_click((x - self.button_sound.offset[0], y - self.button_sound.offset[1]))
+        self.button_chanson.on_click((x - self.button_chanson.offset[0], y - self.button_chanson.offset[1]))
 
         for button_id in self.machine.states[self.state]:
             dscr_button = self.machine.buttons[button_id]
@@ -129,21 +127,21 @@ class Footer(Block):
     def on_changed_state(self, old_state, new_state):
         self.set_state(new_state)
 
-    def onPressedButton(self, buttonID, bChecked):
-        bNeedUpdate = False
-        if buttonID == ButtonID.ID_BUTTON_SOUND:
-            bNeedUpdate = True
-            dispatcher.session.sounds_active = bChecked
-            v = dispatcher.session.volumeLevel - 0.1
+    def on_pressed_button(self, button_id, b_checked):
+        b_need_update = False
+        if button_id == ButtonID.ID_BUTTON_SOUND:
+            b_need_update = True
+            dispatcher.session.sounds_active = b_checked
+            v = dispatcher.session.volume_level - 0.1
             if v <= 0:
                 v = 1
             pygame.mixer.music.set_volume(v)
-            dispatcher.session.volumeLevel = v
+            dispatcher.session.volume_level = v
 
-        if buttonID == ButtonID.ID_BUTTON_CHANSON:
-            bNeedUpdate = True
-            dispatcher.session.chansonActive = bChecked
+        if button_id == ButtonID.ID_BUTTON_CHANSON:
+            b_need_update = True
+            dispatcher.session.chanson_active = b_checked
 
-        print(f'button {buttonID} : check={bChecked}')
-        if bNeedUpdate:
+        print(f'button {button_id} : check={b_checked}')
+        if b_need_update:
             dispatcher.need_update(self)

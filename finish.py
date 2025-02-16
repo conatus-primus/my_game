@@ -50,13 +50,13 @@ class Finish:
 
         return self.code_ret
 
-    def on_timer(self, currentTime):
+    def on_timer(self, current_time):
         if self.tick is None:
             return
 
         if self.tick == 0:
-            self.tick = currentTime
+            self.tick = current_time
             sounds.finish()
         else:
-            if currentTime - self.tick > 3:
+            if current_time - self.tick > 3:
                 self.code_ret = False

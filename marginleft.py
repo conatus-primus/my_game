@@ -1,7 +1,6 @@
 # левый блоки игрового поля
 from py.button import *
 from block import Block
-import configparser
 from py.amulet import AmuletPassive
 
 
@@ -47,7 +46,6 @@ class MarginLeft(Block):
             self.surface.blit(b.surface, b.offset)
             write_text = f'{self.amulet_handles[i].name}'
 
-
             if self.amulet_handles[i].price_now <= 0:
                 text_color = (100, 100, 100)
                 price = self.amulet_handles[i].price_max
@@ -68,14 +66,6 @@ class MarginLeft(Block):
             last_offset_y = b.offset[1] + b.surface.get_height() + 3 * dH
 
         dY = last_offset_y
-
-        # if self.button_acheter is None:
-        #     pos_button = (self.width - 120) // 2, dY
-        #     self.button_acheter = ImagePushButton('acheter', 'images/system/button_120x40', 'Забрать', self, pos_button)
-        #     self.button_acheter.setEnable(False)
-        #
-        # self.button_acheter.render()
-        # self.surface.blit(self.button_acheter.surface, self.button_acheter.offset)
 
         if self.first_render:
             self.first_render = False
@@ -105,35 +95,19 @@ class MarginLeft(Block):
 
         dispatcher.game.amulet_handles = self.amulet_handles
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         return False
-        # if not super().isInBlock(pos):
-        #     return False
-        # x, y = pos
-        # for i, b in enumerate(self.amulet_button):
-        #     b.onClick((x - b.offset[0], y - b.offset[1]))
-        #
-        # if self.button_acheter is not None:
-        #     e = pygame.event
-        #     e.type = pygame.MOUSEBUTTONDOWN
-        #     e.pos = pos
-        #     self.button_acheter.on_click_extend(e)
-        # return True
 
-    def onPressedButton(self, button_id, checked):
+    def on_pressed_button(self, button_id, checked):
         need_update = False
-        print(f'{self.__class__.__name__} pressed buttonID={button_id} bChecked={checked}')
+        print(f'{self.__class__.__name__} pressed button_id={button_id} checked={checked}')
 
     def on_click_extend(self, event):
         pass
-        # if not super().isInBlock(event.pos):
-        #     return False
-        # if self.button_acheter is not None:
-        #     self.button_acheter.on_click_extend(event)
 
-    def onPushedButton(self, button_id):
+    def on_pushed_button(self, button_id):
         need_update = False
-        print(f'{self.__class__.__name__} pushed buttonID={button_id}')
+        print(f'{self.__class__.__name__} pushed button_id={button_id}')
 
     def game_replay(self):
         self.game_over(False)

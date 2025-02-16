@@ -1,7 +1,4 @@
-import copy
-
 from vars import *
-from py.biblio import MapDscr
 import configparser
 
 
@@ -19,6 +16,10 @@ class User:
         self.game: dict[int, tuple] = {}
 
     def load(self):
+
+        if self.name == 'ГОСТЬ':
+            return
+
         try:
             config = configparser.ConfigParser()
             config.read(self.user_file)
@@ -36,14 +37,6 @@ class User:
                 if map_section in config:
                     if 'number' in config[map_section]:
                         map_number = int(config[map_section]['number'])
-
-                        # уровень который сейчас надо проходить
-                        # level = 0
-                        # if 'level' in config[map_section]:
-                        #     level = int(config[map_section]['level'])
-                        # if level <= 1:
-                        #     continue
-                        # self.levels[map_number] = level
 
                         points = 0
                         if 'points' in config[map_section]:

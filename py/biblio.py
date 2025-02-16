@@ -3,7 +3,6 @@ import glob
 import random
 import copy
 from py.panel import *
-import vars
 
 
 class Show:

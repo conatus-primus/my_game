@@ -7,11 +7,10 @@ import pygame
 class Location:
     def __init__(self, map_number):
         self.location_file = CURRENT_DIRECTORY + '/maps/' + str(map_number) + '/location.ini'
-        self.holeByKey = dict()
+        self.hole_by_key = dict()
         self.levels = dict()
         # по умолчанию
-        self.currentHoleID = 'path1'
-        self.currentLevelID = 'path1'
+        self.current_hole_id = 'path1'
 
     def load(self):
         try:
@@ -22,38 +21,38 @@ class Location:
                 for hole_number in range(1, 20):
                     if str(hole_number) in config['keys']:
                         data = [x for x in config['keys'][str(hole_number)].split(',')]
-                        holeName = 'path' + str(hole_number)
-                        self.holeByKey[holeName] = dict()
+                        hole_name = 'path' + str(hole_number)
+                        self.hole_by_key[hole_name] = dict()
                         for action in data:
                             key, number = action.split(':')
-                            self.holeByKey[holeName][key] = 'path' + number
+                            self.hole_by_key[hole_name][key] = 'path' + number
 
             # [level2]
             # 1=path1:1,2 path3:1,2
             # 2=path4:1,2 path5:1,2
             for level in range(1, 10):
-                levelName = 'level' + str(level)
-                if levelName not in config:
+                level_name = 'level' + str(level)
+                if level_name not in config:
                     continue
                 for variant in range(1, 32):
-                    variantName = str(variant)
-                    if variantName not in config[levelName]:
+                    variant_name = str(variant)
+                    if variant_name not in config[level_name]:
                         break
-                    variantStrings = config[levelName][variantName].split()
-                    variantList = []
+                    variant_strings = config[level_name][variant_name].split()
+                    variant_list = []
                     # path1:1,2
                     # path3:1,2
-                    for var in variantStrings:
+                    for var in variant_strings:
                         hole, _ = var.split(':')
                         # path3
-                        variantList += var.replace(',', ' ' + hole).replace(':', ' ' + hole).split()
+                        variant_list += var.replace(',', ' ' + hole).replace(':', ' ' + hole).split()
                         # path3
                         # path31
                         # path32
 
-                    if levelName not in self.levels:
-                        self.levels[levelName] = dict()
-                    self.levels[levelName][variantName] = variantList
+                    if level_name not in self.levels:
+                        self.levels[level_name] = dict()
+                    self.levels[level_name][variant_name] = variant_list
 
             print(self.levels)
 
@@ -71,12 +70,10 @@ class Location:
                     }
         for fixed_key, direct in key_dict.items():
             if user_keys[fixed_key]:
-                # self.currentHoleID = self.holeByKey[self.currentHoleID][key_dict[fixed_key]]
-                # activeHoleID = self.currentHoleID
-                self.currentHoleID = self.holeByKey[self.currentHoleID][key_dict[fixed_key]]
-                oldActiveHoleID = activeHoleID
-                activeHoleID = self.holeByKey[activeHoleID][key_dict[fixed_key]]
-                print(f'{oldActiveHoleID} --> {activeHoleID}')
+                self.current_hole_id = self.hole_by_key[self.current_hole_id][key_dict[fixed_key]]
+                old_active_hole_id = activeHoleID
+                activeHoleID = self.hole_by_key[activeHoleID][key_dict[fixed_key]]
+                print(f'{old_active_hole_id} --> {activeHoleID}')
                 break
         return activeHoleID
 

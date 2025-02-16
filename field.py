@@ -1,7 +1,7 @@
 # карта игрового поля
 from block import Block
-from vectormap import VectorMap
-from location import Location
+from py.vectormap import VectorMap
+from py.location import Location
 from py.amulet import *
 from py.mob import *
 
@@ -23,9 +23,6 @@ class Field(Block):
         self.last_track = []
 
     def load(self, map_number):
-
-        # self.mob = ChangedMob(self, 100, (0, 0), (900, 900), 'images/mobs/mob9_')
-        # self.mob.set_start()
 
         # грузим варианты уровней и движения клавиш
         self.location = Location(map_number)
@@ -50,17 +47,6 @@ class Field(Block):
         self.amulet_user.setLocation(self.location)
         self.amulets.append(self.amulet_user)
 
-        # amuletPassive = AmuletPassive(self, 'ruby.png', ['path1', 'path2'], SHOW_TIME_IN_HOLE_SEC)
-        # # self.amuletPassive = AmuletPassive(self, 'ruby.png', ['path5'], [2, 0.1])
-        # amuletPassive.load(self.vectorMap.holes)
-        # amuletPassive.start()
-        # # self.amulets.append(amuletPassive)
-        #
-        # amuletPassive = AmuletPassive(self, 'sapphire.png', ['path2', 'path1'], SHOW_TIME_IN_HOLE_SEC)
-        # amuletPassive.load(self.vectorMap.holes)
-        # amuletPassive.start()
-        # # self.amulets.append(amuletPassive)
-
         #
         dispatcher.need_update(self)
 
@@ -82,8 +68,6 @@ class Field(Block):
 
         for x in self.mobs:
             x.render(self.surface)
-        # self.all_mob_groups.draw(self.surface)
-        # self.mob.render(self.surface)
 
         if dispatcher.logicaaa() is not None:
             dispatcher.logicaaa().render_field(self.surface)
@@ -119,9 +103,9 @@ class Field(Block):
         for a in self.amulets:
             a.update()
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         # пересчитать положение амулетов
-        if any([a.onClick(pos) for a in self.amulets]):
+        if any([a.on_click(pos) for a in self.amulets]):
             self.recalc_amulet_relative_position()
             dispatcher.need_update(self)
             return True
@@ -208,8 +192,6 @@ class Field(Block):
                              )
         self.mobs.append(new_mob)
         new_mob.set_start()
-        # self.mob = ChangedMob(self, 100, (0, 0), (900, 900), 'images/mobs/mob9_')
-        # self.mob.set_start()
 
     def create_passive_amulet(self, hole_ids, amulet_handle):
         print(f'Создаем пассивный амулет {id}: {hole_ids}')
@@ -329,7 +311,7 @@ class StaticMap:
         # базовый фон
         self.image = pygame.image.load(self.path)
         # фон с яркостью
-        self.brightenImage = pygame.image.load(self.path)
+        self.brighten_image = pygame.image.load(self.path)
         # ставим яркость по умолчанию
         self.brightness = dispatcher.session.brightness
         self.set_brightness(self.brightness)
@@ -343,10 +325,10 @@ class StaticMap:
         if self.brightness >= len(BRIGHTEN):
             self.brightness = 0
         bright_color = (BRIGHTEN[self.brightness], BRIGHTEN[self.brightness], BRIGHTEN[self.brightness])
-        self.brightenImage = pygame.image.load(self.path)
-        self.brightenImage.fill(bright_color, special_flags=pygame.BLEND_RGB_SUB)
+        self.brighten_image = pygame.image.load(self.path)
+        self.brighten_image.fill(bright_color, special_flags=pygame.BLEND_RGB_SUB)
 
     def render(self, surface):
         # рисуем фон
-        surface.blit(self.brightenImage, (0, 0))
+        surface.blit(self.brighten_image, (0, 0))
         surface.blit(self.image_test, (100, 350))

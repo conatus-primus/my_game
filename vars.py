@@ -5,7 +5,7 @@ import pygame
 import configparser
 import enum
 
-from logger import logger
+from py.mylog import MyLog
 
 # размер карты
 WIDTH_MAP = 900
@@ -35,7 +35,7 @@ FON_COLOR_MID = pygame.Color(159, 168, 127)
 FON_COLOR_DARK = pygame.Color(183, 194, 147)
 
 # лог на сессию
-LOG = logger()
+LOG = MyLog()
 
 # событие таймера
 TIMER_EVENT_DISPATCHER = pygame.USEREVENT + 1
@@ -173,8 +173,8 @@ class Session:
         self.map_number = 101
         self.currentHoleID = 'path1'
         self.sounds_active = False
-        self.chansonActive = False
-        self.volumeLevel = 0.1
+        self.chanson_active = False
+        self.volume_level = 0.1
 
         self.user = ''
         # описание карты MapDecr
@@ -197,12 +197,12 @@ class Session:
                 self.brightness = int(config[section]['brightness'])
                 if self.brightness >= len(BRIGHTEN):
                     self.brightness = len(BRIGHTEN) - 1
-            if 'soundsActive' in config[section]:
-                self.sounds_active = True if config[section]['soundsActive'] == '1' else False
-            if 'chansonActive' in config[section]:
-                self.chansonActive = True if config[section]['chansonActive'] == '1' else False
-            if 'volumeLevel' in config[section]:
-                self.volumeLevel = float(config[section]['volumeLevel'])
+            if 'sounds_active' in config[section]:
+                self.sounds_active = True if config[section]['sounds_active'] == '1' else False
+            if 'chanson_active' in config[section]:
+                self.chanson_active = True if config[section]['chanson_active'] == '1' else False
+            if 'volume_level' in config[section]:
+                self.volume_level = float(config[section]['volume_level'])
 
         if self.user == '':
             self.user = 'ГОСТЬ'
@@ -218,9 +218,9 @@ class Session:
                 config[section] = {}
             config[section]['user'] = '' if self.user.lower() in ['гость'] else self.user
             config[section]['brightness'] = str(self.brightness)
-            config[section]['soundsActive'] = '1' if self.sounds_active is True else '0'
-            config[section]['chansonActive'] = '1' if self.chansonActive is True else '0'
-            config[section]['volumeLevel'] = str(self.volumeLevel)
+            config[section]['sounds_active'] = '1' if self.sounds_active is True else '0'
+            config[section]['chanson_active'] = '1' if self.chanson_active is True else '0'
+            config[section]['volume_level'] = str(self.volume_level)
             config.write(f)
 
 

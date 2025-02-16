@@ -4,7 +4,7 @@
 # линии движения ориентированы по направлению к своим дырками
 import copy
 from vars import *
-from svgparser import ParserSvgFileDict, ParserSvgString, Gnuplot, VectorizerPictures
+from py.svgparser import ParserSvgFileDict, ParserSvgString, Gnuplot, VectorizerPictures
 
 
 class Hole:

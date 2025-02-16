@@ -1,33 +1,31 @@
 # начальная заставка
-import pygame
-from vars import *
-from svgparser import VectorizerPictures
+from py.svgparser import VectorizerPictures
 from py.edit import EditText
 from py.user import *
 
 class Invite(VectorizerPictures):
     def __init__(self):
         super().__init__('vect_images/invite2.svg')
-        self.rectText = None
+        self.rect_text = None
         self.offset = None
-        self.imageTitle = None
-        self.imageClick = None
+        self.image_title = None
+        self.image_click = None
         self.__load()
-        self.tickCount = None
+        self.tick_count = None
         self.angle = 0
         self.sign = 1
 
     def __load(self):
         try:
-            self.imageTitle = pygame.image.load('vect_images/invite1.png')
-            self.imageClick = pygame.image.load('vect_images/invite2.png')
+            self.image_title = pygame.image.load('vect_images/invite1.png')
+            self.image_click = pygame.image.load('vect_images/invite2.png')
             super().load()
-            self.rectText = self.overall_rectangle('rect1')
-            if self.rectText is None:
+            self.rect_text = self.overall_rectangle('rect1')
+            if self.rect_text is None:
                 raise (f'{self.__class__.__name__}:{__name__}: ошибка загрузки {self.svg_file}')
 
-            self.offset = (SIZE_GAME[0] - self.imageClick.get_width()) // 2, (
-                    SIZE_GAME[1] - self.imageClick.get_height()) // 2
+            self.offset = (SIZE_GAME[0] - self.image_click.get_width()) // 2, (
+                    SIZE_GAME[1] - self.image_click.get_height()) // 2
 
         except Exception as e:
             LOG.write(str(e))
@@ -38,16 +36,16 @@ class Invite(VectorizerPictures):
         screen.fill(FON_COLOR)
         pygame.draw.rect(screen, FON_COLOR_DARK, (0, 0, WIDTH_GAME, HEIGHT_HEADER))
         pygame.draw.rect(screen, FON_COLOR_DARK, (0, HEIGHT_GAME - HEIGHT_FOOTER, WIDTH_GAME, HEIGHT_FOOTER))
-        screen.blit(self.imageClick, self.offset)
+        screen.blit(self.image_click, self.offset)
 
-        if self.tickCount == None:
-            self.tickCount = 0
+        if self.tick_count == None:
+            self.tick_count = 0
             self.angle = 0
             self.sign = 1
         else:
-            self.tickCount += 1
+            self.tick_count += 1
 
-            if self.tickCount % 10 == 0:
+            if self.tick_count % 10 == 0:
                 self.angle += 0.4 * self.sign
 
                 ANGLE = 10
@@ -56,17 +54,17 @@ class Invite(VectorizerPictures):
                 elif self.angle < - ANGLE:
                     self.sign = -self.sign
 
-        surf = pygame.transform.rotate(self.imageTitle, self.angle)
-        rotateRect = surf.get_rect()
+        surf = pygame.transform.rotate(self.image_title, self.angle)
+        rotate_rect = surf.get_rect()
 
-        _, _, _, h = self.rectText
-        __offset = (SIZE_GAME[0] - rotateRect.width) // 2, (SIZE_GAME[1] - rotateRect.height) // 2 - 2 * h
+        _, _, _, h = self.rect_text
+        __offset = (SIZE_GAME[0] - rotate_rect.width) // 2, (SIZE_GAME[1] - rotate_rect.height) // 2 - 2 * h
         screen.blit(surf, __offset)
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         x, y = pos
         offset_x, offset_y = self.offset
-        l, t, w, h = self.rectText
+        l, t, w, h = self.rect_text
         return l <= x - offset_x <= l + w and t <= y - offset_y <= t + h
 
 
@@ -108,8 +106,8 @@ class Login(EditText, EventObject):
         # выводим предупреждение
         self.start_window.updated(new_text)
 
-    def onClick(self, pos):
-        return self.start_window.onClick(pos)
+    def on_click(self, pos):
+        return self.start_window.on_click(pos)
 
 
 class Start(VectorizerPictures):
@@ -147,9 +145,6 @@ class Start(VectorizerPictures):
         pygame.draw.rect(screen, FON_COLOR_DARK, (0, 0, WIDTH_GAME, HEIGHT_HEADER))
         pygame.draw.rect(screen, FON_COLOR_DARK, (0, HEIGHT_GAME - HEIGHT_FOOTER, WIDTH_GAME, HEIGHT_FOOTER))
 
-        # pygame.draw.rect(screen, FON_COLOR_DARK, self.rect_start, 2)
-        # pygame.draw.rect(screen, FON_COLOR_DARK, self.rect_login_control, 2)
-
         d = HEIGHT_HEADER // 2
         screen.blit(self.image_synopsis, ((WIDTH_GAME - self.image_synopsis.get_width()) // 2, HEIGHT_HEADER + d))
         screen.blit(self.image_window2, (d, HEIGHT_HEADER + d))
@@ -161,7 +156,7 @@ class Start(VectorizerPictures):
         if self.login_control is not None:
             self.login_control.render(screen)
 
-    def onClick(self, pos):
+    def on_click(self, pos):
         x, y = pos
         l, t, w, h = self.rect_start
         return l <= x <= l + w and t <= y <= t + h

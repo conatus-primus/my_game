@@ -1,10 +1,9 @@
-import enum
 from invite import Invite, Start
 from game import Game
 from message import Message
 from finish import Finish
-from py.shared import *
 import sys
+from vars import *
 
 FPS = 60
 
@@ -30,7 +29,7 @@ if __name__ == '__main__':
         if a == '--passive':
             dispatcher.param_passive = True
     dispatcher.param_passive = True
-    
+
     # важно прописать до pygame.init()
     pygame.mixer.pre_init(44100, -16, 1, 512)
 
@@ -38,12 +37,11 @@ if __name__ == '__main__':
     pygame.font.init()
     pygame.mixer.init()
 
-    # TODO посмотреть что делать, если совсем нет картинок
-
     # стартовая заставка
     run_list = [Invite(), Start()]
 
     sounds.load()
+
     pygame.display.set_caption('Защита окон от монстров')
 
     # создаем игру
@@ -92,7 +90,7 @@ if __name__ == '__main__':
 
                 # эмуляция двойного клика мыши
                 if time.time() - click_time < double_click_time and click_pos == pygame.mouse.get_pos():
-                    print("Double click detected")
+                    print('Double click detected')
                     if run_list is None and game is not None:
                         game.on_double_click(event)
 
@@ -105,7 +103,7 @@ if __name__ == '__main__':
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print(event.pos)
                 if run_list is not None:
-                    if run_list[0].onClick(event.pos):
+                    if run_list[0].on_click(event.pos):
 
                         # ---------------------------------------------
                         run_list.pop(0)
@@ -119,11 +117,10 @@ if __name__ == '__main__':
                                 message_error = Message(str(e))
                         else:
                             run_list[0].load()
-                        # sounds.sVgux.play()
                         # ---------------------------------------------
 
                 elif game is not None:
-                    game.onClick(event.pos)
+                    game.on_click(event.pos)
 
             if event.type == pygame.KEYDOWN:
                 pressed = True
@@ -147,7 +144,6 @@ if __name__ == '__main__':
                 except Exception as e:
                     LOG.write(str(e))
                     message_error = Message(str(e))
-                # sounds.sVgux.play()
             # ---------------------------------------------
 
         else:
@@ -165,6 +161,7 @@ if __name__ == '__main__':
 
         pygame.display.flip()
 
+        # эмуляция нажатия для вызова игры из коллекции из подвала
         if game is not None and game.emulate_enter:
             game.emulate_enter = False
             dict_key = {}

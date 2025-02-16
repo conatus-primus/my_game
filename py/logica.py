@@ -1,6 +1,3 @@
-import time
-import pygame
-import copy
 import random
 from vars import *
 from py.amulet import AmuletPassive
