@@ -10,7 +10,7 @@ class Field(Block):
     def __init__(self, game):
         super().__init__(game, WIDTH_MAP, HEIGHT_MAP)
         self.static_map = None
-        self.vectorMap = None
+        self.vector_map = None
         self.location = None
         self.amulets = []
         self.amulet_user = None
@@ -29,20 +29,20 @@ class Field(Block):
         self.location.load()
 
         # грузим векторное описание
-        self.vectorMap = VectorMap(map_number)
-        self.vectorMap.load()
+        self.vector_map = VectorMap(map_number)
+        self.vector_map.load()
 
         # обработка статики в карте (фон + дырки + направляющие)
         self.static_map = StaticMap(map_number)
         self.static_map.load()
 
         # устанавливаем в векторную карту описание текущего уровня
-        self.vectorMap.set_current_level_content(dispatcher.session.level_content)
+        self.vector_map.set_current_level_content(dispatcher.session.level_content)
 
         # пользовательский амулет
         self.amulet_user = AmuletUser(self)
         # задаем все дырки
-        self.amulet_user.load(self.vectorMap.holes + self.vectorMap.disabled_holes)
+        self.amulet_user.load(self.vector_map.holes + self.vector_map.disabled_holes)
         # связываем амулет с локатором - изменится локатор - изменим и амулеты
         self.amulet_user.setLocation(self.location)
         self.amulets.append(self.amulet_user)
@@ -53,7 +53,7 @@ class Field(Block):
     def render(self):
         pygame.draw.rect(self.surface, pygame.Color('blue'), (0, 0, self.width, self.height))
         self.static_map.render(self.surface)
-        self.vectorMap.render(self.surface)
+        self.vector_map.render(self.surface)
 
         # рисуем все амулеты
         for a in self.amulets:
@@ -99,7 +99,7 @@ class Field(Block):
 
     def update(self, sender):
         self.static_map.set_brightness(dispatcher.session.brightness)
-        self.vectorMap.set_current_level_content(dispatcher.session.level_content)
+        self.vector_map.set_current_level_content(dispatcher.session.level_content)
         for a in self.amulets:
             a.update()
 
@@ -124,11 +124,11 @@ class Field(Block):
         # есть хотя бы один амулет гарантировано
         hole_position: list[tuple[str, int, Amulet]] = []
         for a in self.amulets:
-            res = a.currentHole()
+            res = a.get_current_hole()
             if res is not None and res[0] != '':
                 hole_position.append(res)
 
-        # activeHoleID, startSecs, self
+        # active_hole_id, startSecs, self
         # слепляем ключ для сортировки время, сдвинутое на 100 плюс номер дырки (номер точно меньше 100)
         hole_position = sorted(hole_position, key=lambda x: -(int(x[0].replace('path', '')) * 100 + x[1]))
         state = AmuletState.MONTRER_EN_ENTIER
@@ -136,26 +136,26 @@ class Field(Block):
         pos = dict()
         self.strips = {}
         for i, item in enumerate(hole_position):
-            activeHoleID, _, amulet = item
-            state = pos.get(activeHoleID)
+            active_hole_id, _, amulet = item
+            state = pos.get(active_hole_id)
             if state is None:
                 amulet.setMontrerState(AmuletState.MONTRER_EN_ENTIER)
-                pos[activeHoleID] = AmuletState.MONTRER_UNE_PARTIE
+                pos[active_hole_id] = AmuletState.MONTRER_UNE_PARTIE
             else:
                 amulet.setMontrerState(state)
                 if state == AmuletState.MONTRER_UNE_PARTIE:
-                    pos[activeHoleID] = AmuletState.NE_MONTRER_PAS
+                    pos[active_hole_id] = AmuletState.NE_MONTRER_PAS
             # заполним данные для отрисовки панелей
-            if activeHoleID not in self.strips.keys():
-                self.strips[activeHoleID] = []
-            self.strips[activeHoleID].append(amulet)
+            if active_hole_id not in self.strips.keys():
+                self.strips[active_hole_id] = []
+            self.strips[active_hole_id].append(amulet)
 
     # рисуем планки с количеством амулетов если они есть
     def render_strips(self):
         for hole_id, list_amulet in self.strips.items():
-            if hole_id in self.vectorMap.strips:
+            if hole_id in self.vector_map.strips:
                 # координаты планки
-                coords = self.vectorMap.strips[hole_id]
+                coords = self.vector_map.strips[hole_id]
 
                 if len(coords) <= 1:
                     continue
@@ -185,7 +185,7 @@ class Field(Block):
     def create_new_mob(self, hole_id, line_number, velocity, mob_number):
         # print(f'Создаем моба {hole_id}: {line_number}')
 
-        coords = self.vectorMap.line_coords(hole_id, line_number)
+        coords = self.vector_map.line_coords(hole_id, line_number)
         # print(f'mob coords={coords}')
         new_mob = ChangedMob(self, velocity, coords[0], coords[1], 'mob' + str(mob_number),
                              self.all_mob_groups, self.callback_update, len(self.mobs) % 3 + 1
@@ -197,7 +197,7 @@ class Field(Block):
         print(f'Создаем пассивный амулет {id}: {hole_ids}')
         amuletPassive = AmuletPassive(self, amulet_handle.id, hole_ids, SHOW_TIME_IN_HOLE_SEC,
                                       amulet_handle.price_max)
-        amuletPassive.load(self.vectorMap.holes)
+        amuletPassive.load(self.vector_map.holes)
         amuletPassive.start()
         self.amulets.append(amuletPassive)
         dispatcher.game.message(MessadgID.DEF_AMULET_BALL, amulet_handle.id, amulet_handle.price_max)
@@ -209,7 +209,7 @@ class Field(Block):
         if dispatcher.logicaaa():
             dispatcher.logicaaa().set_create_mob_amulet_function(
                 self.create_new_mob, self.create_passive_amulet,
-                self.vectorMap.all_active_pathes())
+                self.vector_map.all_active_pathes())
 
     def game_pause(self):
         self.game_over(True, False)
@@ -274,7 +274,7 @@ class Field(Block):
             self.recalc_amulet_relative_position()
 
         # пробежать по дыркам без амулетов может с кем-то пересеклись
-        hole_rects = self.vectorMap.get_active_rects(delta_rect)
+        hole_rects = self.vector_map.get_active_rects(delta_rect)
 
         for rect in hole_rects:
             mob_del_list = []

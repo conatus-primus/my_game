@@ -49,8 +49,8 @@ class AmuletSprite(pygame.sprite.Sprite):
     def isPointInHole(self, pos):
         return self.rect.collidepoint(pos)
 
-    def update(self, currentHoleID):
-        self.active = True if currentHoleID == self.id else False
+    def update(self, current_hole_id):
+        self.active = True if current_hole_id == self.id else False
 
     def render(self, surface, montrer_state):
         if not self.active:
@@ -88,24 +88,24 @@ class Amulet:
     # минимальное расстояние между точками планки (увязано с размером окружности при отрисовке)
     strip_max_length = 2 * 11
 
-    def __init__(self, amuletName, parent):
+    def __init__(self, amulet_name, parent):
         self.parent = parent
         self.location = None
         # грузим картинку для амулета
-        self.image = self.load_image(amuletName)
-        LOG.write(f'Load amulet {amuletName}')
+        self.image = self.load_image(amulet_name)
+        LOG.write(f'Load amulet {amulet_name}')
         # грузим пользовательский цвет для амулета
         config = configparser.ConfigParser()
         config.read(CURRENT_DIRECTORY + '/data/amulets.ini')
-        if amuletName in config and 'color' in config[amuletName]:
-            r, g, b = config[amuletName]['color'].split(',')
+        if amulet_name in config and 'color' in config[amulet_name]:
+            r, g, b = config[amulet_name]['color'].split(',')
             self.color = pygame.Color(int(r), int(g), int(b))
         else:
             self.color = self.image.get_at((self.image.get_width() // 2, self.image.get_height() // 2))
         # список амулетов
-        self.amuletSprites = []
-        self.activeHoleID = 'path1'
-        self.montrerState = AmuletState.MONTRER_EN_ENTIER
+        self.amulet_sprites = []
+        self.active_hole_id = 'path1'
+        self.montrer_state = AmuletState.MONTRER_EN_ENTIER
 
     def load_image(self, name):
         # TODO сделать нормальную обработку
@@ -114,18 +114,18 @@ class Amulet:
         return image
 
     # создаем спрайты, одна дырка - один спрайт
-    def load(self, vMapHoles):
-        for hole in vMapHoles:
-            self.amuletSprites.append(AmuletSprite(self))
-            self.amuletSprites[-1].load(self.image, hole.id, hole.coords_hole, hole.centre_hole, self.color)
+    def load(self, v_map_holes):
+        for hole in v_map_holes:
+            self.amulet_sprites.append(AmuletSprite(self))
+            self.amulet_sprites[-1].load(self.image, hole.id, hole.coords_hole, hole.centre_hole, self.color)
 
     # связываем амулет с локатором - изменится локатор - изменим и амулеты
     def setLocation(self, location):
         self.location = location
 
     def render(self, surface):
-        for a in self.amuletSprites:
-            a.render(surface, self.montrerState)
+        for a in self.amulet_sprites:
+            a.render(surface, self.montrer_state)
 
     def on_click(self, pos):
         return False
@@ -134,14 +134,14 @@ class Amulet:
     def on_pressed_key(self, pressed_keys):
         return False
 
-    def on_timer(self, currentTime):
+    def on_timer(self, current_time):
         return False
 
-    def setMontrerState(self, montrerState):
-        self.montrerState = montrerState
+    def setMontrerState(self, montrer_state):
+        self.montrer_state = montrer_state
 
     def set_extended_state_show(self, hole_id, state):
-        for a in self.amuletSprites:
+        for a in self.amulet_sprites:
             if a.id == hole_id:
                 a.extended_state_show = state
 
@@ -172,7 +172,7 @@ class Amulet:
         return True
 
     def get_active_rect(self, delta):
-        for a in self.amuletSprites:
+        for a in self.amulet_sprites:
             if a.active:
                 return pygame.Rect(a.rect.left - delta, a.rect.top - delta, a.rect.width + 2 * delta,
                                    a.rect.height + 2 * delta)
@@ -186,23 +186,23 @@ class AmuletUser(Amulet):
 
     # обновляем настройку отображения спрайтов в зависимости от текущей дырки
     def update(self):
-        for a in self.amuletSprites:
-            a.update(self.activeHoleID)
+        for a in self.amulet_sprites:
+            a.update(self.active_hole_id)
 
     def on_click(self, pos):
         # меняем положение пользовательского амулета
         # пока так, потом возможно нужен режим,
         # или клик для амулета пользователя или клик для пассивного/активного амулета
         # может еще что-то
-        clickedAmulet = None
-        for a in self.amuletSprites:
+        clicked_amulet = None
+        for a in self.amulet_sprites:
             if a.isPointInHole(pos):
-                clickedAmulet = a
+                clicked_amulet = a
                 break
 
-        if clickedAmulet is not None:
-            self.location.current_hole_id = clickedAmulet.id
-            self.activeHoleID = clickedAmulet.id
+        if clicked_amulet is not None:
+            self.location.current_hole_id = clicked_amulet.id
+            self.active_hole_id = clicked_amulet.id
             dispatcher.need_update(self)
             return True
 
@@ -210,16 +210,16 @@ class AmuletUser(Amulet):
 
     # вход - нажатые клавиши pygame.key.get_pressed()
     def on_pressed_key(self, pressed_keys):
-        old_active_hole_id = self.activeHoleID
-        self.activeHoleID = self.location.on_pressed_key(pressed_keys, self.activeHoleID)
-        if self.activeHoleID != old_active_hole_id:
+        old_active_hole_id = self.active_hole_id
+        self.active_hole_id = self.location.on_pressed_key(pressed_keys, self.active_hole_id)
+        if self.active_hole_id != old_active_hole_id:
             dispatcher.need_update(self)
             return True
         return False
 
     # дырка, чтобы разобраться в порядке отображения когда несколько амулетов стоят на одной дырке
-    def currentHole(self):
-        return self.activeHoleID, time.time(), self
+    def get_current_hole(self):
+        return self.active_hole_id, time.time(), self
 
 
 # пассивный амулет - назначается пользователем на несколько дыр (2 и больше)
@@ -263,32 +263,32 @@ class AmuletPassive(Amulet):
             return
 
         active_hole_id, _, _ = self.rules[0]
-        for a in self.amuletSprites:
+        for a in self.amulet_sprites:
             a.update(active_hole_id)
 
     def on_click(self, pos):
         return False
 
     # таймер на передвижение амулетов
-    def on_timer(self, currentTime):
+    def on_timer(self, current_time):
         # print(f'{self.__class__.__name__}.{__name__} {current_time}')
 
         if self.start_time is None:
             return False
 
-        activeHoleID, sampleInterval, startSecs = self.rules[0]
-        dT = currentTime - startSecs
-        # print(f'dT={dT} {activeHoleID}, {sampleInterval}, {startSecs}')
+        active_hole_id, sample_interval, start_secs = self.rules[0]
+        dT = current_time - start_secs
+        # print(f'dT={dT} {active_hole_id}, {sample_interval}, {start_secs}')
 
-        if dT < sampleInterval:
+        if dT < sample_interval:
             # оставляем эту дырку
             return False
         else:
             next = False
 
-            if sampleInterval == 0:
+            if sample_interval == 0:
                 if self.mob is not None and self.mob.start is False:
-                    self.set_extended_state_show(activeHoleID, True)
+                    self.set_extended_state_show(active_hole_id, True)
                     self.mob = None
                     next = True
             else:
@@ -300,40 +300,40 @@ class AmuletPassive(Amulet):
                     # пускаем моба
                     if self.mob is not None:
                         # для текущей дырки возвращаем прежнее состояние
-                        self.set_extended_state_show(activeHoleID, True)
+                        self.set_extended_state_show(active_hole_id, True)
                         self.mob = None
 
-                    self.mob = Mob(self, self.velocity, self.centre_hole[activeHoleID],
+                    self.mob = Mob(self, self.velocity, self.centre_hole[active_hole_id],
                                    self.centre_hole[next_hole_id],
                                    'images/amulets/' + self.amulet_name, pygame.sprite.Group(), None)
                     self.mob.set_start()
-                    self.set_extended_state_show(activeHoleID, False)
+                    self.set_extended_state_show(active_hole_id, False)
 
                     # двигаемся дальше
                     # первый элемент передвигаем в конец
-                    self.rules.append((activeHoleID, sampleInterval, 0))
+                    self.rules.append((active_hole_id, sample_interval, 0))
                     # отсекаем его из начала
                     self.rules = self.rules[1:]
                     # корректируем новый первый - ставим текущее время
-                    newActiveHoleID, newSampleInterval, _ = self.rules[0]
-                    self.rules[0] = newActiveHoleID, newSampleInterval, currentTime
+                    new_active_hole_id, new_sample_interval, _ = self.rules[0]
+                    self.rules[0] = new_active_hole_id, new_sample_interval, current_time
 
             if next:
                 # двигаемся дальше
                 # первый элемент передвигаем в конец
-                self.rules.append((activeHoleID, sampleInterval, 0))
+                self.rules.append((active_hole_id, sample_interval, 0))
                 # отсекаем его из начала
                 self.rules = self.rules[1:]
                 # корректируем новый первый - ставим текущее время
-                newActiveHoleID, newSampleInterval, _ = self.rules[0]
-                self.rules[0] = newActiveHoleID, newSampleInterval, currentTime
+                new_active_hole_id, new_sample_interval, _ = self.rules[0]
+                self.rules[0] = new_active_hole_id, new_sample_interval, current_time
 
             dispatcher.need_update(self)
 
             return True
 
     # дырка, чтобы разобраться в порядке отображения когда несколько амулетов стоят на одной дырке
-    def currentHole(self):
+    def get_current_hole(self):
         if self.start_time is None:
             return None
         active_hole_id, _, start_secs = self.rules[0]

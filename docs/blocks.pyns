@@ -1,0 +1,36 @@
+# PynSource Version 1.2
+{'type':'meta', 'info1':'Lorem ipsum dolor sit amet, consectetur adipiscing elit is latin. Comments are saved.'}
+{'type':'umlshape', 'id':'Block', 'x':556, 'y':386, 'width':138, 'height':394, 'attrs': 'game|height|surface|width', 'meths': '__init__|game_continue|game_over|game_pause|game_replay|game_start|is_in_block|load|need_update|on_changed_state|on_click|on_click_extend|on_double_click|on_message|on_pressed_key|on_timer|update'}
+{'type':'umlshape', 'id':'pygame.Surface', 'x':297, 'y':112, 'width':150, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Collection', 'x':268, 'y':200, 'width':130, 'height':186, 'attrs': 'biblio|font', 'meths': '__init__|load|on_click|on_double_click|on_pressed_key|render'}
+{'type':'umlshape', 'id':'Field', 'x':797, 'y':50, 'width':258, 'height':506, 'attrs': 'all_mob_groups|amulet_user|amulets|last_show_mobs|last_track|location|mob_groups|mobs|static_map|strips|vector_map', 'meths': '__init__|callback_update|create_mob_to_centre_from|create_new_mob|create_passive_amulet|game_over|game_pause|game_replay|game_start|load|on_click|on_pressed_key|on_timer|recalc_amulet_relative_position|render|render_strips|update'}
+{'type':'umlshape', 'id':'StaticMap', 'x':1108, 'y':270, 'width':122, 'height':202, 'attrs': 'brighten_image|brightness|image|image_test|path', 'meths': '__init__|load|render|set_brightness'}
+{'type':'umlshape', 'id':'ButtonID', 'x':945, 'y':605, 'width':146, 'height':80, 'attrs': 'ID_BUTTON_CHANSON|ID_BUTTON_SOUND', 'meths': ''}
+{'type':'umlshape', 'id':'Footer', 'x':351, 'y':721, 'width':146, 'height':298, 'attrs': 'button_chanson|button_sound|image_sortir|machine|offset|offset_sortir|offset_y|state', 'meths': '__init__|load|on_changed_state|on_click|on_pressed_button|render|set_state'}
+{'type':'umlshape', 'id':'enum.Enum', 'x':959, 'y':740, 'width':100, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Game', 'x':65, 'y':426, 'width':210, 'height':522, 'attrs': 'block|block_collect|block_game|collection|emulate_enter|game|start|state|user', 'meths': '__change_state|__init__|game_continue|game_over|game_pause|game_replay|game_start|get_block|isSession|load|message|need_update|notify_about_change_state|on_click|on_click_extend|on_double_click|on_pressed_key|on_stop|on_timer|render'}
+{'type':'umlshape', 'id':'Header', 'x':487, 'y':165, 'width':74, 'height':106, 'attrs': 'font', 'meths': '__init__|render'}
+{'type':'umlshape', 'id':'MouseButton', 'x':747, 'y':811, 'width':120, 'height':128, 'attrs': 'LEFT|MIDDLE|RIGHT|SCROLL_BACK|SCROLL_FRONT', 'meths': ''}
+{'type':'umlshape', 'id':'MarginLeft', 'x':593, 'y':5, 'width':146, 'height':314, 'attrs': 'amulet_button|amulet_handles|button_acheter|first_render', 'meths': '__init__|game_over|game_replay|game_start|load|loadAmulets|on_click|on_click_extend|on_message|on_pressed_button|on_pushed_button|render'}
+{'type':'umlshape', 'id':'MarginRight', 'x':308, 'y':486, 'width':146, 'height':202, 'attrs': 'bright_offset|bright_panel|current_map|level_panel', 'meths': '__init__|load|on_click|on_pressed_button|render'}
+{'type':'umlshape', 'id':'Sounds', 'x':131, 'y':60, 'width':90, 'height':314, 'attrs': '__sFail|__sFall|__sFinish|__sGlass|__sStart|__sSuccess|__sVgux', 'meths': '__init__|fail|fall|finish|glass|load|start|succeess|vgux'}
+{'type':'umlshape', 'id':'Session', 'x':1254, 'y':21, 'width':122, 'height':282, 'attrs': 'brightness|chanson_active|currentHoleID|level_content|logica|map_number|path|selected_map|sounds_active|user|volume_level', 'meths': '__init__|read|write'}
+{'type':'umlshape', 'id':'Dispatcher', 'x':1256, 'y':349, 'width':114, 'height':282, 'attrs': 'finish_screen|flag_finish|game|param_passive|session|tick|user', 'meths': '__init__|load|load_image|logicaaa|need_update|on_stop|on_timer'}
+{'type':'umlshape', 'id':'ButtonState', 'x':1130, 'y':642, 'width':120, 'height':160, 'attrs': 'CONTINUE_ID|HOUSE_ID|PAUSE_ID|PLAY_ID|REPLAY_ID|RETURN_ID|SELECT_ID', 'meths': ''}
+{'type':'umlshape', 'id':'GameState', 'x':784, 'y':620, 'width':100, 'height':144, 'attrs': 'GAME_NO|GAME_OVER|GAME_PAUSE|GAME_PLAY|GAME_SELECT|GAME_WAIT', 'meths': ''}
+{'type':'umlshape', 'id':'MessadgID', 'x':1014, 'y':871, 'width':146, 'height':96, 'attrs': 'DEF_AMULETS_CLEAR|DEF_AMULET_BALL|DEF_SELECT_GAME', 'meths': ''}
+{'type':'edge', 'id':'pygame.Surface_to_Block', 'source':'pygame.Surface', 'target':'Block', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Collection_to_Block', 'source':'Collection', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'Field_to_Block', 'source':'Field', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'StaticMap_to_Field', 'source':'StaticMap', 'target':'Field', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Footer_to_Block', 'source':'Footer', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'ButtonID_to_enum.Enum', 'source':'ButtonID', 'target':'enum.Enum', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'Collection_to_Game', 'source':'Collection', 'target':'Game', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Header_to_Block', 'source':'Header', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'MouseButton_to_enum.Enum', 'source':'MouseButton', 'target':'enum.Enum', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'MarginLeft_to_Block', 'source':'MarginLeft', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'MarginRight_to_Block', 'source':'MarginRight', 'target':'Block', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'ButtonState_to_enum.Enum', 'source':'ButtonState', 'target':'enum.Enum', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'GameState_to_enum.Enum', 'source':'GameState', 'target':'enum.Enum', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'MessadgID_to_enum.Enum', 'source':'MessadgID', 'target':'enum.Enum', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'Session_to_Dispatcher', 'source':'Session', 'target':'Dispatcher', 'uml_edge_type': 'composition'}

@@ -38,7 +38,7 @@ class CheckButton:
 
 # полностью нарисованная кнопка
 class DrawnCheckButton(CheckButton):
-    def __init__(self, buttonID, name, parent, offset, color_fon = FON_COLOR):
+    def __init__(self, buttonID, name, parent, offset, color_fon=FON_COLOR):
         super().__init__(buttonID, parent, color_fon)
         self.offset = offset
         self.image_pressed = pygame.image.load('images/system/' + name + '_on.png')
@@ -58,7 +58,7 @@ class DrawnCheckButton(CheckButton):
 # button : (path, name без _on.png/_off.png)
 # image : (pathActive pathDisable)
 class ImageDrawnCheckButton(CheckButton):
-    def __init__(self, buttonID, buttonPath, image_path, parent, offset, color_fon = FON_COLOR):
+    def __init__(self, buttonID, buttonPath, image_path, parent, offset, color_fon=FON_COLOR):
         super().__init__(buttonID, parent, color_fon)
         self.offset = offset
 
@@ -66,7 +66,7 @@ class ImageDrawnCheckButton(CheckButton):
         self.image_pressed_out = pygame.image.load(buttonPath + '_off.png')
 
         self.image = pygame.image.load(image_path)
-        self.disableImage = pygame.image.load(image_path.replace('.png', '_gray.png'))
+        self.disable_image = pygame.image.load(image_path.replace('.png', '_gray.png'))
 
         self.surface = pygame.Surface(
             (max(self.image_pressed.get_width(), self.image_pressed_out.get_width()),
@@ -83,7 +83,7 @@ class ImageDrawnCheckButton(CheckButton):
         if self.enabled:
             self.surface.blit(self.image, self.image_offset)
         else:
-            self.surface.blit(self.disableImage, self.image_offset)
+            self.surface.blit(self.disable_image, self.image_offset)
 
     def setEnable(self, enabled):
         self.enabled = enabled

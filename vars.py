@@ -171,7 +171,7 @@ class Session:
         self.brightness = 0
         # TODO задать кривой номер и нормально показать ошибку
         self.map_number = 101
-        self.currentHoleID = 'path1'
+        self.current_hole_id = 'path1'
         self.sounds_active = False
         self.chanson_active = False
         self.volume_level = 0.1

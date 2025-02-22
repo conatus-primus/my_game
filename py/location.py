@@ -62,7 +62,7 @@ class Location:
 
     # получить следующую дырку при нажатии на клавиши
     # user_keys = pygame.key.get_pressed()
-    def on_pressed_key(self, user_keys, activeHoleID):
+    def on_pressed_key(self, user_keys, active_hole_id):
         key_dict = {pygame.K_LEFT: 'L', pygame.K_a: 'L',
                     pygame.K_RIGHT: 'R', pygame.K_d: 'R',
                     pygame.K_UP: 'U', pygame.K_w: 'U',
@@ -71,9 +71,8 @@ class Location:
         for fixed_key, direct in key_dict.items():
             if user_keys[fixed_key]:
                 self.current_hole_id = self.hole_by_key[self.current_hole_id][key_dict[fixed_key]]
-                old_active_hole_id = activeHoleID
-                activeHoleID = self.hole_by_key[activeHoleID][key_dict[fixed_key]]
-                print(f'{old_active_hole_id} --> {activeHoleID}')
+                old_active_hole_id = active_hole_id
+                active_hole_id = self.hole_by_key[active_hole_id][key_dict[fixed_key]]
+                print(f'{old_active_hole_id} --> {active_hole_id}')
                 break
-        return activeHoleID
-
+        return active_hole_id
