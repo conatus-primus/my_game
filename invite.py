@@ -3,6 +3,7 @@ from py.svgparser import VectorizerPictures
 from py.edit import EditText
 from py.user import *
 
+
 class Invite(VectorizerPictures):
     def __init__(self):
         super().__init__('vect_images/invite2.svg')
@@ -156,6 +157,12 @@ class Start(VectorizerPictures):
         if self.login_control is not None:
             self.login_control.render(screen)
 
+        font = pygame.font.SysFont('Comic Sans MS', 20)
+        offset_y = HEIGHT_GAME - HEIGHT_FOOTER
+        font.set_bold(False)
+        text = font.render(f'InkaSoft         https://github.com/conatus-primus/my_game.git', True, (0, 0, 0))
+        screen.blit(text, ((WIDTH_GAME - text.get_width()) / 2, offset_y + (HEIGHT_FOOTER - text.get_height()) // 2))
+
     def on_click(self, pos):
         x, y = pos
         l, t, w, h = self.rect_start
@@ -167,4 +174,3 @@ class Start(VectorizerPictures):
         dispatcher.session.user = new_text
         dispatcher.user = User(new_text)
         dispatcher.user.load()
-
