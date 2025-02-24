@@ -315,7 +315,7 @@ class StaticMap:
         # ставим яркость по умолчанию
         self.brightness = dispatcher.session.brightness
         self.set_brightness(self.brightness)
-        self.image_test = pygame.image.load(CURRENT_DIRECTORY + '/images/nuage.png')
+        # self.image_test = pygame.image.load(CURRENT_DIRECTORY + '/images/nuage.png')
 
     def load(self):
         pass
@@ -331,4 +331,4 @@ class StaticMap:
     def render(self, surface):
         # рисуем фон
         surface.blit(self.brighten_image, (0, 0))
-        surface.blit(self.image_test, (100, 350))
+        # surface.blit(self.image_test, (100, 350))

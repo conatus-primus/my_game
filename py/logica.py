@@ -329,6 +329,7 @@ class Logica(Round):
             if len(self.holes_info) >= m:
                 passive_amulet_count = (len(self.holes_info) - (m - 2)) // 2
 
+                # тестовый режим пассивный амулет двигается по всем окнам последовательно
                 if dispatcher.param_passive is True:
                     ids = []
                     for i in range(len(self.holes_info)):
