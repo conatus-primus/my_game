@@ -1,0 +1,21 @@
+# PynSource Version 1.2
+{'type':'meta', 'info1':'Lorem ipsum dolor sit amet, consectetur adipiscing elit is latin. Comments are saved.'}
+{'type':'umlshape', 'id':'AmuletState', 'x':151, 'y':239, 'width':154, 'height':96, 'attrs': 'MONTRER_EN_ENTIER|MONTRER_UNE_PARTIE|NE_MONTRER_PAS', 'meths': ''}
+{'type':'umlshape', 'id':'AmuletSprite', 'x':821, 'y':219, 'width':162, 'height':314, 'attrs': 'active|centre|color|contour|coords_hole|extended_state_show|id|image|parent|pens|rect', 'meths': '__init__|isPointInHole|load|render|update'}
+{'type':'umlshape', 'id':'Amulet', 'x':572, 'y':218, 'width':194, 'height':426, 'attrs': 'active_hole_id|amulet_sprites|color|image|location|montrer_state|parent|strip_max_length', 'meths': '__init__|count_balls|get_active_rect|load|load_image|minus_balls|on_click|on_pressed_key|on_timer|render|render_last|render_strip|setLocation|setMontrerState|set_extended_state_show'}
+{'type':'umlshape', 'id':'AmuletUser', 'x':396, 'y':25, 'width':122, 'height':170, 'attrs': 'active_hole_id|location', 'meths': '__init__|currentHole|on_click|on_pressed_key|update'}
+{'type':'umlshape', 'id':'AmuletPassive', 'x':355, 'y':313, 'width':140, 'height':410, 'attrs': 'amulet_name|balls|centre_hole|list_holes_id|mob|mob2|rules|start_time|velocity', 'meths': '__init__|count_balls|currentHole|load|load_amulets|minus_balls|on_click|on_timer|render|render_last|start|stop|update'}
+{'type':'umlshape', 'id':'AmuletTrack', 'x':148, 'y':387, 'width':120, 'height':154, 'attrs': 'center_pos|color|radius', 'meths': '__init__|is_stop|render'}
+{'type':'umlshape', 'id':'enum.Enum', 'x':216, 'y':168, 'width':100, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'pygame.sprite.Sprite', 'x':674, 'y':122, 'width':210, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'OVERALL_RECT', 'x':701, 'y':691, 'width':130, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'OVERALL_CONTOUR', 'x':843, 'y':613, 'width':160, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Mob', 'x':232, 'y':600, 'width':40, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'edge', 'id':'AmuletPassive_to_Amulet', 'source':'AmuletPassive', 'target':'Amulet', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'AmuletUser_to_Amulet', 'source':'AmuletUser', 'target':'Amulet', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'AmuletState_to_enum.Enum', 'source':'AmuletState', 'target':'enum.Enum', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'AmuletSprite_to_pygame.sprite.Sprite', 'source':'AmuletSprite', 'target':'pygame.sprite.Sprite', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'OVERALL_RECT_to_AmuletSprite', 'source':'OVERALL_RECT', 'target':'AmuletSprite', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'AmuletSprite_to_Amulet', 'source':'AmuletSprite', 'target':'Amulet', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'OVERALL_CONTOUR_to_AmuletSprite', 'source':'OVERALL_CONTOUR', 'target':'AmuletSprite', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Mob_to_AmuletPassive', 'source':'Mob', 'target':'AmuletPassive', 'uml_edge_type': 'composition'}

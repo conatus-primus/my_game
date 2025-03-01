@@ -26,9 +26,10 @@ if __name__ == '__main__':
     for i, a in enumerate(sys.argv):
         if i == 0:
             continue
+        # пассивный амулет двигается по всем окнам, а не по паре окон
+        # тестовый режим для проверки планок
         if a == '--passive':
             dispatcher.param_passive = True
-    dispatcher.param_passive = True
 
     # важно прописать до pygame.init()
     pygame.mixer.pre_init(44100, -16, 1, 512)
