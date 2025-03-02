@@ -144,7 +144,7 @@ class MapDscr:
         return ['path' + str(i) for i in range(1, count + 1)]
 
     @staticmethod
-    def __generate_combination(count_hole, upper_level: list[int]):
+    def __generate_combination(count_hole, upper_level):
         # считаем сколько чисел надо исключить
         temp_level = copy.copy(upper_level)
         exclude = len(upper_level) - count_hole
