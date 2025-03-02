@@ -23,6 +23,8 @@ class Finish:
         for x in self.mob:
             x.set_start()
 
+        pygame.mixer.music.pause()
+
     def render(self, surface):
         pygame.draw.rect(surface, FON_COLOR, (0, 0, WIDTH_GAME, HEIGHT_GAME))
         x, y = (WIDTH_GAME - self.image.get_width()) // 2, (HEIGHT_GAME - self.image.get_height()) // 2

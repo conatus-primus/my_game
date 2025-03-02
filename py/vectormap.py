@@ -154,11 +154,12 @@ class RawMap(ParserMapFile):
         self.__print()
 
     def __print(self):
-        with open(self.current_txt_file, 'wt') as fw:
-            for obj in self.holes:
-                res = obj.__str__()
-                print(res, file=fw)
-                print(' ', file=fw)
+        pass
+        # with open(self.current_txt_file, 'wt') as fw:
+        #     for obj in self.holes:
+        #         res = obj.__str__()
+        #         print(res, file=fw)
+        #         print(' ', file=fw)
 
 
 # объект с описанием карты в зависимости от уровня игры
